@@ -60,7 +60,6 @@ function Section({children, title}: SectionProps): React.JSX.Element {
   );
 }
 
-
 const Stack = createNativeStackNavigator();
 
 function App(): React.JSX.Element {
@@ -79,7 +78,8 @@ function App(): React.JSX.Element {
         </Stack.Navigator>
         </SafeAreaView>
       </NavigationContainer>
-    
+
+
   );
 }
 
