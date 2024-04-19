@@ -1,0 +1,15 @@
+{
+  "name": "rv-copilot",
+  "version": "1.0.0",
+  "description": "RV Copilot Project for CS 464",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Patrick Godfrey, Corianne Frankovitch, Katherine Piper",
+  "license": "ISC",
+  "dependencies": {
+    "@google-cloud/datastore": "^8.7.0",
+    "express": "^4.19.2"
+  }
+}
