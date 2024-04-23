@@ -27,8 +27,11 @@ import {
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStackNavigator } from '@react-navigation/stack';
 
-import HomeScreen from './src/screens/HomeScreen.js';
+
+import HomeScreen from './src/screens/AuthScreen.js';
+import AppNavContainer from './src/navigations/index.js';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -71,13 +74,7 @@ function App(): React.JSX.Element {
 
   return (
     
-      <NavigationContainer>
-        <SafeAreaView style={{flex: 1}}>
-        <Stack.Navigator>
-          <Stack.Screen name="Home" component={HomeScreen}/>
-        </Stack.Navigator>
-        </SafeAreaView>
-      </NavigationContainer>
+        <AppNavContainer/>
 
 
   );
