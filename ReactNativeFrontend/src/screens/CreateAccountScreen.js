@@ -10,7 +10,7 @@ const CreateAccountScreen = ({ navigation }) => {
     return (
         <View>
             <Text>Hi from Create Account Screen</Text>
-            {/* Button to navigate to SignUp screen */}
+            {/* Button to navigate to Login screen */}
             <Button title="Go to Log In" onPress={goToLogin} />
         </View>
     );

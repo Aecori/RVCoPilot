@@ -5,12 +5,8 @@ const HomeScreen = ({ navigation }) => {
 
     const name = "Name";
 
-    const goToLoginScreen = () => {
-        navigation.navigate('LoginScreen');
-    };
-
-    const goToCreateAccountScreen = () => {
-        navigation.navigate('CreateAccountScreen');
+    const goToAuthScreen = () => {
+        navigation.navigate('AuthScreen');
     };
 
     const goToRVSiteListScreen = () => {
@@ -21,6 +17,7 @@ const HomeScreen = ({ navigation }) => {
         <View>
             <Text>Welcome to RV CoPilot {name} </Text>
             <Button title="Go to RV Site List" onPress={goToRVSiteListScreen} />
+            <Button title="Login / Create account" onPress={goToAuthScreen} />
         </View>
     );
 };
