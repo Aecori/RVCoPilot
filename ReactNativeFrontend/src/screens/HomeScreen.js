@@ -1,14 +1,28 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Button } from 'react-native';
 
+const HomeScreen = ({ navigation }) => {
 
+    const name = "Name";
 
-function HomeScreen () {
+    const goToLoginScreen = () => {
+        navigation.navigate('LoginScreen');
+    };
+
+    const goToCreateAccountScreen = () => {
+        navigation.navigate('CreateAccountScreen');
+    };
+
+    const goToRVSiteListScreen = () => {
+        navigation.navigate('RVSiteListScreen');
+    };
+
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', }}>
-        <Text>Home Screen</Text>
-      </View>
+        <View>
+            <Text>Welcome to RV CoPilot {name} </Text>
+            <Button title="Go to RV Site List" onPress={goToRVSiteListScreen} />
+        </View>
     );
-  }
+};
 
-  export default HomeScreen;
+export default HomeScreen;
