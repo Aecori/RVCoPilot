@@ -16,7 +16,7 @@ const siteSchema = Joi.object({
     SiteRating: Joi.number().integer().min(0).max(5),
     Comments: Joi.array().items(Joi.object({
         Comment: Joi.string(),
-        Rating: Joi.number().integer().min(0).max(5),
+        Rating: Joi.number().integer().min(1).max(5),
         Date: Joi.date()
     }))
 });
