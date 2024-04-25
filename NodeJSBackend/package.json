@@ -1,0 +1,20 @@
+{
+  "name": "rv-copilot",
+  "version": "1.0.0",
+  "description": "RV Copilot Project for CS 464",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Patrick Godfrey, Corianne Frankovitch, Katherine Piper",
+  "license": "ISC",
+  "dependencies": {
+    "@google-cloud/datastore": "^8.7.0",
+    "body-parser": "^1.20.2",
+    "express": "^4.19.2",
+    "geographiclib-dms": "^2.0.0",
+    "geographiclib-geodesic": "^2.0.0",
+    "joi": "^17.13.0",
+    "mathjs": "^12.4.1"
+  }
+}
