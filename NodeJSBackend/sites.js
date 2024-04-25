@@ -5,6 +5,7 @@ router.use(bodyParser.json());
 const ds = require('./datastore');
 const datastore = ds.datastore;
 const math = require('mathjs');
+const { PropertyFilter } = require('@google-cloud/datastore');
 var geodesic = require("geographiclib-geodesic"),
     geod = geodesic.Geodesic.WGS84, r;
 
@@ -22,10 +23,10 @@ function calculateFence(lat, lon){
     up = geod.Direct(lat, lon, 0, math.round(50 * 1609.34, 2));
     down = geod.Direct(lat, lon, 180, math.round(50 * 1609.34, 2));
     let fence = {
-        latMin: down.lat2,
-        latMax: up.lat2,
-        lonMin: left.lon2,
-        lonMax: right.lon2
+        latMin: math.round(down.lat2, 6),
+        latMax: math.round(up.lat2, 6),
+        lonMin: math.round(left.lon2, 6),
+        lonMax: math.round(right.lon2, 6)
     }
     return fence;
 }
@@ -48,16 +49,24 @@ async function getFenceSites(req){
         return Promise.reject('Latitude must be between -90 and 90, and longitude must be between -180 and 180');
     }
 
-
-    let fence = calculateFence(req.params.latitude, req.params.longitude);
-    // Create query to get all sites that are within the fence
-    const query = datastore.createQuery(SITE).filter('latitude', '>=', fence.latMin)
-    .filter('latitude', '<=', fence.latMax)
-    .filter('longitude', '>=', fence.lonMin)
-    .filter('longitude', '<=', fence.lonMax);
-    return datastore.runQuery(query).then( (results) => {
+    // TODO: May have to migrate to Firestore because geospatial queries require
+    // the ability to use multiple filters on the same field
+    const fence = calculateFence(req.params.latitude, req.params.longitude);
+    const query = datastore.createQuery(SITE)
+    .filter('SiteLongitude', '>=', fence.lonMin)
+    .filter('SiteLongitude', '<=', fence.lonMax);
+    const results = await datastore.runQuery(query).then( (results) => {
         return results[0].map(ds.fromDatastore);
     });
+
+    // Filter out sites that are not within the latitude fence
+    let filtered_results = [];
+    for(let i = 0; i < results.length; i++){
+        if(results[i].SiteLatitude >= fence.latMin && results[i].SiteLatitude <= fence.latMax){
+            filtered_results.push(results[i]);
+        }
+    }
+    return filtered_results;
 }
 
 async function postSite(req){
@@ -175,7 +184,7 @@ router.get('/:id', (req, res) => {
     });
 })
 
-router.get('/:latitude/:longitude', (req, res) => {
+router.get('/latitude/:latitude/longitude/:longitude', (req, res) => {
     getFenceSites(req).then( (results) => {
         res.status(200).json(results);
     })
