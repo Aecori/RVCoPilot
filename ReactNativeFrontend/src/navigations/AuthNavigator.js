@@ -8,6 +8,7 @@ import LoginScreen from '../screens/LoginScreen.js';
 import CreateAccountScreen from '../screens/CreateAccountScreen.js';
 import AuthScreen from '../screens/AuthScreen.js';
 
+import { LOGIN, CREATE_ACCOUNT } from '../constants/Constants.js';
 
 const AuthNavigator= ({navigation}) => {
 
@@ -16,9 +17,9 @@ const AuthNavigator= ({navigation}) => {
     
     return (
         <AuthStack.Navigator>
-            <AuthStack.Screen name="AuthScreen" component={AuthScreen}/>
-            <AuthStack.Screen name="LoginScreen" component={LoginScreen}/>
-            <AuthStack.Screen name="CreateAccountScreen" component={CreateAccountScreen}/>
+            <AuthStack.Screen name={"AuthScreen"} component={AuthScreen}/>
+            <AuthStack.Screen name={LOGIN} component={LoginScreen}/>
+            <AuthStack.Screen name={CREATE_ACCOUNT} component={CreateAccountScreen}/>
         </AuthStack.Navigator>
     );
 }

@@ -1,24 +1,26 @@
 import React from 'react';
 
+import { HOME, RVSITE_DETAILS, RVSITE_LIST, EDIT_RVSITE_DETAILS } from '../constants/Constants.js';
+
 import {createStackNavigator } from '@react-navigation/stack';
-import HomeScreen from '../screens/HomeScreen.js';
-import RVSiteListScreen from '../screens/RVSiteListScreen.js';
-import RVSiteScreen from '../screens/RVSiteScreen.js';
-import EditRVSiteScreen from '../screens/EditRVSiteScreen.js';
+
+import HomeScreen from '../screens/HomeScreen';
+import RVSiteListScreen from '../screens/RVSiteListScreen';
+import RVSiteScreen from '../screens/RVSiteScreen';
+import EditRVSiteScreen from '../screens/EditRVSiteScreen';
+
 
 
 const HomeStack = createStackNavigator ();
 
 const HomeScreenNavigator= () => {
     
-
-    
     return (
-        <HomeStack.Navigator initialRouteName="HomeScrenn">
-            <HomeStack.Screen name="HomeScreen" component={HomeScreen}/>
-            <HomeStack.Screen name="RVSiteListScreen" component= {RVSiteListScreen}/>
-            <HomeStack.Screen name="RVSiteScreen" component= {RVSiteScreen}/>
-            <HomeStack.Screen name="EditRVSiteScreen" component= {EditRVSiteScreen}/>
+        <HomeStack.Navigator initialRouteName={HOME}>
+            <HomeStack.Screen name={HOME} component={HomeScreen}/>
+            <HomeStack.Screen name={RVSITE_LIST} component= {RVSiteListScreen}/>
+            <HomeStack.Screen name={RVSITE_DETAILS} component= {RVSiteScreen}/>
+            <HomeStack.Screen name={EDIT_RVSITE_DETAILS} component= {EditRVSiteScreen}/>
         </HomeStack.Navigator>
     );
 }
