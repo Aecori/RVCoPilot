@@ -75,7 +75,7 @@ async function postSite(req){
         "CellService": req.body.CellService,
         "PetsAllowed": req.body.PetsAllowed,
         "Recreation": req.body.Recreation,
-        "SiteRating": "",
+        "SiteRating": 0,
         "Comments": []
     };
 
@@ -187,6 +187,8 @@ router.get('/:latitude/:longitude', (req, res) => {
 });
 
 router.post('/', (req, res) => {
+    // Console log contents of request
+    console.log(req.body);
     postSite(req).then( (key) => {
         res.status(201).json({
             "id": key
