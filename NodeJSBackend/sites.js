@@ -40,16 +40,16 @@ async function getSites(req){
 
 // Get all sites within 50 miles of a given point
 async function getFenceSites(req){
-    if (!req.body.latitude || !req.body.longitude || isNaN(req.body.latitude) || isNaN(req.body.longitude)) {
+    if (!req.params.latitude || !req.params.longitude || isNaN(req.params.latitude) || isNaN(req.params.longitude)) {
         return Promise.reject('Latitude and longitude formatting error');
-    } else if (isNaN(req.body.latitude) || isNaN(req.body.longitude)) {
+    } else if (isNaN(req.params.latitude) || isNaN(req.params.longitude)) {
         return Promise.reject('Latitude and longitude formatting error');
-    } else if (req.body.latitude < -90 || req.body.latitude > 90 || req.body.longitude < -180 || req.body.longitude > 180) {
+    } else if (req.params.latitude < -90 || req.params.latitude > 90 || req.params.longitude < -180 || req.params.longitude > 180) {
         return Promise.reject('Latitude must be between -90 and 90, and longitude must be between -180 and 180');
     }
 
 
-    let fence = calculateFence(req.body.latitude, req.body.longitude);
+    let fence = calculateFence(req.params.latitude, req.params.longitude);
     // Create query to get all sites that are within the fence
     const query = datastore.createQuery(SITE).filter('latitude', '>=', fence.latMin)
     .filter('latitude', '<=', fence.latMax)
