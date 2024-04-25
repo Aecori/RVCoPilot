@@ -1,6 +1,9 @@
 import React from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
+
+import google from '../assets/google.svg';
 import MyButton from '../components/button1';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const LoginScreen = ({ navigation }) => {
     const [username, setUsername] = React.useState('');
@@ -29,28 +32,30 @@ const LoginScreen = ({ navigation }) => {
     
 
     return (
-        <View>
-            <Text>Hi from Login</Text>
-            
-            <TextInput
-                style={styles.input}
-                placeholder="Username"
-                value={username}
-                onChangeText={setUsername}
-                keyboardType='default'
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Password"
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
-                keyboardType='default'
-            />        
-            <MyButton title="Login and go see RV sites" onPress={handleLogin} />
-            {/* Button to navigate to CreateAccount screen */}
-            <Button title="Go to Create Account" onPress={goToCreateAccountScreen} />
-        </View>
+        <SafeAreaView>
+            <View style={{alignItems:'center'}}>
+                <Text>Login</Text>
+                
+                <TextInput
+                    style={styles.input}
+                    placeholder="Username"
+                    value={username}
+                    onChangeText={setUsername}
+                    keyboardType='default'
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Password"
+                    secureTextEntry
+                    value={password}
+                    onChangeText={setPassword}
+                    keyboardType='default'
+                />        
+                <MyButton title="Login and go see RV sites" onPress={handleLogin} />
+                {/* Button to navigate to CreateAccount screen */}
+                <Button title="New user? Go to Create Account" onPress={goToCreateAccountScreen} />
+            </View>
+        </SafeAreaView>
     );
 }
 
