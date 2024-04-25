@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+router.use(bodyParser.json());
 const ds = require('./datastore');
 const datastore = ds.datastore;
 const math = require('mathjs');
