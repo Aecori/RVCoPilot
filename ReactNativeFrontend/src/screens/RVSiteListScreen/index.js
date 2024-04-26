@@ -10,10 +10,10 @@ const RVSiteListScreen = () => {
   const navigation = useNavigation();
 
   const siteData=sampleRVSiteData;
-  console.log(sampleRVSiteData);
+  //console.log(sampleRVSiteData);
 
   const goToRVSiteScreen = (item) => {
-    console.log(item);
+    //console.log(item);
     navigation.navigate('RVSiteScreen', { item: item });
   }
 

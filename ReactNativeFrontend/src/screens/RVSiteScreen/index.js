@@ -10,7 +10,7 @@ function RVSiteScreen ({route}) {
     const siteData  = Object.entries(item).map(([key, value]) => ({key,value}));
 
     if (!siteData) {
-      console.error("Item is not defined");
+      //console.error("Item is not defined");
       return null;
     }
   
