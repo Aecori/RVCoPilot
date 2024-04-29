@@ -192,6 +192,11 @@ async function postComment(req){
     });
 };
 
+async function deleteSite(req){
+    const key = datastore.key([SITE, parseInt(req.params.id,10)]);
+    return datastore.delete(key);
+}
+
 /* ------------- Begin Controller Functions ------------- */
 router.get('/', (req, res) => {
     getSites(req).then( (results) => {
@@ -275,7 +280,14 @@ router.patch('/:id', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-
+    deleteSite(req).then( () => {
+        res.status(204).end();
+    })
+    .catch( (error) => {
+        res.status(404).json({
+            "Error": "Site not found"
+        });
+    });
 })
 
 /* ------------- End Controller Functions ------------- */
