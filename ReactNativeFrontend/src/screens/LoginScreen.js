@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, Alert, StyleSheet, Image } from 'react-native';
 
 import google from '../assets/google.svg';
+import register from '../assets/register.png';
 import MyButton from '../components/button1';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -32,10 +33,18 @@ const LoginScreen = ({ navigation }) => {
     
 
     return (
-        <SafeAreaView>
+        <SafeAreaView 
+            style={{
+                backgroundColor: 'white',
+                paddingTop: 0,      
+                }}
+        >
             <View style={{alignItems:'center'}}>
-                <Text>Login</Text>
-                
+                <Image 
+                source={register} 
+                style={{width: 400, height: 400}} 
+                />
+                <Text style={{fontSize:28}}>Login</Text>
                 <TextInput
                     style={styles.input}
                     placeholder="Username"
@@ -53,7 +62,9 @@ const LoginScreen = ({ navigation }) => {
                 />        
                 <MyButton title="Login and go see RV sites" onPress={handleLogin} />
                 {/* Button to navigate to CreateAccount screen */}
-                <Button title="New user? Go to Create Account" onPress={goToCreateAccountScreen} />
+                <View style={{flexDirection:'row'}}>
+                    <MyButton title="New user? Create Account" onPress={goToCreateAccountScreen} />
+                </View>
             </View>
         </SafeAreaView>
     );
