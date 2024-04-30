@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, Text, TextInput, Button, Alert, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, Button, Alert, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
 import google from '../assets/google.svg';
 import register from '../assets/register.png';
 import MyButton from '../components/button1';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const LoginScreen = ({ navigation }) => {
     const [username, setUsername] = React.useState('');
@@ -33,10 +34,10 @@ const LoginScreen = ({ navigation }) => {
     
 
     return (
-        <SafeAreaView 
+        <ScrollView 
             style={{
                 backgroundColor: 'white',
-                paddingTop: 0,      
+                flex: 1,
                 }}
         >
             <View style={{alignItems:'center'}}>
@@ -62,11 +63,11 @@ const LoginScreen = ({ navigation }) => {
                 />        
                 <MyButton title="Login and go see RV sites" onPress={handleLogin} />
                 {/* Button to navigate to CreateAccount screen */}
-                <View style={{flexDirection:'row'}}>
-                    <MyButton title="New user? Create Account" onPress={goToCreateAccountScreen} />
-                </View>
+                <TouchableOpacity onPress={() => navigation.navigate('CreateAccountScreen')}>
+                    <Text style={{color: '#007bff'}}>New user? Create account</Text>
+                </TouchableOpacity>
             </View>
-        </SafeAreaView>
+        </ScrollView>
     );
 }
 

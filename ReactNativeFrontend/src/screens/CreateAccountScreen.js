@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { View, Text, Button, Image, SafeAreaView, ScrollView, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { Alert, View, Text, Button, Image, SafeAreaView, ScrollView, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 
 
 
@@ -9,19 +9,72 @@ import MyButton from '../components/button1';
 
 
 const CreateAccountScreen = ({ navigation }) => {
-    // Function to navigate to the SignUp screen
-    const goToLogin = () => {
+    const [username, setUsername] = React.useState('');
+    const [password, setPassword] = React.useState('');
+    const [confirmPassword, setConfirmPassword] = React.useState('');
+
+    const handleCreateAccount = () => {
+        // Logic for handling login
+        if (!username || !password || !confirmPassword) {
+            Alert.alert('Please enter both username and password');
+            return;
+        } else if (password !== confirmPassword) {
+            Alert.alert('Passwords do not match');
+            return;
+        } 
+        else {
+            // Call the login API
+            // If successful, navigate to the RVSiteListScreen
+            // If unsuccessful, show an error message
+        }
+        // After successful login, navigate to the RVSiteListScreen
         navigation.navigate('RVSiteListScreen');
+
     };
 
    return (
-        <SafeAreaView>
+        <ScrollView
+        style={{
+            backgroundColor: 'white',
+            flex: 1,
+            }}
+        >   
             <View style={{alignItems:'center'}}>
-                <Text>Create Account</Text>
+            <Image 
+                source={register} 
+                style={{width: 400, height: 400}} 
+            />
+                <Text style={{fontSize:28}}>Create Account</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Select a username"
+                    value={username}
+                    onChangeText={setUsername}
+                    keyboardType='default'
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Password"
+                    secureTextEntry
+                    value={password}
+                    onChangeText={setPassword}
+                    keyboardType='default'
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Confirm password"
+                    secureTextEntry
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    keyboardType='default'
+                />    
                 {/* Button to navigate to Login screen */ }
-                <MyButton title="Create Account" onPress={goToLogin} />
+                <MyButton title="Create Account" onPress={handleCreateAccount} />
+                <TouchableOpacity title = "Log in instead" onPress={() => navigation.navigate('LoginScreen')}>
+                    <Text style={{color: '#007bff'}}>Already have an account? Login</Text>
+                </TouchableOpacity>
             </View>
-        </SafeAreaView>
+        </ScrollView>
     ); 
 }
 
