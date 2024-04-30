@@ -1,12 +1,19 @@
 import React from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import MyButton from '../components/button1';
 
 const HomeScreen = ({ navigation }) => {
 
-    const name = "Name";
-
     const goToAuthScreen = () => {
         navigation.navigate('AuthScreen');
+    };
+
+    const goToLoginScreen = () => {
+        navigation.navigate('LoginScreen');
+    };
+
+    const goToCreateAccountScreen = () => {
+        navigation.navigate('CreateAccountScreen');
     };
 
     const goToRVSiteListScreen = () => {
@@ -14,11 +21,14 @@ const HomeScreen = ({ navigation }) => {
     };
 
     return (
+        <ScrollView contentContainerStyle={{ flex: 1, backgroundColor: 'white' }}>
         <View>
-            <Text>Welcome to RV CoPilot {name} </Text>
-            <Button title="Go to RV Site List" onPress={goToRVSiteListScreen} />
-            <Button title="Login / Create account" onPress={goToAuthScreen} />
+            <Text style= {{fontSize: 28, textAlign: 'center'}}>Welcome to RV CoPilot</Text>
+            <MyButton title="Go to RV Site List" onPress={goToRVSiteListScreen} />
+            <MyButton title="Login" onPress={goToLoginScreen} />
+            <MyButton title="Create Account" onPress={goToCreateAccountScreen} />
         </View>
+        </ScrollView>
     );
 };
 
