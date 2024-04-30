@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
 import { Alert, View, Text, Button, Image, SafeAreaView, ScrollView, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 
-
-
 import google from '../assets/google.svg';
 import register from '../assets/register.png';
+
+import storeCredentials from '../components/auth';
 import MyButton from '../components/button1';
 
 
@@ -23,12 +23,12 @@ const CreateAccountScreen = ({ navigation }) => {
             return;
         } 
         else {
-            // Call the login API
-            // If successful, navigate to the RVSiteListScreen
-            // If unsuccessful, show an error message
+            // Store the username and password securely
+            storeCredentials(username, password);
+            // After successful login, navigate to the RVSiteListScreen
+            navigation.navigate('RVSiteListScreen');
         }
-        // After successful login, navigate to the RVSiteListScreen
-        navigation.navigate('RVSiteListScreen');
+        
 
     };
 
