@@ -3,23 +3,10 @@ import { View, Text, TouchableOpacity, StyleSheet, Button } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import basicStyle from '../../styles/basicStyle.js';
 
-const HomeScreen = () => {
+const MainScreen = () => {
     
     const navigation = useNavigation();
     const name = "Name";
-    
-
-    const goToLoginScreen = () => {
-        navigation.navigate('LoginScreen');
-    };
-
-    const goToCreateAccountScreen = () => {
-        navigation.navigate('CreateAccountScreen');
-    };
-
-    const goToRVSiteListScreen = () => {
-        navigation.navigate('RVSiteListScreen');
-    };
 
     return (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center'}}>
@@ -34,4 +21,4 @@ const HomeScreen = () => {
     );
 };
 
-export default HomeScreen;
+export default MainScreen;
