@@ -1,20 +1,19 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, Button } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import basicStyle from '../../styles/basicStyle.js';
 import sampleRVSiteData from '../../assets/data/sampleRVSiteData.js';
-
 
 const RVSiteListScreen = () => {
 
   const navigation = useNavigation();
+  const userName = "Bob"
 
   const siteData=sampleRVSiteData;
   //console.log(sampleRVSiteData);
 
   const goToRVSiteScreen = (item) => {
     //console.log(item);
-    navigation.navigate('RVSiteScreen', { item: item });
+    navigation.navigate('RVSiteScreen', { item: item, userName: userName });
   }
 
   const goToHomeScreen = () => {
@@ -23,21 +22,25 @@ const RVSiteListScreen = () => {
   
   const Item = ({item}) => (
     <View style={styles.item}>
-      <Text style={styles.title}>{item.name}</Text>
-      <TouchableOpacity onPress={()=> goToRVSiteScreen(item)} style={styles.button}>
-            <Text style={styles.buttonText}>Site Details</Text>
-          </TouchableOpacity>
-    </View>
+
+      <Text style={styles.textRVSite}>{item.SiteName}</Text>
+        <TouchableOpacity onPress={()=> goToRVSiteScreen(item)}>
+          <Text style={styles.buttonText}>Site Details</Text>
+        </TouchableOpacity>
+      </View>
   );
 
-  const keyExtractor = (item, index) => `${item.name}-${item.site_identifier}`;
+  const keyExtractor = (item, index) => `${item.id}`;
   
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#e0e0e1'}}>
+      
       <TouchableOpacity style={[styles.homeButton, styles.topRight] } onPress={goToHomeScreen}>
         <Text>Return Home</Text>
       </TouchableOpacity>
-      <Text>Nearby RV Sites</Text>
+
+      <Text style={styles.title}>Nearby RV Sites</Text>
+
       <View style={styles.container}>
         <FlatList
           data={siteData}
@@ -46,25 +49,29 @@ const RVSiteListScreen = () => {
         />
       </View>
     </View>
-
     
   );
 };
 
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   item: {
-    backgroundColor: '#FFC3D3BC',
+    backgroundColor: '#3e4272',
     padding: 15,
     marginVertical: 8,
     marginHorizontal: 16,
     borderRadius: 5,
   },
   title: {
-    fontSize: 18,
+    fontSize: 22,
+    padding: 10, 
+    marginTop: 15,
+    color: '#899499'
+  },
+  textRVSite: {
+    color:'#ecd9c4',
+    fontSize: 16,
+    padding: 5
   },
   container: {
     boxSizing: 'border-box',
@@ -78,42 +85,33 @@ const styles = StyleSheet.create({
     padding: 5,
     background: '#D9D9D9',
     borderWidth: 1,
-    borderColor: '#AFAFAF',
+    borderColor: '#FFFFFF',
     boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
     borderRadius: 10,
   },
-
   homeButton: {
     width: 126,
-    height: 40,
+    height: 35,
     backgroundColor: '#D9D9D9',
     borderWidth: 1,
     borderColor: '#AFAFAF',
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20,
+    margin: 15
   },
-
   buttonText: {
     fontFamily: 'MarkoOne-Regular',
     fontStyle: 'normal',
     fontWeight: '400',
     lineHeight: 32,
     textAlign: 'center',
-    color: '#000000',
-  },
-  justifyCenter: {
-    justifyContent: 'center'
+    color: '#d0e6f2',
   },
   topRight: {
     position: 'absolute', 
     top: 5, 
     right: 20,
-  },
-  middleBottom: {
-    position: 'absoulte', 
-    bottom: 5
   }
 });
 export default RVSiteListScreen;
