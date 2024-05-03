@@ -129,3 +129,108 @@ Outcome | Status Code | Notes
 --- | --- | ---
 Success | 204 No Content | 
 Failure | 404 Not Found | Site not found
+
+
+**Example for Comment (used in POST /sites/:id/comments)**
+
+```json
+{
+    "id": 1,
+    "Username": "godfre",
+    "Comment": "Great site, loved the view!",
+    "Rating": 5,
+    "Date": "2022-01-01T00:00:00.000Z"
+}
+```
+
+**Example for Cellphone (used in POST /sites and PATCH /sites/:id)**
+
+```json
+{
+    "Carrier": "Verizon",
+    "Signal": true,
+    "SignalStrength": 4
+}
+```
+
+**Example for Site (used in POST /sites)**
+
+```json
+{
+    "id": 1,
+    "SiteName": "Camp Paradise",
+    "SiteDescription": "A beautiful campsite with a lake view",
+    "SiteLatitude": 45.123,
+    "SiteLongitude": -120.123,
+    "SiteType": "Campsite",
+    "RVElectricAccess": true,
+    "WaterAccess": true,
+    "WifiAccess": false,
+    "CellService": [
+        {
+            "Carrier": "Verizon",
+            "Signal": true,
+            "SignalStrength": 4
+        }
+    ],
+    "PetsAllowed": true,
+    "Recreation": [
+        "Fishing",
+        "Hiking"
+    ],
+    "SiteRating": 5,
+    "Comments": [
+        {
+            "id": 1,
+            "Username": "godfre",
+            "Comment": "Great site, loved the view!",
+            "Rating": 5,
+            "Date": "2022-01-01T00:00:00.000Z"
+        }
+    ]
+}
+```
+
+**Example for Site Update (used in PATCH /sites/:id)**
+
+```json
+{
+    "SiteName": "Camp Paradise Updated",
+    "SiteDescription": "A beautiful campsite with a lake view, now with improved facilities",
+    "SiteLatitude": 45.123,
+    "SiteLongitude": -120.123,
+    "SiteType": "Campsite",
+    "RVElectricAccess": true,
+    "WaterAccess": true,
+    "WifiAccess": true,
+    "CellService": [
+        {
+            "Carrier": "Verizon",
+            "Signal": true,
+            "SignalStrength": 4
+        }
+    ],
+    "PetsAllowed": true,
+    "Recreation": [
+        "Fishing",
+        "Hiking",
+        "Boating"
+    ]
+}
+```
+
+**Example for User (not directly linked to any endpoint in the provided documentation)**
+
+```json
+{
+    "Username": "godfre",
+    "SavedSites": [
+        1,
+        2,
+        3
+    ]
+}
+```
+```
+
+These examples are based on the provided schemas and represent typical data that might be used with these schemas.
