@@ -9,7 +9,9 @@ const HomeScreenDrawerNavigator= ({navigation}) => {
     
     return (
         <Drawer.Navigator>
-            <Drawer.Screen name="HomeScreenNavigator" component={HomeScreenNavigator}/>
+            <SafeAreaView>
+                <Drawer.Screen name="HomeScreenNavigator" component={HomeScreenNavigator}/>
+            </SafeAreaView>
         </Drawer.Navigator>
     );
 }
