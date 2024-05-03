@@ -233,4 +233,4 @@ Failure | 404 Not Found | Site not found
 ```
 ```
 
-These examples are based on the provided schemas and represent typical data that might be used with these schemas.
+These examples are based on expected values, but are likely not contained in the actual database itself.
