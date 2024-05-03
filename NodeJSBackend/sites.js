@@ -6,6 +6,7 @@ const ds = require('./datastore');
 const datastore = ds.datastore;
 const math = require('mathjs');
 const { PropertyFilter } = require('@google-cloud/datastore');
+const e = require('express');
 var geodesic = require("geographiclib-geodesic"),
     geod = geodesic.Geodesic.WGS84, r;
 
@@ -14,6 +15,7 @@ const siteUpdateSchema = require('./schema/schemas').siteUpdateSchema;
 const commentSchema = require('./schema/schemas').commentSchema;
 
 const SITE = "Site";
+const COMMENT = "Comment";
 
 
 // Helper function to calculate calculate 50 miles in all directions from a given point
@@ -36,6 +38,17 @@ async function getSites(req){
     let query = datastore.createQuery(SITE);
     return datastore.runQuery(query).then( (results) => {
         return results[0].map(ds.fromDatastore);
+    });
+}
+
+async function getSite(req){
+    const key = datastore.key([SITE, parseInt(req.params.id,10)]);
+    return datastore.get(key).then( (entity) => {
+        if(entity[0] == undefined){
+            return Promise.reject('Site not found');
+        } else {
+            return ds.fromDatastore(entity[0]);
+        }
     });
 }
 
@@ -71,26 +84,30 @@ async function getFenceSites(req){
 
 async function postSite(req){
     const key = datastore.key(SITE);
+    console.log(key);
+    console.log(key.id);
     const new_site = {
         "id": key.id,
         "SiteName": req.body.SiteName,
-        "SiteDescription": req.body.Description,
+        "SiteDescription": req.body.SiteDescription,
         "SiteLatitude": req.body.SiteLatitude,
         "SiteLongitude": req.body.SiteLongitude,
         "SiteType": req.body.SiteType,
         "RVElectricAccess": req.body.RVElectricAccess,
         "WaterAccess": req.body.WaterAccess,
         "WifiAccess": req.body.WifiAccess,
-        "CellService": req.body.CellService,
+        "CellService": [],
         "PetsAllowed": req.body.PetsAllowed,
         "Recreation": req.body.Recreation,
         "SiteRating": 0,
         "Comments": []
     };
+    console.log(new_site);
 
     // Validate the new site schema
     const { error, value } = siteSchema.validate(new_site);
     if(error) {
+        console.log(error);
         return Promise.reject(error);
     }
     return datastore.save({"key":key, "data":new_site}).then(() => {
@@ -98,91 +115,109 @@ async function postSite(req){
     });
 }
 
-async function updateSite(req) {
-    const key = datastore.key([SITE, parseInt(req.params.id,10)]);
-    // Check what fields are being updated
-    const updated_site = {};
-    if(req.body.SiteName) updated_site.SiteName = req.body.SiteName;
-    if(req.body.SiteDescription) updated_site.SiteDescription = req.body.SiteDescription;
-    if(req.body.SiteLatitude) updated_site.SiteLatitude = req.body.SiteLatitude;
-    if(req.body.SiteLongitude) updated_site.SiteLongitude = req.body.SiteLongitude;
-    if(req.body.SiteType) updated_site.SiteType = req.body.SiteType;
-    if(req.body.RVElectricAccess) updated_site.RVElectricAccess = req.body.RVElectricAccess;
-    if(req.body.WaterAccess) updated_site.WaterAccess = req.body.WaterAccess;
-    if(req.body.WifiAccess) updated_site.WifiAccess = req.body.WifiAccess;
-    if(req.body.CellService) updated_site.CellService = req.body.CellService;
-    if(req.body.PetsAllowed) updated_site.PetsAllowed = req.body.PetsAllowed;
-    if(req.body.Recreation) updated_site.Recreation = req.body.Recreation;
-
-    // Validate the updated site schema
-    const { error, value } = siteUpdateSchema.validate(updated_site);
-    if(error) {
-        return Promise.reject(error);
-    }
-    return datastore.get(key).then( (entity) => {
-        if(entity[0] == undefined){
-            return Promise.reject('Site not found');
-        } else {
-            return datastore.update({"key":key, "data":updated_site}).then(() => {
-                return key.id;
-            });
-        }
-    });
-}
-
-async function updateComment(req){
+async function updateSite(req, results) {
     const key = datastore.key([SITE, parseInt(req.params.id,10)]);
     return datastore.get(key).then( (entity) => {
         if(entity[0] == undefined){
             return Promise.reject('Site not found');
-        } else {
-            let site = entity[0];
-            let new_comment = {
-                "Comment": req.body.Comment,
-                "Rating": req.body.Rating,
-                "Date": new Date()
-            }
-            // Validate the new comment schema
-            const { error, value } = commentSchema.validate(new_comment);
-            if(error) {
-                return Promise.reject(error);
-            }
-            site.Comments.push(new_comment);
-
-            // Get the average rating of the site
-            let total = 0;
-            for(let i = 0; i < site.Comments.length; i++){
-                total += site.Comments[i].Rating;
-            }
-            site.SiteRating = math.round(total / site.Comments.length, 2);
-            return datastore.update({"key":key, "data":site}).then(() => {
-                return key.id;
-            });
         }
+
+        // Get values from entity and update them if they are in the request
+        const updated_site = {};
+        if(req.body.SiteName) updated_site.SiteName = req.body.SiteName
+        else updated_site.SiteName = entity[0].SiteName;
+        if(req.body.SiteDescription) updated_site.SiteDescription = req.body.SiteDescription
+        else updated_site.SiteDescription = entity[0].SiteDescription;
+        if(req.body.SiteLatitude) updated_site.SiteLatitude = req.body.SiteLatitude
+        else updated_site.SiteLatitude = entity[0].SiteLatitude;
+        if(req.body.SiteLongitude) updated_site.SiteLongitude = req.body.SiteLongitude
+        else updated_site.SiteLongitude = entity[0].SiteLongitude;
+        if(req.body.SiteLongitude) updated_site.SiteLongitude = req.body.SiteLongitude
+        else updated_site.SiteLongitude = entity[0].SiteLongitude;
+        if(req.body.SiteType) updated_site.SiteType = req.body.SiteType
+        else updated_site.SiteType = entity[0].SiteType;
+        if(req.body.RVElectricAccess) updated_site.RVElectricAccess = req.body.RVElectricAccess
+        else updated_site.RVElectricAccess = entity[0].RVElectricAccess;
+        if(req.body.WaterAccess) updated_site.WaterAccess = req.body.WaterAccess
+        else updated_site.WaterAccess = entity[0].WaterAccess;
+        if(req.body.WifiAccess) updated_site.WifiAccess = req.body.WifiAccess
+        else updated_site.WifiAccess = entity[0].WifiAccess;
+        if(req.body.CellService) updated_site.CellService = req.body.CellService
+        else updated_site.CellService = entity[0].CellService;
+        if(req.body.PetsAllowed) updated_site.PetsAllowed = req.body.PetsAllowed
+        else updated_site.PetsAllowed = entity[0].PetsAllowed;
+        if(req.body.Recreation) updated_site.Recreation = req.body.Recreation
+        else updated_site.Recreation = entity[0].Recreation;
+        updated_site.SiteRating = entity[0].SiteRating;
+        updated_site.Comments = entity[0].Comments;
+        
+        // Validate the updated site schema
+        const { error, value } = siteUpdateSchema.validate(updated_site);
+        if(error) {
+            return Promise.reject("Invalid site data");
+        }
+        return datastore.update({"key":key, "data":updated_site}).then(() => {
+            return updated_site;
+        });
     });
 }
 
+async function postComment(req){
+    const key = datastore.key([SITE, parseInt(req.params.id,10)]);
+    return datastore.get(key).then( (entity) => {
+        if(entity[0] == undefined){
+            return Promise.reject("Site not found");
+        }
+        const site = entity[0];
+        const new_comment_key = datastore.key(COMMENT);
+        let new_comment = {
+            "id": new_comment_key.id,
+            "Username": req.body.Username,
+            "Comment": req.body.Comment, 
+            "Rating": req.body.Rating,
+            "Date": new Date()
+        }
+        const { error, value } = commentSchema.validate(new_comment);
+        if(error) {
+            return Promise.reject("Invalid comment data");
+        }
+        site.Comments.push(new_comment);
+        // Get the average rating of the site
+        let total = 0;
+        for(let i = 0; i < site.Comments.length; i++){
+            total += site.Comments[i].Rating;
+        }
+        site.SiteRating = math.round(total / site.Comments.length, 2);
+        return datastore.update({"key":key, "data":site}).then(() => {
+            return datastore.save({"key":new_comment_key, "data":new_comment}).then(() => {
+                return site;
+            });
+        });
+    });
+};
+
+async function deleteSite(req){
+    const key = datastore.key([SITE, parseInt(req.params.id,10)]);
+    return datastore.delete(key);
+}
 
 /* ------------- Begin Controller Functions ------------- */
 router.get('/', (req, res) => {
-    const query = datastore.createQuery(SITE);
-    datastore.runQuery(query).then( (results) => {
-        res.status(200).json(results[0].map(ds.fromDatastore));
+    getSites(req).then( (results) => {
+        res.status(200).json(results);
     });
 });
 
 router.get('/:id', (req, res) => {
-    const key = datastore.key([SITE, parseInt(req.params.id,10)]);
-    datastore.get(key).then( (entity) => {
-        if(entity[0] == undefined){
-            res.status(404).json({
-                "Error": "Site not found"
-            });
-        } else {
-            res.status(200).json(ds.fromDatastore(entity[0]));
-        }
+    getSite(req).then( (results) => {
+        res.status(200).json(results);
+    })
+    .catch( (error) => {
+        res.status(404).json({
+            "Error": "Site not found"
+        });
     });
-})
+});
 
 router.get('/latitude/:latitude/longitude/:longitude', (req, res) => {
     getFenceSites(req).then( (results) => {
@@ -205,28 +240,27 @@ router.post('/', (req, res) => {
     })
     .catch( (error) => {
         res.status(400).json({
-            "Error": error
+            "Error": "Invalid site data"
         });
     });
 });
 
 router.post('/:id/comments', (req, res) => {
-    updateComment(req).then( (key) => {
-        res.status(200).json({
-            "id": key
-        });
+    postComment(req, results).then( (updated_site) => {
+        res.status(200).json(updated_site);
     })
     .catch( (error) => {
-        if(error == 'Site not found'){
-            res.status(404).json({
-                "Error": error
-            });
-        } else {
-            res.status(400).json({
-                "Error": error
-            });
+        switch (error) {
+            case 'Site not found':
+            res.status(404).json({"Error": "Site not found"});
+            break;
+            case 'Invalid comment data':
+            res.status(400).json({"Error": "Invalid comment data"});
+            break;
+            default:
+            res.status(400).json({"Error": "Invalid comment data"});
         }
-    });
+    })
 });
 
 router.patch('/:id', (req, res) => {
@@ -236,17 +270,29 @@ router.patch('/:id', (req, res) => {
         });
     })
     .catch( (error) => {
-        if(error == 'Site not found'){
-            res.status(404).json({
-                "Error": error
-            });
-        } else {
-            res.status(400).json({
-                "Error": error
-            });
+        switch (error) {
+            case 'Site not found':
+            res.status(404).json({"Error": "Site not found"});
+            break;
+            case 'Invalid site data':
+            res.status(400).json({"Error": "Invalid site data"});
+            break;
+            default:
+            res.status(400).json({"Error": "Invalid site data"});
         }
     });
 });
+
+router.delete('/:id', (req, res) => {
+    deleteSite(req).then( () => {
+        res.status(204).end();
+    })
+    .catch( (error) => {
+        res.status(404).json({
+            "Error": "Site not found"
+        });
+    });
+})
 
 /* ------------- End Controller Functions ------------- */
 
