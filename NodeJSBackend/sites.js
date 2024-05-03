@@ -84,26 +84,30 @@ async function getFenceSites(req){
 
 async function postSite(req){
     const key = datastore.key(SITE);
+    console.log(key);
+    console.log(key.id);
     const new_site = {
         "id": key.id,
         "SiteName": req.body.SiteName,
-        "SiteDescription": req.body.Description,
+        "SiteDescription": req.body.SiteDescription,
         "SiteLatitude": req.body.SiteLatitude,
         "SiteLongitude": req.body.SiteLongitude,
         "SiteType": req.body.SiteType,
         "RVElectricAccess": req.body.RVElectricAccess,
         "WaterAccess": req.body.WaterAccess,
         "WifiAccess": req.body.WifiAccess,
-        "CellService": req.body.CellService,
+        "CellService": [],
         "PetsAllowed": req.body.PetsAllowed,
         "Recreation": req.body.Recreation,
         "SiteRating": 0,
         "Comments": []
     };
+    console.log(new_site);
 
     // Validate the new site schema
     const { error, value } = siteSchema.validate(new_site);
     if(error) {
+        console.log(error);
         return Promise.reject(error);
     }
     return datastore.save({"key":key, "data":new_site}).then(() => {
