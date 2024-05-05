@@ -135,11 +135,9 @@ Failure | 404 Not Found | Site not found
 
 ```json
 {
-    "id": 1,
     "Username": "godfre",
     "Comment": "Great site, loved the view!",
-    "Rating": 5,
-    "Date": "2022-01-01T00:00:00.000Z"
+    "Rating": 5
 }
 ```
 
