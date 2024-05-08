@@ -1,15 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import sampleRVSiteData from '../../assets/data/sampleRVSiteData.js';
+import AntIcon from 'react-native-vector-icons/AntDesign';
+import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
+//import Samplemap from '../../components/Samplemap.js';
 
-const RVSiteListScreen = () => {
+const RVSiteMapScreen = () => {
 
   const navigation = useNavigation();
   const userName = "Unverified user"
 
   const siteData=sampleRVSiteData;
-  //console.log(sampleRVSiteData);
+  console.log(sampleRVSiteData);
+
+  //const [location, setLocation] = useState(false);
 
   const goToRVSiteScreen = (item) => {
     //console.log(item);
@@ -20,9 +25,10 @@ const RVSiteListScreen = () => {
     navigation.navigate('HomeScreen');
   }
 
-  const goToMapScreen = () => {
-    navigation.navigate('MapScreen');
-  }
+  const goToRVSiteListScreen = () => {
+    navigation.navigate('RVSiteListScreen');
+  };
+
   
   const Item = ({item}) => (
     <View style={styles.item}>
@@ -36,12 +42,12 @@ const RVSiteListScreen = () => {
   const keyExtractor = (item, index) => `${item.id}`;
   
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#3e4272'}}>
-
+    <View style={{flex:1, backgroundColor: '#3e4272', alignItems: 'center'}}>
+      
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 10, marginTop: 10}}>
           
-          <TouchableOpacity style={[styles.homeButton] } onPress={goToMapScreen}>
-              <Text>Map View</Text>
+          <TouchableOpacity style={[styles.homeButton] } onPress={goToRVSiteListScreen}>
+              <Text>View as List</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.homeButton } onPress={goToHomeScreen}>
@@ -50,9 +56,28 @@ const RVSiteListScreen = () => {
 
       </View>
 
+                 
+
+
+      <View>
+                       
+                <MapView
+                        provider={PROVIDER_GOOGLE}
+                        style={{flex:1}}
+                        initialRegion={{
+                        latitude: 37.78825,
+                        longitude: -122.4324,
+                        latitudeDelta: 0.0922,
+                        longitudeDelta: 0.0421,
+                        }}
+                        />
+                </View>
+                
+
+
       <Text style={styles.title}>Nearby RV Sites</Text>
 
-     
+      {/*
       <View style={styles.container}>
         <FlatList
           data={siteData}
@@ -60,8 +85,7 @@ const RVSiteListScreen = () => {
           keyExtractor={keyExtractor}
         />
       </View>
-     
-
+      */}
     </View>
     
   );
@@ -69,30 +93,33 @@ const RVSiteListScreen = () => {
 
 
 const styles = StyleSheet.create({
-  item: {
-    backgroundColor: '#e0e0e1',
-    padding: 10,
-    marginVertical: 6,
-    marginHorizontal: 6,
-    borderRadius: 5,
+  mapcontainer: {
+    ...StyleSheet.absoluteFillObject,
+    height: 400,
+    width: 400,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
   },
-  itemBox: {
-    backgroundColor: '#f0f0f0', 
-    padding: 5, 
-    marginBottom: 5,
+  map: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  item: {
+    backgroundColor: '#3e4272',
+    padding: 15,
+    marginVertical: 8,
+    marginHorizontal: 16,
     borderRadius: 5,
-    borderWidth: 1, 
-    borderColor: '#ccc', 
   },
   title: {
     fontSize: 22,
-    padding: 10,
+    padding: 10, 
     marginTop: 15,
-    color: '#ecd9c4'
+    color: '#899499'
   },
   textRVSite: {
-    color:'#A9A9A9',
-    fontSize: 16
+    color:'#ecd9c4',
+    fontSize: 16,
+    padding: 5
   },
   container: {
     boxSizing: 'border-box',
@@ -127,7 +154,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     lineHeight: 32,
     textAlign: 'center',
-    color: '#333333',
+    color: '#d0e6f2',
   },
   topRight: {
     position: 'absolute', 
@@ -135,4 +162,4 @@ const styles = StyleSheet.create({
     right: 20,
   }
 });
-export default RVSiteListScreen;
+export default RVSiteMapScreen;

@@ -7,4 +7,4 @@ export const LOGIN= "LoginScreen";
 export const CREATE_ACCOUNT= "CreateAccountScreen";
 export const HOME_NAVIGATOR= "HomeScreenNavigator";
 export const MAIN_SCREEN="MainScreen";
-
+export const RVSITE_MAP="MapScreen";
