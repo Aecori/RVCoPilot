@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import sampleRVSiteData from '../../assets/data/sampleRVSiteData.js';
-import AntIcon from 'react-native-vector-icons/AntDesign';
+//import AntIcon from 'react-native-vector-icons/AntDesign';
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 //import Samplemap from '../../components/Samplemap.js';
 
@@ -59,19 +59,21 @@ const RVSiteMapScreen = () => {
                  
 
 
-      <View>
+     
                        
-                <MapView
-                        provider={PROVIDER_GOOGLE}
-                        style={{flex:1}}
-                        initialRegion={{
-                        latitude: 37.78825,
-                        longitude: -122.4324,
-                        latitudeDelta: 0.0922,
-                        longitudeDelta: 0.0421,
-                        }}
-                        />
-                </View>
+      <View style={styles.container}>
+     <MapView
+       provider={PROVIDER_GOOGLE} // remove if not using Google Maps
+       style={styles.map}
+       region={{
+         latitude: 37.78825,
+         longitude: -122.4324,
+         latitudeDelta: 0.015,
+         longitudeDelta: 0.0121,
+       }}
+     >
+     </MapView>
+   </View>
                 
 
 
@@ -93,7 +95,7 @@ const RVSiteMapScreen = () => {
 
 
 const styles = StyleSheet.create({
-  mapcontainer: {
+  container: {
     ...StyleSheet.absoluteFillObject,
     height: 400,
     width: 400,
