@@ -46,6 +46,7 @@ const siteUpdateSchema = Joi.object({
 });
 
 const userSchema = Joi.object({
+    id: Joi.number().integer(),
     Username: Joi.string().required(),
     SavedSites: Joi.array().items(Joi.number().integer())
 });
