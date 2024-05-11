@@ -1,4 +1,5 @@
 import React from 'react';
+import { requireNativeComponent } from 'react-native';
 import { View, Text, TextInput, Button, Alert, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
 import google from '../assets/google.svg';
