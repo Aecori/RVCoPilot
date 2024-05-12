@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, TouchableOpacity, TextInput, Alert, ScrollView, ErrorMessage } from 'react-native';
+import { Dimensions, View, Text, StyleSheet, Button, TouchableOpacity, TextInput, Alert, ScrollView, ErrorMessage, FlatList } from 'react-native';
 import { useRoute, useNavigation} from '@react-navigation/native';
+//import getCurrentDate from '../../utils/currentDate.js';  Not needed backend will apply to comment.
 
 function EditRVSiteScreen() {
+
+  const screenWidth  = Dimensions.get('window').width;
 
   const navigation = useNavigation();
   const route = useRoute();
@@ -36,8 +39,11 @@ function EditRVSiteScreen() {
     Comments: []
   });
 
+  const[newCellService, setCellService] = useState('');
   const[newComment, setNewComment] = useState('');
   const[newRating, setNewRating] = useState('');
+  const[rating, setRating] = useState(0);
+  const[recreationItem, setRecreationItem] = useState('');
 
   const [validationErrors, setValidationErrors] = useState({});
   
@@ -47,8 +53,6 @@ function EditRVSiteScreen() {
     }
   }, [rvSite]);
 
-  
-  
   const handleElectricAccess = (value) => {
     setEditedData(prevData => ({
       ...prevData,
@@ -92,7 +96,7 @@ function EditRVSiteScreen() {
     }));
   }
 
-  const saveComments= () => {
+  const saveComments = () => {
     console.log("New Comment", newComment);
     if (newComment === '') {
       return;
@@ -103,7 +107,8 @@ function EditRVSiteScreen() {
         ...prevData.Comments, {
           comment: newComment,
         //User name needs to be filled in
-        user: "A User Name"
+        user: "A User Name", 
+        rating: rating
         }]
       })
     );
@@ -112,6 +117,29 @@ function EditRVSiteScreen() {
     handleSaveChanges();
   }
 
+  const addRecreationItem = () => {
+    console.log("recreation item", recreationItem);
+    if (recreationItem == '') {
+      return;
+    }
+    setEditedData(prevData => ({
+      ...prevData,
+      Recreation: [
+        ...prevData.Recreation, 
+        recreationItem,
+      ]
+    }));
+    setRecreationItem('');
+  }
+
+  const deleteRecreationItem = (index) => {
+    const updatedRecList = [...editedData.Recreation];
+    updatedRecList.splice(index, 1);
+    setEditedData(prevData => ({
+      ...prevData,
+      Recreation: updatedRecList
+    }))
+  }
   const handleInputChange = (key, value) => {
     
     setEditedData(prevData => ({
@@ -123,12 +151,12 @@ function EditRVSiteScreen() {
   const handleSaveChanges = () => {
 
     const siteDataToSend = {
-      // Non editable and edited data to be sent to backend after user 'saves'
-      SiteName: rvSite.SiteName,
-      SiteRating: rvSite.SiteRating,
-      SiteLatitude: rvSite.SiteLatitude,
-      SiteLongitude: rvSite.SiteLongitude,
-      ...editedData
+        // Non editable and edited data to be sent to backend after user 'saves'
+        SiteName: rvSite.SiteName,
+        SiteRating: rvSite.SiteRating,
+        SiteLatitude: rvSite.SiteLatitude,
+        SiteLongitude: rvSite.SiteLongitude,
+        ...editedData
     }
 
 
@@ -175,13 +203,15 @@ function EditRVSiteScreen() {
   }; 
 
   return (
-      <View style={{flex:1, backgroundColor: '#e0e0e1 '}}>
+      <View style={{flex:1, backgroundColor: '#3e4272'}}>
 
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 10, marginTop: 10}}>
+        
           
               <TouchableOpacity style={[styles.homeButton] } onPress={goToRVSiteScreen}>
                   <Text>Back to Site</Text>
               </TouchableOpacity>
+              
 
               <TouchableOpacity style={styles.homeButton } onPress={goToHomeScreen}>
                   <Text>Return Home</Text>
@@ -193,14 +223,15 @@ function EditRVSiteScreen() {
 
           <Text style={styles.title}>{rvSite.SiteName}</Text>
 
-          <View style={{flex:1}}>
-              <ScrollView style={{paddingHorizontal: 20, backgroundColor: '#3e4272', borderRadius: 5 }}>
+          <View style={{flex: 1, overflow:'hidden'}}>
+              <ScrollView
+                style={{paddingHorizontal: 20, backgroundColor: '#e0e0e1', borderRadius: 5, margin: 5, width: screenWidth * 0.9}}>
 
                     <Text style={styles.textRVSite}>Description of site:</Text>
-                    <View style={[styles.textInputWrapper]}>
+                    <View style={[styles.descriptionInputWrapper]}>
                       <TextInput
                           placeholder="Description"
-                          style={{color: '#ecd9c4', width: 280}}
+                          style={{color: '#333333', width: 280}}
                           value={editedData.SiteDescription}
                           maxLength={500}
                           multiline= {true}
@@ -302,32 +333,56 @@ function EditRVSiteScreen() {
 
                     <View>
                         <Text style={styles.textRVSite}>Comments:</Text>
-                        <View style={[styles.textInputWrapper]}>
+                        <View style={[styles.commentInputWrapper]}>
                           <TextInput
                               placeholder="Additional Comments Here!"
-                              style={{color: '#ecd9c4', width: 280}}
+                              style={{color: '#333333', width: 280}}
                               value={newComment}
                               maxLength={500}
                               multiline= {true}
-                              onChangeText={text => setNewComment(text)}
+                              onChangeText={text => setNewComment(text)} 
                           />
+                          
                         </View>
                         
                     </View>
+                    
+                    <View>
+                      <Text>XX</Text>
+                      
+                  
+                    </View>
 
                     <View>
-                        <Text style={styles.textRVSite}>Recreational activities:</Text>
-                        <View style={[styles.textInputWrapper]}>
+                        <Text style={styles.textRVSite}>Recreationad activities:</Text>
+                        <View style={[styles.recreationInputWrapper]}>
                           <TextInput
-                              placeholder="Recreation here"
-                              style={{color: '#ecd9c4', width: 280}}
-                              value={editedData.Recreation}
-                              maxLength={500}
-                              multiline= {true}
+                              placeholder="Additional recreation here"
+                              style={{color: '#333333', width: 280}}
+                              value={recreationItem}
+                              maxLength={30}
+                              onChangeText={text => setRecreationItem(text)}
                             />
                         </View>
                     </View>
-                      
+                    
+                        <Button title="Add New Recreation" onPress={addRecreationItem} />
+                        <FlatList
+                          numColumns={2}
+                          data={editedData.Recreation}
+                          renderItem={({ item, index }) => 
+                            <View style={[{flex:1, flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10}, styles.itemBox]}>
+                                <Text style={styles.textRVSite}>{item}</Text>
+                                <TouchableOpacity
+                                  onPress={() => deleteRecreationItem(index)}>
+                                    <Text style={styles.deleteButtonX}>X</Text>
+                                </TouchableOpacity>
+                            </View>}
+                          
+                          keyExtractor={(item, index) => index.toString()}
+                          scrollEnabled={false}
+                          
+                        />         
                 </ScrollView>    
             
           </View>
@@ -338,9 +393,7 @@ function EditRVSiteScreen() {
               onPress = { () => {saveComments();}} 
             />
           </View>
-          
-          
-          
+             
         </View>
 
       </View>
@@ -350,20 +403,37 @@ function EditRVSiteScreen() {
 
   const styles = StyleSheet.create({
     item: {
-      backgroundColor: '#3e4272',
+      backgroundColor: '#e0e0e1',
       padding: 10,
       marginVertical: 6,
       marginHorizontal: 6,
       borderRadius: 5,
     },
+    itemBox: {
+      backgroundColor: '#f0f0f0',
+      padding: 5,
+      marginBottom: 5,
+      borderRadius: 5,
+      borderWidth: 1,
+      borderColor: '#ccc',
+      width: 40,
+      marginHorizontal: 15,
+    },
+    deleteButtonX: {
+      position: 'absolute',
+      top: 0,
+      right: 0,
+      padding: 5,
+    },
     title: {
       fontSize: 22,
       padding: 10, 
       marginTop: 15,
-      color: '#899499'
+      color: '#ecd9c4'
     },
     textRVSite: {
-      color:'#ecd9c4',
+      flex: 1,
+      color:'#899499',
       fontSize: 16,
       padding: 5
     },
@@ -396,9 +466,8 @@ function EditRVSiteScreen() {
       textAlign: 'center',
       color: '#000000',
     },
-   
     middleBottom: {
-      position: 'absoulte', 
+      position: 'absolute', 
       bottom: 5
     }, 
     radioButton: {
@@ -411,7 +480,7 @@ function EditRVSiteScreen() {
       marginBottom: 5,
     },
     radioButtonSelected: {
-      backgroundColor: 'lightblue',
+      backgroundColor: '#7CCD7C',
     },
     input: {
       borderWidth: 1,
@@ -432,7 +501,16 @@ function EditRVSiteScreen() {
       marginBottom: 10,
       width: '80%',
     },
-    textInputWrapper: {
+    descriptionInputWrapper: {
+      width: 300,
+      height: 120,
+      borderWidth: 1,
+      borderColor: '#ccc',
+      borderRadius: 5,
+      padding: 5,
+      
+    },
+    commentInputWrapper: {
       width: 300,
       height: 120,
       borderWidth: 1,
@@ -440,9 +518,14 @@ function EditRVSiteScreen() {
       borderRadius: 5,
       padding: 5,
     },
-    textInput: {
-      width: '100%',
-    },
+    recreationInputWrapper: {
+      width: 300,
+      height: 40,
+      borderWidth: 1,
+      borderColor: '#ccc',
+      borderRadius: 5,
+      padding: 5,
+    }
   });
       
   export default EditRVSiteScreen;
