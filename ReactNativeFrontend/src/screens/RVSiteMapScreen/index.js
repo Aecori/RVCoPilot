@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, Button, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import sampleRVSiteData from '../../assets/data/sampleRVSiteData.js';
-//import AntIcon from 'react-native-vector-icons/AntDesign';
-import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
-//import Samplemap from '../../components/Samplemap.js';
+import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import Geolocation from '@react-native-community/geolocation';
+
 
 const RVSiteMapScreen = () => {
+
+
+  const [loading, setLoading] = useState(false);
+  const [location, setLocation] = useState(null);
+  const [error, setError] = useState(null);
 
   const navigation = useNavigation();
   const userName = "Unverified user"
@@ -14,10 +19,7 @@ const RVSiteMapScreen = () => {
   const siteData=sampleRVSiteData;
   console.log(sampleRVSiteData);
 
-  //const [location, setLocation] = useState(false);
-
   const goToRVSiteScreen = (item) => {
-    //console.log(item);
     navigation.navigate('RVSiteScreen', { item: item, userName: userName });
   }
 
@@ -29,17 +31,9 @@ const RVSiteMapScreen = () => {
     navigation.navigate('RVSiteListScreen');
   };
 
-  
-  const Item = ({item}) => (
-    <View style={styles.item}>
-      <Text style={styles.textRVSite}>{item.SiteName}</Text>
-        <TouchableOpacity onPress={()=> goToRVSiteScreen(item, userName)}>
-          <Text style={styles.buttonText}>Site Details</Text>
-        </TouchableOpacity>
-      </View>
-  );
-
-  const keyExtractor = (item, index) => `${item.id}`;
+  const requestLocation = () => {
+    Geolocation.getCurrentPosition(info => console.log(info));
+  }
   
   return (
     <View style={{flex:1, backgroundColor: '#3e4272', alignItems: 'center'}}>
@@ -53,41 +47,41 @@ const RVSiteMapScreen = () => {
           <TouchableOpacity style={styles.homeButton } onPress={goToHomeScreen}>
               <Text>Return Home</Text>
           </TouchableOpacity>
-
-      </View>
-
-                 
-
-
-     
-                       
-      <View style={styles.container}>
-     <MapView
-       provider={PROVIDER_GOOGLE} // remove if not using Google Maps
-       style={styles.map}
-       region={{
-         latitude: 37.78825,
-         longitude: -122.4324,
-         latitudeDelta: 0.015,
-         longitudeDelta: 0.0121,
-       }}
-     >
-     </MapView>
-   </View>
-                
-
+      </View>  
 
       <Text style={styles.title}>Nearby RV Sites</Text>
-
-      {/*
+                       
       <View style={styles.container}>
-        <FlatList
-          data={siteData}
-          renderItem={({item}) => <Item item={item} />}
-          keyExtractor={keyExtractor}
-        />
+        <MapView
+          provider={PROVIDER_GOOGLE} // remove if not using Google Maps
+          style={styles.map}
+          region={{
+            latitude: 37.78825,
+            longitude: -122.4324,
+            latitudeDelta: 0.015,
+            longitudeDelta: 0.0121,
+          }}
+        >
+          {siteData.map((site) => (
+          <Marker
+            key={site.id}
+            coordinate={{ latitude: site.SiteLatitude, longitude: site.SiteLongitude }}
+            title={site.SiteName}
+            onPress={() => goToRVSiteScreen(site)}
+          />
+        ))}
+        </MapView>
       </View>
-      */}
+
+      <View style={styles.button}>
+        <Button
+          disabled={loading}
+          title="Get Location"
+          onPress={requestLocation}
+        />
+
+      </View>
+      
     </View>
     
   );
@@ -125,7 +119,7 @@ const styles = StyleSheet.create({
   },
   container: {
     boxSizing: 'border-box',
-    width: '85%',
+    width: '90%',
     aspectRatio: 0.8,
     alignItems: 'center',
     left: 0,
@@ -136,7 +130,6 @@ const styles = StyleSheet.create({
     background: '#D9D9D9',
     borderWidth: 1,
     borderColor: '#FFFFFF',
-    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
     borderRadius: 10,
   },
   homeButton: {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import sampleRVSiteData from '../../assets/data/sampleRVSiteData.js';
@@ -8,11 +8,40 @@ const RVSiteListScreen = () => {
   const navigation = useNavigation();
   const userName = "Unverified user"
 
-  const siteData=sampleRVSiteData;
-  //console.log(sampleRVSiteData);
+  const [siteData, setSiteData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('https://your-rv-copilot.uc.r.appspot.com/', {
+          headers: {
+            Accept: 'application/json',
+          },
+        });
+        if (!response.ok) {
+          throw new Error('Failed to load RV Site Data');
+        }
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const data = await response.json();
+          setSiteData(data);
+          setLoading(false); 
+        } else {
+          throw new Error('Response format not JSON');
+        }
+      } catch (error) {
+        console.log("Error logging site JSON, using default sample");
+        setSiteData(sampleRVSiteData);
+        setError(error.message);
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const goToRVSiteScreen = (item) => {
-    //console.log(item);
     navigation.navigate('RVSiteScreen', { item: item, userName: userName });
   }
 
@@ -60,8 +89,6 @@ const RVSiteListScreen = () => {
           keyExtractor={keyExtractor}
         />
       </View>
-     
-
     </View>
     
   );
