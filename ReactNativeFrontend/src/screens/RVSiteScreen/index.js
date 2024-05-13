@@ -44,14 +44,14 @@ function RVSiteScreen () {
 
       </View>
     
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', overflow:'scroll' }}>
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
 
         <View style={{flexDirection: "row"}}>
           <Text style={styles.title}>{siteData.SiteName}</Text>
+
           {/* TODO - SAVE/LIKE BUTTON */}
           <Icon name="heart-o" color="gray" size={20}></Icon>
         </View>
-          
 
 
           <ScrollView style={{paddingHorizontal: 20, flex:1}}>
@@ -100,12 +100,23 @@ function RVSiteScreen () {
             <View style={styles.item}>
               <Text style={styles.textRVSite}>Pets Allowed: {siteData.PetsAllowed !== undefined ? (siteData.PetsAllowed ? 'Yes' : 'No') : 'Data Not Available'}</Text>
             </View>
+
             <View style={styles.item}>
-              <Text style={styles.textRVSite}>Recreation: {siteData.RVElectricAccess !== undefined ? siteData.Recreation : 'Data Not Available'}</Text>
+              <Text style={styles.textRVSite}>Recreation:</Text>{siteData.Recreation !== undefined ? (
+                siteData.Recreation.map((recreationItem, index) => 
+                <View key={index}>
+                  <Text style={[styles.textRVSite, { marginLeft: 20 }]} key={index}>
+                    {recreationItem}
+                  </Text>
+                </View>))
+             : <Text>'Data Not Available'</Text>
+            }
             </View>
+
             <View style={styles.item}>
-              <Text style={styles.textRVSite}>Site Rating: {siteData.SiteRating !== undefined ? siteData.SiteRating : 'Data Not Available'}</Text>
+              <Text style={styles.textRVSite}>Site Rating: {siteData.SiteRating === null || siteData.SiteRating === 0 ? '(Not available)' : siteData.SiteRating}</Text>
             </View>
+
             <View style={styles.item}>
               <Text style={styles.textRVSite}>User Comments:</Text>
               {siteData.Comments !== undefined ? (
