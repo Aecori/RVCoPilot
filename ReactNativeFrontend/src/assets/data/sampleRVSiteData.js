@@ -3,19 +3,25 @@ const sampleRVSiteData = [
       id: 1,
       SiteName: "Mountain View Campground",
       SiteDescription: "Beautiful campground with mountain views",
-      SiteLatitude: 40.1234,
-      SiteLongitude: -105.5678,
+      SiteLatitude: 37.7234,
+      SiteLongitude: -122.5678,
       SiteType: "RV Park",
       RVElectricAccess: true,
       WaterAccess: true,
       WifiAccess: true,
-      CellService: true,
+      CellService: [
+        {
+            "Carrier": "Verizon",
+            "Signal": true,
+            "SignalStrength": 4
+        }
+    ],
       PetsAllowed: true,
       Recreation: ["hiking", "fishing"],
       SiteRating: 4,
       Comments: [
-          { user: "JohnDoe", comment: "Great spot for families" },
-          { user: "JaneSmith", comment: "Clean facilities" }
+          { Username: "JohnDoe", Comment: "Great spot for families" },
+          { Username: "JaneSmith", Comment: "Clean facilities" }
       ]
   },
   {
@@ -28,13 +34,19 @@ const sampleRVSiteData = [
       RVElectricAccess: true,
       WaterAccess: true,
       WifiAccess: false,
-      CellService: true,
+      CellService: [
+        {
+            "Carrier": "Verizon",
+            "Signal": true,
+            "SignalStrength": 4
+        }
+    ],
       PetsAllowed: true,
       Recreation: ["boating", "birdwatching"],
       SiteRating: 5,
       Comments: [
-          { user: "OutdoorFanatic", comment: "Perfect for birdwatching" },
-          { user: "AdventureSeeker", comment: "Lovely sunset views" }
+          { Username: "OutdoorFanatic", Comment: "Perfect for birdwatching" },
+          { Username: "AdventureSeeker", Comment: "Lovely sunset views" }
       ]
   },
   {
@@ -47,13 +59,19 @@ const sampleRVSiteData = [
       RVElectricAccess: true,
       WaterAccess: true,
       WifiAccess: false,
-      CellService: true,
+      CellService: [
+        {
+            "Carrier": "Verizon",
+            "Signal": true,
+            "SignalStrength": 4
+        }
+    ],
       PetsAllowed: true,
       Recreation: ["picnicking", "wildlife viewing"],
       SiteRating: 3,
       Comments: [
-          { user: "NatureLover123", comment: "Lots of wildlife sightings" },
-          { user: "CampingEnthusiast", comment: "Peaceful and quiet atmosphere" }
+          { Username: "NatureLover123", Comment: "Lots of wildlife sightings" },
+          { Username: "CampingEnthusiast", Comment: "Peaceful and quiet atmosphere" }
       ]
   },
 ];

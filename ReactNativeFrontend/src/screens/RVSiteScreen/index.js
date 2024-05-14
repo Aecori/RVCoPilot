@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Button, TouchableOpacity, ScrollView } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/FontAwesome.js';
 
 function RVSiteScreen () {
 
@@ -34,7 +35,7 @@ function RVSiteScreen () {
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 10, marginTop: 10}}>
           
           <TouchableOpacity style={[styles.homeButton] } onPress={goToRVSiteListScreen}>
-              <Text>Back to Site</Text>
+              <Text>RV Site List</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.homeButton } onPress={goToHomeScreen}>
@@ -45,7 +46,12 @@ function RVSiteScreen () {
     
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', overflow:'scroll' }}>
 
+        <View style={{flexDirection: "row"}}>
           <Text style={styles.title}>{siteData.SiteName}</Text>
+          {/* TODO - SAVE/LIKE BUTTON */}
+          <Icon name="heart-o" color="gray" size={20}></Icon>
+        </View>
+          
 
 
           <ScrollView style={{paddingHorizontal: 20, flex:1}}>
@@ -68,9 +74,29 @@ function RVSiteScreen () {
             <View style={styles.item}>
               <Text style={styles.textRVSite}>Wifi Access: {siteData.WifiAccess !== undefined ? (siteData.WifeAccess ? 'Yes' : 'No') : 'Data Not Available'}</Text>
             </View>
+
             <View style={styles.item}>
-              <Text style={styles.textRVSite}>Cell Service: {siteData.CellService !== undefined ? (siteData.CellService ? 'Yes' : 'No') : 'Data Not Available'}</Text>
+              <Text style={styles.textRVSite}>Cell Service:</Text>
+              {siteData.CellService !== undefined ? (
+                siteData.CellService.length > 0 ? (
+                  siteData.CellService.map((carrier, index) => {
+                    if (carrier.Signal === true) {
+                      return (
+                        <Text key={index} style={[styles.textRVSite, {marginLeft: 20,}]}>
+                          {carrier.Carrier}
+                        </Text>
+                      );
+                    }
+                  })
+                ) : (
+                  <Text style={styles.textRVSite}>No carriers with service</Text>
+                )
+              ) : (
+                <Text style={styles.textRVSite}>Data Not Available</Text>
+              )}
             </View>
+
+
             <View style={styles.item}>
               <Text style={styles.textRVSite}>Pets Allowed: {siteData.PetsAllowed !== undefined ? (siteData.PetsAllowed ? 'Yes' : 'No') : 'Data Not Available'}</Text>
             </View>
@@ -85,7 +111,7 @@ function RVSiteScreen () {
               {siteData.Comments !== undefined ? (
                 siteData.Comments.map((comment, index) => (
                   <View key={index}>
-                    <Text style={styles.textRVSite}>{comment.user}: {comment.comment}</Text>
+                    <Text style={styles.textRVSite}>{comment.Username}: {comment.Comment}</Text>
                   </View>
                 ))
               ) : (
@@ -97,7 +123,7 @@ function RVSiteScreen () {
       </View>
 
       <View style={{margin:15}}>
-        <Button title="Edit RV Site" style={{padding:10, marginBottom:10}} onPress={() => goToEditRVSiteScreen(item)} />
+        <Button title="Update RV Site Info" style={{padding:10, marginBottom:10}} onPress={() => goToEditRVSiteScreen(item)} />
       </View>
     
     </View>
