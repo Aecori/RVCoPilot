@@ -59,17 +59,17 @@ function EditRVSiteScreen() {
     updatedCellService[index] = newCellularData;
     setEditedData({ ...editedData, CellService: updatedCellService });
   };
-
   const togglePanel = (index) => {
     setActivePanel(activePanel === index ? null : index);
   };
-
   const handleRatingChange= (value) => {
     setUserRating(value);
   }
+
   const saveComments = () => {
     console.log("New Comment", newComment);
-    //TODO: Update to allow saveComment if Rating provided
+
+    // Ensure no new comments added if no comment or rating information provided by user
     if (newComment === '' && userRating === 0) {
       handleSaveChanges();
     }
@@ -78,7 +78,8 @@ function EditRVSiteScreen() {
       setEditedData(prevData => ({
         ...prevData,
         Comments: [
-          ...prevData.Comments, {
+          // check if comments initialized properly
+          ...(prevData.Comments || []), {
             comment: newComment,
           //TODO: User name needs to be filled in
           Username: "A User Name", 
@@ -220,7 +221,10 @@ function EditRVSiteScreen() {
                           value={editedData.SiteDescription}
                           maxLength={200}
                           multiline= {true}
-                          onChangeText={text => handleInputChange('SiteDescription', text)}
+                          onChangeText={text => setEditedData(prevData => ({
+                            ...prevData,
+                            SiteDescription: text
+                          }))}
                         />
                     </View>
 
@@ -252,7 +256,7 @@ function EditRVSiteScreen() {
                         <Text style={styles.textRVSite}>Cell Service Data:</Text>
 
                           <View>
-                            {editedData.CellService.map((cellularData, index) => (
+                            {editedData.CellService && editedData.CellService.map((cellularData, index) => (
                               <View key={`${cellularData.id}-${index}`}>
                                 <Button
                                   style={{fontSize: 16}}
