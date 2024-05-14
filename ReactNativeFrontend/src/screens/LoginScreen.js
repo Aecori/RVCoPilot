@@ -1,23 +1,20 @@
 import React from 'react';
-import { requireNativeComponent } from 'react-native';
-import { View, Text, TextInput, Button, Alert, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Alert, StyleSheet, Image, TouchableOpacity } from 'react-native';
+
+import { useAuth0, Auth0Provider } from 'react-native-auth0';
+
+import handleAuthLogin from '../components/auth0';
 
 import google from '../assets/google.svg';
 import register from '../assets/register.png';
 import MyButton from '../components/button1';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView } from 'react-native-gesture-handler';
 
 const LoginScreen = ({ navigation }) => {
+
     const [username, setUsername] = React.useState('');
     const [password, setPassword] = React.useState('');
 
-    // Function to navigate to the SignUp screen
-    const goToCreateAccountScreen = () => {
-        navigation.navigate('CreateAccountScreen');
-    };
-
-    
     const handleLogin = () => {
         // Logic for handling login
         if (!username || !password) {
@@ -35,6 +32,7 @@ const LoginScreen = ({ navigation }) => {
     
 
     return (
+        <Auth0Provider domain={"dev-zifkiob8dukhcy86.us.auth0.com"} clientId={"oQZMm2AFurSbtzd0h9htwed8z2ZtwYAM"}>
         <ScrollView 
             style={{
                 backgroundColor: 'white',
@@ -63,12 +61,14 @@ const LoginScreen = ({ navigation }) => {
                     keyboardType='default'
                 />        
                 <MyButton title="Login and go see RV sites" onPress={handleLogin} />
+                <MyButton title="Login with Auth0" onPress={() => handleAuthLogin(navigation)} />
                 {/* Button to navigate to CreateAccount screen */}
                 <TouchableOpacity onPress={() => navigation.navigate('CreateAccountScreen')}>
                     <Text style={{color: '#007bff'}}>New user? Create account</Text>
                 </TouchableOpacity>
             </View>
         </ScrollView>
+        </Auth0Provider>
     );
 }
 
