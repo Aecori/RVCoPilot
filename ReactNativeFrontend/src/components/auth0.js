@@ -12,7 +12,7 @@ const handleAuthLogin = async (navigation) => {
         });
         console.log(credentials);
         // Store the credentials - maybe?  
-        // Navigate to the next screen
+        // Navigate to the homescreen/RV List
         navigation.navigate('RVSiteListScreen');
     } catch (error) {
         console.error(error);
