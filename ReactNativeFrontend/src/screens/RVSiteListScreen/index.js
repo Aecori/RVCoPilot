@@ -15,7 +15,7 @@ const RVSiteListScreen = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://your-rv-copilot.uc.r.appspot.com/', {
+        const response = await fetch('https://your-rv-copilot.uc.r.appspot.com/sites', {
           headers: {
             Accept: 'application/json',
           },
@@ -50,7 +50,7 @@ const RVSiteListScreen = () => {
   }
 
   const goToMapScreen = () => {
-    navigation.navigate('MapScreen');
+    navigation.navigate('MapScreen', { siteData: siteData, userName: userName});
   }
   
   const Item = ({item}) => (
@@ -80,7 +80,6 @@ const RVSiteListScreen = () => {
       </View>
 
       <Text style={styles.title}>Nearby RV Sites</Text>
-
      
       <View style={styles.container}>
         <FlatList

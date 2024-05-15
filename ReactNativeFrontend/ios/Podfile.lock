@@ -980,6 +980,7 @@ PODS:
   - react-native-config (1.5.1):
     - react-native-config/App (= 1.5.1)
   - react-native-config/App (1.5.1):
+    - React-Core
   - react-native-geolocation (3.2.1):
     - glog
     - RCT-Folly (= 2022.05.16.00)
@@ -1167,10 +1168,11 @@ PODS:
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
+    - React-RCTImage
   - SimpleKeychain (1.1.0)
-  - React-RCTImage
   - SocketRocket (0.6.1)
   - Yoga (1.14.0)
+
 DEPENDENCIES:
   - A0Auth0 (from `../node_modules/react-native-auth0`)
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
@@ -1407,7 +1409,7 @@ SPEC CHECKSUMS:
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
   FlipperKit: 37525a5d056ef9b93d1578e04bc3ea1de940094f
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 035f1e36e53b355cf70f6434d161b36e7d21fecd
+  glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
   Google-Maps-iOS-Utils: f77eab4c4326d7e6a277f8e23a0232402731913a
   GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
   hermes-engine: 9cecf9953a681df7556b8cc9c74905de8f3293c0
@@ -1460,11 +1462,11 @@ SPEC CHECKSUMS:
   React-runtimescheduler: 9636eee762c699ca7c85751a359101797e4c8b3b
   React-utils: d16c1d2251c088ad817996621947d0ac8167b46c
   ReactCommon: 2aa35648354bd4c4665b9a5084a7d37097b89c10
-  RNGestureHandler: bc2cdb2dc42facdf34992ae364b8a728e19a3686
-  RNScreens: b6b64d956af3715adbfe84808694ae82d3fec74f
+  RNGestureHandler: 96439cf6543defdde87459e48cd1a3f0e45a008e
+  RNScreens: 134a7511b12b8eb440b87aac21e36a71295d6024
   SimpleKeychain: f8707c8e97b38c6a6e687b17732afc9bcef06439
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
-  Yoga: 805bf71192903b20fc14babe48080582fee65a80
+  Yoga: d17d2cc8105eed528474683b42e2ea310e1daf61
 
 PODFILE CHECKSUM: e91422f9078db5df3639d64dc748a98d8ab313ea
 

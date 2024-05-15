@@ -4,7 +4,6 @@ import SignalRating from './SignalRating.js';
 
 const CellularDataInput = ({ startCellularData, onSave }) => {
 
-  console.log("in cellulardatacomponent");
   const [cellularData, setCellularData] = useState({
     Carrier: startCellularData.Carrier,
     Signal: startCellularData.Signal,
@@ -45,7 +44,6 @@ const CellularDataInput = ({ startCellularData, onSave }) => {
         <Text>Signal Strength</Text>
           <SignalRating defaultRating={cellularData.Strength} maxRating={5} onRatingChange={value => handleInputChange('Strength',value)} icon="star" emptyIcon="star-o"/>
       </View>
-      
 
       <Button title="Save" onPress={handleSave} />
     </View>
