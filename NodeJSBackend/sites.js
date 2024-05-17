@@ -33,6 +33,20 @@ function calculateFence(lat, lon){
     return fence;
 }
 
+function calculateFenceVariable(lat, lon, distance){
+    left = geod.Direct(lat, lon, 270, math.round(distance * 1609.34, 2));
+    right = geod.Direct(lat, lon, 90, math.round(distance * 1609.34, 2));
+    up = geod.Direct(lat, lon, 0, math.round(distance * 1609.34, 2));
+    down = geod.Direct(lat, lon, 180, math.round(distance * 1609.34, 2));
+    let fence = {
+        latMin: math.round(down.lat2, 6),
+        latMax: math.round(up.lat2, 6),
+        lonMin: math.round(left.lon2, 6),
+        lonMax: math.round(right.lon2, 6)
+    }
+    return fence;
+}
+
 // Get all sites
 async function getSites(req){
     let query = datastore.createQuery(SITE);
@@ -220,6 +234,23 @@ router.get('/:id', (req, res) => {
 });
 
 router.get('/latitude/:latitude/longitude/:longitude', (req, res) => {
+    getFenceSites(req).then( (results) => {
+        res.status(200).json(results);
+    })
+    .catch( (error) => {
+        res.status(400).json({
+            "Error": error
+        });
+    })
+});
+
+router.get('/latitude/:latitude/longitude/:longitude/distance/:distance', (req, res) => {
+    if (!req.params.distance || isNaN(req.params.distance)) {
+        res.status(400).json({
+            "Error": "Distance must be a number"
+        });
+        return;
+    }
     getFenceSites(req).then( (results) => {
         res.status(200).json(results);
     })
