@@ -4,6 +4,7 @@ import { useRoute, useNavigation} from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import StarRating from '../../components/StarRating.js';
 import CellularDataInput from '../../components/CellularDataInput.js';
+import YesNoButtons from '../../components/YesNoButtons.js';
 
 function EditRVSiteScreen() {
 
@@ -43,7 +44,6 @@ function EditRVSiteScreen() {
 
   const[newComment, setNewComment] = useState('');
   const[userRating, setUserRating] = useState(0);
-  const[rating, setRating] = useState(0);
   const[recreationItem, setRecreationItem] = useState('');
 
   const [activePanel, setActivePanel] = useState(null);
@@ -54,51 +54,23 @@ function EditRVSiteScreen() {
     }
   }, [rvSite]);
 
-  const handleElectricAccess = (value) => {
-    setEditedData(prevData => ({
-      ...prevData,
-      RVElectricAccess: value
-    }));
-  };
-
-  const handleWaterAccess = (value) => {
-    setEditedData(prevData => ({
-      ...prevData,
-      WaterAccess: value
-    }));
-  }
-
-  const handleWifiAccess = (value) => {
-    setEditedData(prevData => ({
-    ...prevData,
-    WifiAccess: value
-  }))
-  }
-
   const handleCellularDataChange = (index, newCellularData) => {
     const updatedCellService = [...editedData.CellService];
     updatedCellService[index] = newCellularData;
     setEditedData({ ...editedData, CellService: updatedCellService });
   };
-
   const togglePanel = (index) => {
     setActivePanel(activePanel === index ? null : index);
   };
-
-  const handlePetsAllowed = (value) => {
-    setEditedData(prevData => ({
-      ...prevData,
-      PetsAllowed: value
-    }));
-  }
   const handleRatingChange= (value) => {
     setUserRating(value);
   }
+
   const saveComments = () => {
     console.log("New Comment", newComment);
 
-    if (newComment === '') {
-      setNewComment('');
+    // Ensure no new comments added if no comment or rating information provided by user
+    if (newComment === '' && userRating === 0) {
       handleSaveChanges();
     }
 
@@ -106,7 +78,8 @@ function EditRVSiteScreen() {
       setEditedData(prevData => ({
         ...prevData,
         Comments: [
-          ...prevData.Comments, {
+          // check if comments initialized properly
+          ...(prevData.Comments || []), {
             comment: newComment,
           //TODO: User name needs to be filled in
           Username: "A User Name", 
@@ -124,9 +97,9 @@ function EditRVSiteScreen() {
     if (recreationItem == '') {
       return;
     }
-    if (editedData.Recreation.length > 15) {
+    if (editedData.Recreation.length > 20) {
       Alert.alert(
-        'Recreation limited reached',
+        'Recreation limit reached',
         '',
         [{text: 'Ok', onPress: () => {
             return;
@@ -144,6 +117,11 @@ function EditRVSiteScreen() {
     }));
     setRecreationItem('');
   }
+
+  const addCellServiceItem = () => {
+    //TODO: Add Cell Service Item with Drop Down Menu for Carrier options when adding new Cell Service Item
+
+  }
   const deleteRecreationItem = (index) => {
     const updatedRecList = [...editedData.Recreation];
     updatedRecList.splice(index, 1);
@@ -152,10 +130,10 @@ function EditRVSiteScreen() {
       Recreation: updatedRecList
     }))
   }
-  const handleInputChange = (key, value) => { 
+  const handleInputChange = (value, propertyName) => { 
     setEditedData(prevData => ({
       ...prevData,
-      [key]: value
+      [propertyName]: value
     }));
   }
   const handleSaveChanges = () => {
@@ -243,102 +221,48 @@ function EditRVSiteScreen() {
                           value={editedData.SiteDescription}
                           maxLength={200}
                           multiline= {true}
-                          onChangeText={text => handleInputChange('SiteDescription', text)}
+                          onChangeText={text => setEditedData(prevData => ({
+                            ...prevData,
+                            SiteDescription: text
+                          }))}
                         />
                     </View>
 
-                      <View style={{flexDirection:"row"}}>
-                          <Text style={styles.textRVSite}>Electric Access for RV:</Text>
-                            <View style={[styles.radioGroup, { flexDirection: 'row' }]}>
-                              <TouchableOpacity
-                                style={[styles.radioButton, editedData.RVElectricAccess === true && styles.radioButtonSelected]}
-                                onPress={() => handleElectricAccess(true)}
-                              >
-                                <Text> Yes </Text>
-                              </TouchableOpacity>
+                    <YesNoButtons
+                        label="Electric Access for RV:"
+                        value={editedData.RVElectricAccess}
+                        onSelect={(value) => handleInputChange(value, 'RVElectricAccess')}
+                    />
 
-                              <TouchableOpacity
-                                style={[styles.radioButton, editedData.RVElectricAccess === false && styles.radioButtonSelected]}
-                                onPress={() => handleElectricAccess(false)}
-                              >
-                                <Text> No </Text>
-                              </TouchableOpacity>
+                      <YesNoButtons
+                        label="Water Access for RV:"
+                        value={editedData.WaterAccess}
+                        onSelect={(value) => handleInputChange(value, 'WaterAccess')}
+                    />
 
-                            </View>
-
-                      </View>
-
-                      <View style={{flexDirection:"row"}}>
-                          <Text style={styles.textRVSite}>Water Access for RV:</Text>
-                          <View style={[styles.radioGroup, { flexDirection: 'row' }]}>
-                            <TouchableOpacity
-                              style={[styles.radioButton, editedData.WaterAccess === true && styles.radioButtonSelected]}
-                              onPress={() => handleWaterAccess(true)}
-                            >
-                              <Text> Yes </Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity
-                              style={[styles.radioButton, editedData.WaterAccess === false && styles.radioButtonSelected]}
-                              onPress={() => handleWaterAccess(false)}
-                            >
-                              <Text> No </Text>
-                            </TouchableOpacity>
-                          </View>
-
-                      </View>
-
-                      <View style={{flexDirection:"row"}}>
-                          <Text style={styles.textRVSite}>Wifi Access for RV:</Text>
-                          <View style={[styles.radioGroup, { flexDirection: 'row' }]}>
-                            <TouchableOpacity
-                              style={[styles.radioButton, editedData.WifiAccess === true && styles.radioButtonSelected]}
-                              onPress={() => handleWifiAccess(true)}
-                            >
-                              <Text> Yes </Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity
-                              style={[styles.radioButton, editedData.WifiAccess === false && styles.radioButtonSelected]}
-                              onPress={() => handleWifiAccess(false)}
-                            >
-                              <Text> No </Text>
-                            </TouchableOpacity>
-                            
-                          </View>
-                        
-                      </View>
-
-                      <View style={{flexDirection:"row"}}>
-                          <Text style={styles.textRVSite}>Pets Allowed at Site:</Text>
-                          <View style={[styles.radioGroup, { flexDirection: 'row' }]}>
-                            <TouchableOpacity
-                              style={[styles.radioButton, editedData.PetsAllowed === true && styles.radioButtonSelected]}
-                              onPress={() => handlePetsAllowed(true)}
-                            >
-                              <Text> Yes </Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity
-                              style={[styles.radioButton, editedData.PetsAllowed === false && styles.radioButtonSelected]}
-                              onPress={() => handlePetsAllowed(false)}
-                            >
-                              <Text> No </Text>
-                            </TouchableOpacity>
-                            
-                          </View>
-                      </View>
+                      <YesNoButtons
+                        label="Wifi Access for RV:"
+                        value={editedData.WifiAccess}
+                        onSelect={(value) => handleInputChange(value, 'WifiAccess')}
+                    />
+                    
+                      <YesNoButtons
+                          label="Pets Allowed at Site:"
+                          value={editedData.PetsAllowed}
+                          onSelect={(value) => handleInputChange(value, 'PetsAllowed')}
+                      />
 
                       <View style={{borderColor: "#ccc"}}>
                         <Text style={styles.textRVSite}>Cell Service Data:</Text>
 
                           <View>
-                            {editedData.CellService.map((cellularData, index) => (
-                              <View key={cellularData.id}>
+                            {editedData.CellService && editedData.CellService.map((cellularData, index) => (
+                              <View key={`${cellularData.id}-${index}`}>
                                 <Button
                                   style={{fontSize: 16}}
                                   title={`Show ${cellularData.Carrier} Service Data`}
                                   onPress={() => togglePanel(index)}
+                                  accessibilityLabel={`Show ${cellularData.Carrier} Service Data`}
                                 />
                                 {activePanel === index && (
                                   <CellularDataInput
@@ -349,9 +273,8 @@ function EditRVSiteScreen() {
                               </View>
                             ))}
                           </View>
-                      </View>  
 
-                      
+                      </View>                     
 
                     <View>
                         <Text style={styles.textRVSite}>Comments:</Text>
@@ -500,18 +423,6 @@ function EditRVSiteScreen() {
     middleBottom: {
       position: 'absolute', 
       bottom: 5
-    }, 
-    radioButton: {
-      borderWidth: 1,
-      borderColor: 'black',
-      borderRadius: 5,
-      paddingHorizontal: 10,
-      paddingVertical: 5,
-      marginHorizontal: 10,
-      marginBottom: 5,
-    },
-    radioButtonSelected: {
-      backgroundColor: '#7CCD7C',
     },
     input: {
       borderWidth: 1,

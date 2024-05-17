@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, Button, ActivityIndicator } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import sampleRVSiteData from '../../assets/data/sampleRVSiteData.js';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
@@ -8,16 +8,18 @@ import Geolocation from '@react-native-community/geolocation';
 
 const RVSiteMapScreen = () => {
 
+  const route = useRoute();
+  const navigation = useNavigation();
+  const { siteData } = route.params || {};
+  //const siteData=sampleRVSiteData;
+  //console.log("SiteData on Map View Screen", siteData);
+  const userName = "Unverified user";
 
   const [loading, setLoading] = useState(false);
   const [location, setLocation] = useState(null);
-  const [error, setError] = useState(null);
+  const [locationError, setLocationError] = useState(null);
 
-  const navigation = useNavigation();
-  const userName = "Unverified user"
-
-  const siteData=sampleRVSiteData;
-  console.log(sampleRVSiteData);
+  const [mapSiteData, setMapSiteData] = useState(null);
 
   const goToRVSiteScreen = (item) => {
     navigation.navigate('RVSiteScreen', { item: item, userName: userName });
@@ -32,7 +34,15 @@ const RVSiteMapScreen = () => {
   };
 
   const requestLocation = () => {
-    Geolocation.getCurrentPosition(info => console.log(info));
+    Geolocation.getCurrentPosition(info => {
+      if (info) {
+          setLocation([info.coords.latitude, info.coords.longitude]);
+          //console.log("Location", [info.coords.latitude, info.coords.longitude]);
+      } error => {
+        console.error("Error getting location:", error);
+        setLocationError(error.message);
+      }
+  });
   }
   
   return (
