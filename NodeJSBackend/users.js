@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
 router.use(bodyParser.json());
-const ds = require('./datastore');
+const ds = require('./datastore.js');
 const datastore = ds.datastore;
 const math = require('mathjs');
 const { PropertyFilter } = require('@google-cloud/datastore');
@@ -11,7 +11,7 @@ const USER = 'User';
 
 const { expressjwt: jwt } = require('express-jwt');
 const jwksRsa = require('jwks-rsa');
-const { DOMAIN } = require('./auth');
+const { DOMAIN } = require('./auth.js');
 
 /* ------------- Begin Users Middleware ------------- */
 const { authorizationHeaderExists } = require('./middleware/middleware.js');
@@ -113,3 +113,5 @@ router.put('/sites/:site_id', authorizationHeaderExists, checkJwt, (req, res) =>
         res.status(204).end();
     });
 });
+
+module.exports = router;
