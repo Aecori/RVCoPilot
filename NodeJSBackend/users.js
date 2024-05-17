@@ -7,8 +7,29 @@ const datastore = ds.datastore;
 const math = require('mathjs');
 const { PropertyFilter } = require('@google-cloud/datastore');
 const e = require('express');
-
 const USER = 'User';
+
+const { expressjwt: jwt } = require('express-jwt');
+const jwksRsa = require('jwks-rsa');
+const { DOMAIN } = require('./auth');
+
+/* ------------- Begin Users Middleware ------------- */
+const { authorizationHeaderExists } = require('./middleware/middleware.js');
+
+checkJwt = jwt({
+    secret: jwksRsa.expressJwtSecret({
+      cache: true,
+      rateLimit: true,
+      jwksRequestsPerMinute: 5,
+      jwksUri: `${DOMAIN}/.well-known/jwks.json`
+    }),
+  
+    // Validate the audience and the issuer.
+    issuer: `${DOMAIN}/`,
+    algorithms: ['RS256'],
+  });
+
+/* ------------- End Users Middleware ------------- */
 
 function getUser(id) {
     const key = datastore.key([USER, parseInt(id, 10)]);
@@ -36,8 +57,29 @@ function putSiteInUserList(user_id, site_id) {
     });
 }
 
-router.get('/:id', (req, res) => {
-    const user = getUser(req.params.id)
+function checkIfUserExists(user_id) {
+    const key = datastore.key([USER, parseInt(user_id, 10)]);
+    return datastore.get(key).then( (entity) => {
+        if (entity[0] === undefined) {
+            return false;
+        }
+        return true;
+    });
+}
+
+function createNewUser(user_id) {
+    const key = datastore.key([USER, parseInt(user_id, 10)]);
+    const user = {
+        id: key.id,
+        "Username": user_id,
+        "SavedSites": [],
+        "Bio": ""
+    };
+}
+
+router.get('/', authorizationHeaderExists, checkJwt, (req, res) => {
+    // Get user ID from JSON
+    const user = getUser(req.body.Username)
     .then( (user) => {
         if (user === null) {
             res.status(404).json({Error: "No user with this user_id exists"});
@@ -47,9 +89,22 @@ router.get('/:id', (req, res) => {
     });
 });
 
+router.put('/', authorizationHeaderExists, checkJwt, (req, res) => {
+    // Check if user exists
+    checkIfUserExists(req.body.Username)
+    .then( (exists) => {
+        if (exists) {
+            res.status(409).json({Error: "User already exists"});
+            return;
+        }
+        createNewUser(req.body.Username);
+        res.status(201).end();
+    });
+});
 
-router.put('/:id/sites/:site_id', (req, res) => {
-    putSiteInUserList(req.params.id, req.params.site_id)
+
+router.put('/sites/:site_id', authorizationHeaderExists, checkJwt, (req, res) => {
+    putSiteInUserList(req.body.Username, req.params.site_id)
     .then( (result) => {
         if (result === null) {
             res.status(404).json({Error: "No user with this user_id exists"});
