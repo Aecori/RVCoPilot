@@ -14,7 +14,7 @@ const SignalRating = ({ startRating, maxRating, onRatingChange, icon, emptyIcon 
     <View style={styles.container}>
       {[...Array(maxRating).keys()].map((index) => (
         <TouchableOpacity
-        style={{margin: 5}}
+          style={{marginHorizontal: 5}}
           key={index}
           onPress={() => handleSignalPress(index + 1)}
         >
@@ -33,7 +33,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    margin: 10,
   },
 });
 

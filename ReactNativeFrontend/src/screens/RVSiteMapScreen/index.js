@@ -6,6 +6,7 @@ import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
 
 
+
 const RVSiteMapScreen = () => {
 
   const route = useRoute();
@@ -18,7 +19,6 @@ const RVSiteMapScreen = () => {
   const [loading, setLoading] = useState(false);
   const [location, setLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
-
   const [mapSiteData, setMapSiteData] = useState(null);
 
   const goToRVSiteScreen = (item) => {
@@ -37,18 +37,22 @@ const RVSiteMapScreen = () => {
     Geolocation.getCurrentPosition(info => {
       if (info) {
           setLocation([info.coords.latitude, info.coords.longitude]);
-          //console.log("Location", [info.coords.latitude, info.coords.longitude]);
+          console.log("Location", [info.coords.latitude, info.coords.longitude]);
       } error => {
         console.error("Error getting location:", error);
         setLocationError(error.message);
       }
   });
   }
+
+  if (!location) {
+    requestLocation();
+  }
   
   return (
-    <View style={{flex:1, backgroundColor: '#3e4272', alignItems: 'center'}}>
+    <View style={styles.screenview}>
       
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 10, marginTop: 10}}>
+      <View style={styles.buttonContainer}>
           
           <TouchableOpacity style={[styles.homeButton] } onPress={goToRVSiteListScreen}>
               <Text>View as List</Text>
@@ -57,7 +61,8 @@ const RVSiteMapScreen = () => {
           <TouchableOpacity style={styles.homeButton } onPress={goToHomeScreen}>
               <Text>Return Home</Text>
           </TouchableOpacity>
-      </View>  
+
+      </View>
 
       <Text style={styles.title}>Nearby RV Sites</Text>
                        
@@ -72,7 +77,7 @@ const RVSiteMapScreen = () => {
             longitudeDelta: 0.0121,
           }}
         >
-          {siteData.map((site) => (
+          {siteData && siteData.map((site) => (
           <Marker
             key={site.id}
             coordinate={{ latitude: site.SiteLatitude, longitude: site.SiteLongitude }}
@@ -99,15 +104,30 @@ const RVSiteMapScreen = () => {
 
 
 const styles = StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFillObject,
-    height: 400,
-    width: 400,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
+  screenview: { 
+    flex: 1, 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    backgroundColor: '#6CA3AA'
+  },
+  title: {
+    fontSize: 24,
+    padding: 10,
+    marginTop: 15,
+    color: '#F5F6E4'
   },
   map: {
     ...StyleSheet.absoluteFillObject,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    position: 'absolute',
+    top: 10, 
+    left: 0,
+    right: 0,
+    paddingHorizontal: 20,
   },
   item: {
     backgroundColor: '#3e4272',
@@ -115,12 +135,6 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     marginHorizontal: 16,
     borderRadius: 5,
-  },
-  title: {
-    fontSize: 22,
-    padding: 10, 
-    marginTop: 15,
-    color: '#899499'
   },
   textRVSite: {
     color:'#ecd9c4',
@@ -130,7 +144,7 @@ const styles = StyleSheet.create({
   container: {
     boxSizing: 'border-box',
     width: '90%',
-    aspectRatio: 0.8,
+    aspectRatio: 0.7,
     alignItems: 'center',
     left: 0,
     right: 0,
@@ -161,10 +175,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#d0e6f2',
   },
-  topRight: {
-    position: 'absolute', 
-    top: 5, 
-    right: 20,
-  }
 });
 export default RVSiteMapScreen;

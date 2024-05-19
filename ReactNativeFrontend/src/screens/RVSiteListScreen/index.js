@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import sampleRVSiteData from '../../assets/data/sampleRVSiteData.js';
 
@@ -65,9 +65,9 @@ const RVSiteListScreen = () => {
   const keyExtractor = (item, index) => `${item.id}`;
   
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#3e4272'}}>
+    <View style={styles.screenview}>
 
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 10, marginTop: 10}}>
+      <View style={styles.buttonContainer}>
           
           <TouchableOpacity style={[styles.homeButton] } onPress={goToMapScreen}>
               <Text>Map View</Text>
@@ -95,30 +95,39 @@ const RVSiteListScreen = () => {
 
 
 const styles = StyleSheet.create({
+  screenview: { 
+    flex: 1, 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    backgroundColor: '#6CA3AA'
+  },
+  title: {
+    fontSize: 24,
+    padding: 10,
+    marginTop: 15,
+    color: '#F5F6E4'
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    position: 'absolute',
+    top: 10, 
+    left: 0,
+    right: 0,
+    paddingHorizontal: 20,
+  },
   item: {
-    backgroundColor: '#e0e0e1',
+    backgroundColor: '#FFFFFF',
     padding: 10,
     marginVertical: 6,
     marginHorizontal: 6,
     borderRadius: 5,
   },
-  itemBox: {
-    backgroundColor: '#f0f0f0', 
-    padding: 5, 
-    marginBottom: 5,
-    borderRadius: 5,
-    borderWidth: 1, 
-    borderColor: '#ccc', 
-  },
-  title: {
-    fontSize: 22,
-    padding: 10,
-    marginTop: 15,
-    color: '#ecd9c4'
-  },
   textRVSite: {
-    color:'#A9A9A9',
-    fontSize: 16
+    textAlign: 'center',
+    color:'#97AFA9',
+    fontSize: 20
   },
   container: {
     boxSizing: 'border-box',
@@ -130,9 +139,10 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     padding: 5,
+    paddingTop: 60,
     background: '#D9D9D9',
-    borderWidth: 1,
-    borderColor: '#FFFFFF',
+    borderWidth: 2,
+    borderColor: '#F6F5E4',
     boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
     borderRadius: 10,
   },
@@ -148,17 +158,9 @@ const styles = StyleSheet.create({
     margin: 15
   },
   buttonText: {
-    fontFamily: 'MarkoOne-Regular',
-    fontStyle: 'normal',
-    fontWeight: '400',
     lineHeight: 32,
     textAlign: 'center',
-    color: '#333333',
+    color: '#7CC2D1',
   },
-  topRight: {
-    position: 'absolute', 
-    top: 5, 
-    right: 20,
-  }
 });
 export default RVSiteListScreen;
