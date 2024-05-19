@@ -96,6 +96,33 @@ async function getFenceSites(req){
     return filtered_results;
 }
 
+async function getFenceSitesWithDistance(req){
+    if (!req.params.latitude || !req.params.longitude || isNaN(req.params.latitude) || isNaN(req.params.longitude)) {
+        return Promise.reject('Latitude and longitude formatting error');
+    } else if (isNaN(req.params.latitude) || isNaN(req.params.longitude)) {
+        return Promise.reject('Latitude and longitude formatting error');
+    } else if (req.params.latitude < -90 || req.params.latitude > 90 || req.params.longitude < -180 || req.params.longitude > 180) {
+        return Promise.reject('Latitude must be between -90 and 90, and longitude must be between -180 and 180');
+    }
+    
+    const fence = calculateFenceVariable(req.params.latitude, req.params.longitude, req.params.distance);
+    const query = datastore.createQuery(SITE)
+    .filter('SiteLongitude', '>=', fence.lonMin)
+    .filter('SiteLongitude', '<=', fence.lonMax);
+    const results = await datastore.runQuery(query).then( (results) => {
+        return results[0].map(ds.fromDatastore);
+    });
+
+    // Filter out sites that are not within the latitude fence
+    let filtered_results = [];
+    for(let i = 0; i < results.length; i++){
+        if(results[i].SiteLatitude >= fence.latMin && results[i].SiteLatitude <= fence.latMax){
+            filtered_results.push(results[i]);
+        }
+    }
+    return filtered_results;
+}
+
 async function postSite(req){
     const key = datastore.key(SITE);
     console.log(key);
@@ -251,7 +278,7 @@ router.get('/latitude/:latitude/longitude/:longitude/distance/:distance', (req, 
         });
         return;
     }
-    getFenceSites(req).then( (results) => {
+    getFenceSitesWithDistance(req).then( (results) => {
         res.status(200).json(results);
     })
     .catch( (error) => {
