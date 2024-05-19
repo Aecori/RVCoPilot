@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Dimensions, View, Text, StyleSheet, Button, TouchableOpacity, TextInput, Alert, ScrollView, ErrorMessage, FlatList } from 'react-native';
+import { Dimensions, View, Text, StyleSheet, Button, TouchableOpacity, TextInput, Alert, ScrollView, ErrorMessage, FlatList, Modal } from 'react-native';
 import { useRoute, useNavigation} from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import StarRating from '../../components/StarRating.js';
-import CellularDataInput from '../../components/CellularDataInput.js';
 import YesNoButtons from '../../components/YesNoButtons.js';
+import CellServiceDataList from '../../components/CellServiceDataList.js';
+import NewCellServiceItem from '../../components/NewCellServiceItem.js';
+
 
 function EditRVSiteScreen() {
 
@@ -45,8 +47,8 @@ function EditRVSiteScreen() {
   const[newComment, setNewComment] = useState('');
   const[userRating, setUserRating] = useState(0);
   const[recreationItem, setRecreationItem] = useState('');
-
-  const [activePanel, setActivePanel] = useState(null);
+  const [cellServiceView, setCellServiceView] = useState(null);
+  const [newCellServiceView, setNewCellServiceView] = useState(false);
   
   useEffect(() => {
     if (item) {
@@ -58,17 +60,20 @@ function EditRVSiteScreen() {
     const updatedCellService = [...editedData.CellService];
     updatedCellService[index] = newCellularData;
     setEditedData({ ...editedData, CellService: updatedCellService });
+    toggleCellServiceView(false);
   };
-  const togglePanel = (index) => {
-    setActivePanel(activePanel === index ? null : index);
+  const toggleCellServiceView = (index) => {
+    setCellServiceView(cellServiceView === index ? null : index);
   };
+
+  const toggleNewCellServiceView =() => {
+    setNewCellServiceView(!newCellServiceView);
+  }
+
   const handleRatingChange= (value) => {
     setUserRating(value);
   }
-
   const saveComments = () => {
-    console.log("New Comment", newComment);
-
     // Ensure no new comments added if no comment or rating information provided by user
     if (newComment === '' && userRating === 0) {
       handleSaveChanges();
@@ -93,6 +98,31 @@ function EditRVSiteScreen() {
     }
     
   }
+
+  const saveNewCarrier = (newCellServiceItem) => {
+    if (newCellServiceItem.Carrier === '') {
+      return;
+    }
+    setEditedData(prevData => ({
+      ...prevData,
+      CellService: [
+        ...prevData.CellService,
+        newCellServiceItem,
+      ]
+    }));
+    toggleNewCellServiceView(false);
+  }
+
+  const deleteCellCarrierItem = (index) => {
+    const updatedCellCarrierList = [...editedData.CellService];
+    updatedCellCarrierList.splice(index, 1);
+    setEditedData(prevData => ({
+      ...prevData,
+      CellService: updatedCellCarrierList
+    }));
+    toggleCellServiceView(false);
+  }
+
   const addRecreationItem = () => {
     if (recreationItem == '') {
       return;
@@ -117,18 +147,13 @@ function EditRVSiteScreen() {
     }));
     setRecreationItem('');
   }
-
-  const addCellServiceItem = () => {
-    //TODO: Add Cell Service Item with Drop Down Menu for Carrier options when adding new Cell Service Item
-
-  }
   const deleteRecreationItem = (index) => {
     const updatedRecList = [...editedData.Recreation];
     updatedRecList.splice(index, 1);
     setEditedData(prevData => ({
       ...prevData,
       Recreation: updatedRecList
-    }))
+    }));
   }
   const handleInputChange = (value, propertyName) => { 
     setEditedData(prevData => ({
@@ -189,9 +214,9 @@ function EditRVSiteScreen() {
   }; 
 
   return (
-      <View style={{flex:1, backgroundColor: '#3e4272'}}>
+      <View style={styles.screenview}>
 
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 10, marginTop: 10}}>
+        <View style={styles.buttonContainer}>
         
           
               <TouchableOpacity style={[styles.homeButton] } onPress={goToRVSiteScreen}>
@@ -205,28 +230,31 @@ function EditRVSiteScreen() {
 
         </View>
 
-        <View style={{  flex: 1, alignItems: 'center', overflow:'scroll' }}>
+        <View style={styles.container}>
 
-          <Text style={styles.title}>{rvSite.SiteName}</Text>
+          <Text style={styles.title}>Edit {rvSite.SiteName}</Text>
 
           <View style={{flex: 1, overflow:'hidden'}}>
               <ScrollView
-                style={{paddingHorizontal: 20, backgroundColor: '#e0e0e1', borderRadius: 5, margin: 5, width: screenWidth * 0.9}}>
+                style={{paddingHorizontal: 10, borderRadius: 5, margin: 5, width: screenWidth * 0.9}}>
 
+                  <View style={styles.fieldItem}>
                     <Text style={styles.textRVSite}>Description of site:</Text>
-                    <View style={[styles.descriptionInputWrapper]}>
-                      <TextInput
-                          placeholder="Description"
-                          style={{color: '#333333', width: 280}}
-                          value={editedData.SiteDescription}
-                          maxLength={200}
-                          multiline= {true}
-                          onChangeText={text => setEditedData(prevData => ({
-                            ...prevData,
-                            SiteDescription: text
-                          }))}
-                        />
-                    </View>
+                      <View style={[styles.inputWrapper]}>
+                        <TextInput
+                            placeholder="Description"
+                            style={{color: '#333333', width: 280}}
+                            value={editedData.SiteDescription}
+                            maxLength={200}
+                            multiline= {true}
+                            onChangeText={text => setEditedData(prevData => ({
+                              ...prevData,
+                              SiteDescription: text
+                            }))}
+                          />
+                      </View>
+                  </View>
+                    
 
                     <YesNoButtons
                         label="Electric Access for RV:"
@@ -250,35 +278,11 @@ function EditRVSiteScreen() {
                           label="Pets Allowed at Site:"
                           value={editedData.PetsAllowed}
                           onSelect={(value) => handleInputChange(value, 'PetsAllowed')}
-                      />
+                      />                    
 
-                      <View style={{borderColor: "#ccc"}}>
-                        <Text style={styles.textRVSite}>Cell Service Data:</Text>
-
-                          <View>
-                            {editedData.CellService && editedData.CellService.map((cellularData, index) => (
-                              <View key={`${cellularData.id}-${index}`}>
-                                <Button
-                                  style={{fontSize: 16}}
-                                  title={`Show ${cellularData.Carrier} Service Data`}
-                                  onPress={() => togglePanel(index)}
-                                  accessibilityLabel={`Show ${cellularData.Carrier} Service Data`}
-                                />
-                                {activePanel === index && (
-                                  <CellularDataInput
-                                    startCellularData={cellularData}
-                                    onSave={(newCellularData) => handleCellularDataChange(index, newCellularData)}
-                                  />
-                                )}
-                              </View>
-                            ))}
-                          </View>
-
-                      </View>                     
-
-                    <View>
+                    <View style={styles.fieldItem}>
                         <Text style={styles.textRVSite}>Comments:</Text>
-                        <View style={[styles.commentInputWrapper]}>
+                        <View style={[styles.inputWrapper]}>
                           <TextInput
                               placeholder="Additional Comments Here!"
                               style={{color: '#333333', width: 280}}
@@ -289,13 +293,61 @@ function EditRVSiteScreen() {
                           />
                         </View>
                     </View>
+
+                    <View style={styles.fieldItem}>
+        
+                      <Text style={styles.textRVSite}>Cell Service at RV Site:</Text>
+      
+                      <CellServiceDataList
+                        editedData={editedData}
+                        cellServiceView={cellServiceView}
+                        toggleCellServiceView={toggleCellServiceView}
+                        handleCellularDataChange={handleCellularDataChange}
+                        deleteCellCarrierItem={deleteCellCarrierItem}
+                        styles={styles}
+                      />
+                    </View>
+
+                    <View style={styles.fieldItem}>
+
+                      <View style={{flexDirection: 'row'}}>
+                          <Text style={styles.textRVSite}>Add new cell service:</Text>
+                          <TouchableOpacity style={styles.addButtonContainer} onPress={toggleNewCellServiceView}>
+                            <FontAwesome name="plus-circle" size={24} color="gray" />
+                          </TouchableOpacity>
+
+                          <Modal
+                            animationType="slide"
+                            transparent={true}
+                            visible={newCellServiceView}
+                            onRequestClose={() => {
+                              setNewCellServiceView(!newCellServiceView);
+                            }}
+                          >
+                            <View style={styles.centeredView}>
+                              <View style={styles.modalView}>
+                                <NewCellServiceItem editedData={editedData} onSave={saveNewCarrier} />
+                                  <TouchableOpacity style={styles.closeButton} onPress={toggleNewCellServiceView}>
+                                      <Text style={styles.closeButtonText}>Close</Text>
+                                  </TouchableOpacity>
+                              </View>
+                            </View>
+
+                          </Modal>
+                      </View>
+                      
+                      {newCellServiceView && 
+                      <NewCellServiceItem
+                        editedData={editedData}
+                        onSave={saveNewCarrier}></NewCellServiceItem>}
+                    </View>
                     
-                    <View style={[styles.textRVSite, { flex: 1, justifyContent: 'center', alignItems: 'center' }]}>
-                        <Text>How would you rate this RV site? </Text>
+                    <View style={styles.fieldItem}>
+                        <Text style={styles.textRVSite}>How would you rate this RV site? </Text>
                         <StarRating defaultRating={userRating} maxRating={5} onRatingChange={handleRatingChange} icon="star" emptyIcon="star-o"/>
                     </View>
 
-                    <View style={{flex:1, marginVertical:20}}>
+                    <View style={styles.fieldItem}>
                       <Text style={styles.textRVSite}>Recreational activities:</Text>
 
                       <View style={styles.recreationInputWrapper}>
@@ -307,7 +359,7 @@ function EditRVSiteScreen() {
                           onChangeText={(text) => setRecreationItem(text)}
                         />
                         <TouchableOpacity style={styles.addButtonContainer} onPress={addRecreationItem}>
-                        <FontAwesome name="plus-circle" size={24} color="gray" />
+                          <FontAwesome name="plus-circle" size={24} color="gray" />
                         </TouchableOpacity>
                         </View>
                     </View>
@@ -318,8 +370,8 @@ function EditRVSiteScreen() {
                         data={editedData.Recreation}
                         renderItem={({ item, index }) => 
 
-                        <View style={[{flex:1, flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10}, styles.itemBox]}>
-                            <Text style={styles.textRVSite}>{item}
+                        <View style={[{flex:1, flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10}, styles.item]}>
+                            <Text style={[styles.textRVSite, {color: color='#F5F6E4'}]}>{item}
                             </Text>
                             <TouchableOpacity
                               onPress={() => deleteRecreationItem(index)}>
@@ -339,15 +391,20 @@ function EditRVSiteScreen() {
                 </ScrollView>    
             
           </View>
+   
+        </View>
 
-          <View style={{margin:15}}>
+        <View style={{margin:15}}>
             <Button 
+              borderWidth= {2}
+              borderColor= '#FFFFFF'
+              boxShadow='0px 4px 4px rgba(0, 0, 0, 0.25)'
+              borderRadius={10}
+              color='#081516'
               title="Save Changes" 
               onPress = { () => {saveComments();}} 
             />
           </View>
-             
-        </View>
 
       </View>
     );
@@ -355,35 +412,49 @@ function EditRVSiteScreen() {
   
 
   const styles = StyleSheet.create({
-    item: {
-      backgroundColor: '#e0e0e1',
+    screenview: {
+      flex: 1,
+      backgroundColor: '#6CA3AA'
+    },
+    title: {
+      fontSize: 24,
       padding: 10,
+      marginTop: 15,
+      color: '#9A7B5B'
+    },
+    buttonContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      paddingVertical: 10,
+      position: 'absolute',
+      top: 10, 
+      left: 0,
+      right: 0,
+      paddingHorizontal: 20,
+    },
+    container: {
+      flex: 1,
+      padding: 5,
+      marginTop: 100, 
+      marginHorizontal: 10,
+      backgroundColor: '#FFFFFF',
+      borderWidth: 2,
+      borderColor: '#FFFFFF',
+      boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+      borderRadius: 10,
+      alignItems: 'center',
+    },
+    fieldItem: {
+      flex: 1,
+      padding: 5,
+      marginVertical: 20
+    },
+    item: {
+      backgroundColor: '#9A7B5B',
+      padding: 5,
       marginVertical: 6,
       marginHorizontal: 6,
       borderRadius: 5,
-    },
-    itemBox: {
-      backgroundColor: '#f0f0f0',
-      padding: 5,
-      marginBottom: 5,
-      borderRadius: 5,
-      borderWidth: 1,
-      borderColor: '#ccc',
-      width: 40,
-      marginHorizontal: 15,
-    },
-    deleteButtonX: {
-      position: 'absolute',
-      color: 'gray',
-      top: 0,
-      right: 0,
-      padding: 5,
-    },
-    title: {
-      fontSize: 22,
-      padding: 10, 
-      marginTop: 15,
-      color: '#ecd9c4'
     },
     textRVSite: {
       flex: 1,
@@ -391,15 +462,12 @@ function EditRVSiteScreen() {
       fontSize: 16,
       padding: 5
     },
-    buttonContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      paddingHorizontal: 20,
-      paddingTop: 10,
-      marginTop: 10,
-      },
-    gray: {
-      color: '#A9A9A9',
+    deleteButtonX: {
+      position: 'absolute',
+      color: '#F5F6E4',
+      top: 0,
+      right: 0,
+      padding: 5,
     },
     homeButton: {
       width: 126,
@@ -443,7 +511,8 @@ function EditRVSiteScreen() {
       marginBottom: 10,
       width: '80%',
     },
-    descriptionInputWrapper: {
+    inputWrapper: {
+      marginVertical: 20,
       width: 300,
       height: 120,
       borderWidth: 1,
@@ -452,15 +521,6 @@ function EditRVSiteScreen() {
       padding: 5,
       
     },
-    commentInputWrapper: {
-      width: 300,
-      height: 120,
-      borderWidth: 1,
-      borderColor: '#ccc',
-      borderRadius: 5,
-      padding: 5,
-    },
-
     addButtonContainer: {
       position: "absolute",
       top: 0,
@@ -483,7 +543,29 @@ function EditRVSiteScreen() {
     addButton: {
       color: "blue",
       size: 16
-    }
+    },
+    centeredView: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalView: {
+      backgroundColor: 'white',
+      borderRadius: 10,
+      padding: 20,
+      alignItems: 'center',
+      elevation: 5,
+      alignSelf: 'center', 
+      maxWidth: '80%',
+      maxHeight: '60%',
+    },
+    closeButton: {
+      marginVertical: 5,
+    },
+    closeButtonText: {
+      color: 'gray',
+    },
   });
       
   export default EditRVSiteScreen;
