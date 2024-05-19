@@ -30,9 +30,9 @@ function RVSiteScreen () {
 
   return (
 
-    <View style={{flex:1, backgroundColor: '#e0e0e1'}}>
+    <View style={styles.screenview}>
 
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 10, marginTop: 10}}>
+      <View style={styles.buttonContainer}>
           
           <TouchableOpacity style={[styles.homeButton] } onPress={goToRVSiteListScreen}>
               <Text>RV Site List</Text>
@@ -44,9 +44,9 @@ function RVSiteScreen () {
 
       </View>
     
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={styles.container}>
 
-        <View style={{flexDirection: "row"}}>
+        <View style={{flexDirection: "row", backgroundColor: '#FFFFFF'}}>
           <Text style={styles.title}>{siteData.SiteName}</Text>
 
           {/* TODO - SAVE/LIKE BUTTON */}
@@ -80,11 +80,18 @@ function RVSiteScreen () {
               {siteData.CellService !== undefined ? (
                 siteData.CellService.length > 0 ? (
                   siteData.CellService.map((carrier, index) => {
-                    if (carrier.Signal === true) {
+                    if (carrier && carrier.Signal) {
                       return (
-                        <Text key={index} style={[styles.textRVSite, {marginLeft: 20,}]}>
-                          {carrier.Carrier}
+                        <View key={index} style={[styles.carrierRow, { marginLeft: 20 }]}>
+                        <Text style={styles.carrierText}>
+                          {carrier.Carrier} 
                         </Text>
+                        {carrier.SignalStrength !== undefined && (
+                          <Text style={styles.carrierText}>
+                            {carrier.SignalStrength} (bars)
+                          </Text>
+                        )}
+                      </View>
                       );
                     }
                   })
@@ -121,8 +128,15 @@ function RVSiteScreen () {
               <Text style={styles.textRVSite}>User Comments:</Text>
               {siteData.Comments !== undefined ? (
                 siteData.Comments.map((comment, index) => (
-                  <View key={index}>
-                    <Text style={styles.textRVSite}>{comment.Username}: {comment.Comment}</Text>
+                  <View 
+                    style={[styles.textRVSite, { marginLeft: 20, flexDirection:'row' }]} 
+                    key={index}>
+                      <Text style={styles.textRVSite}>
+                        {comment.Username}:
+                      </Text>
+                      <Text style={styles.textRVSiteComment}>
+                          {comment.Comment}
+                      </Text>
                   </View>
                 ))
               ) : (
@@ -134,8 +148,13 @@ function RVSiteScreen () {
       </View>
 
       <View style={{margin:15}}>
-        <Button title="Update RV Site Info" style={{padding:10, marginBottom:10}} onPress={() => goToEditRVSiteScreen(item)} />
-      </View>
+            <Button 
+              fontStyle='bold'
+              color='#081516'
+              title="Update RV Site Info" 
+              onPress={() => goToEditRVSiteScreen(item)} 
+            />
+          </View>
     
     </View>
 
@@ -143,46 +162,65 @@ function RVSiteScreen () {
   }
 
 const styles = StyleSheet.create({
-  item: {
-    backgroundColor: '#3e4272',
-    padding: 10,
-    marginVertical: 6,
-    marginHorizontal: 6,
-    borderRadius: 5,
+  screenview: {
+    flex: 1,
+    backgroundColor: '#6CA3AA'
   },
   title: {
     fontSize: 22,
     padding: 10,
     marginTop: 15,
-    color: '#899499'
-  },
-  textRVSite: {
-    color:'#ecd9c4',
-    fontSize: 16
+    color: '#9A7B5B',
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingTop: 10,
-    marginTop: 10,
-    },
-  container: {
-    boxSizing: 'border-box',
-    width: '85%',
-    aspectRatio: .8,
-    alignItems: 'center',
+    paddingVertical: 10,
+    position: 'absolute',
+    top: 10, 
     left: 0,
     right: 0,
-    top: 0,
-    bottom: 0,
+    paddingHorizontal: 20,
+  },
+  container: {
+    flex: 1,
     padding: 5,
-    background: '#D9D9D9',
-    borderWidth: 1,
-    borderColor: '#AFAFAF',
+    marginTop: 100, 
+    marginHorizontal: 10,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
     boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
     borderRadius: 10,
+    alignItems: 'center',
   },
+  item: {
+    backgroundColor: '#FFFFFF',
+    padding: 10,
+    marginVertical: 6,
+    marginHorizontal: 5,
+    borderRadius: 5,
+  },
+  textRVSite: {
+    color:'#899499',
+    fontSize: 16,
+    flexWrap: 'wrap',
+  },
+  textRVSiteComment: {
+    fontStyle: 'italic',
+    marginLeft: 10,
+    color:'#97AFA9',
+    fontSize: 16
+  },
+  carrierText: {
+    marginRight: 10,
+    color:'#97AFA9',
+    fontSize: 16
+  },
+  textButton: {
+    color: '#7CC2D1',
+  },
+  
   homeButton: {
     width: 126,
     height: 35,
@@ -206,7 +244,12 @@ const styles = StyleSheet.create({
   middleBottom: {
     position: 'absoulte', 
     bottom: 5
-  }
+  },
+  carrierRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  
 });
     
 export default RVSiteScreen;

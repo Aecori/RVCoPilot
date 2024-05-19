@@ -3,21 +3,21 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 const YesNoButtons = ({ label, value, onSelect }) => {
     return (
-        <View style={{ flexDirection: 'row' }}>
+        <View style={styles.fieldItem}>
             <Text style={styles.textRVSite}>{label}</Text>
-            <View style={[styles.radioGroup, { flexDirection: 'row' }]}>
+            <View style={[{ flexDirection: 'row' }]}>
                 <TouchableOpacity
                     style={[styles.radioButton, value === true && styles.radioButtonSelected]}
                     onPress={() => onSelect(true)}
                 >
-                    <Text> Yes </Text>
+                    <Text style={styles.radioButtonText}> Yes </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={[styles.radioButton, value === false && styles.radioButtonSelected]}
                     onPress={() => onSelect(false)}
                 >
-                    <Text> No </Text>
+                    <Text style={styles.radioButtonText}> No </Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -25,23 +25,33 @@ const YesNoButtons = ({ label, value, onSelect }) => {
 };
 
 const styles = StyleSheet.create({
+    fieldItem: {
+        flexDirection: 'row',
+        marginVertical: 15,
+        alignItems: 'center'
+      },
     textRVSite: {
-      flex: 1,
-      color:'#899499',
-      fontSize: 16,
-      padding: 5
+        flex: 1,
+        color:'#899499',
+        fontSize: 16,
+        padding: 10
     },
     radioButton: {
-      borderWidth: 1,
-      borderColor: 'black',
-      borderRadius: 5,
-      paddingHorizontal: 10,
-      paddingVertical: 5,
-      marginHorizontal: 10,
-      marginBottom: 5,
+        borderWidth: 1,
+        borderColor: '#899499',
+        borderRadius: 5,
+        paddingHorizontal: 15,
+        paddingVertical: 7,
+        marginHorizontal: 7,
+        marginVertical: 10,
+        backgroundColor: 'white',
+        justifyContent: 'center'
+    },
+    radioButtonText: {
+        color: '#899499'
     },
     radioButtonSelected: {
-      backgroundColor: '#7CCD7C',
+        backgroundColor: '#A8C7B9',
     },
   });
       

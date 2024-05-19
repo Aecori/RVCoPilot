@@ -14,6 +14,11 @@ const sampleRVSiteData = [
             "Carrier": "Verizon",
             "Signal": true,
             "SignalStrength": 4
+        },
+        {
+            "Carrier": "AT&T",
+            "Signal": true,
+            "SignalStrength": 3
         }
     ],
       PetsAllowed: true,
