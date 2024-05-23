@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Text, View, Button, StyleSheet, TextInput, Switch } from 'react-native';
 import SignalRating from './SignalRating.js';
+import Button2 from './Button2.js';
 
 const UpdateCellServiceItem = ({ startCellularData, rvSiteName, onSave, onDelete }) => {
 
@@ -50,10 +51,9 @@ const UpdateCellServiceItem = ({ startCellularData, rvSiteName, onSave, onDelete
         </View>
 
         <View style={{flexDirection: "row", justifyContent: 'space-between', margin: 20}}>
-          <Button title="Save" onPress={handleSave} />
-          <Button title="Delete" onPress={handleDelete} />
+          <Button2 title="Save" onPress={handleSave} />
+          <Button2 title="Delete" onPress={handleDelete} />
         </View>
-
     </View>
     
   );

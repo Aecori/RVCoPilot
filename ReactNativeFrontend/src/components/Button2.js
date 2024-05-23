@@ -1,9 +1,8 @@
 import React from 'react';
 import {TouchableOpacity, Text, StyleSheet} from 'react-native'; 
 
-const MyButton = ({ onPress, title }) => {
+const Button2 = ({ onPress, title }) => {
     const handlePress = () => {
-        console.log('Button pressed!');
         if (onPress) {
             onPress();
         }
@@ -18,16 +17,23 @@ const MyButton = ({ onPress, title }) => {
 
 const styles = StyleSheet.create({
     button: {
-        backgroundColor: '#6CA3AA',
-        padding: 10,
-        borderRadius: 5,
+        justifyContent: 'center',
         alignItems: 'center',
-        marginVertical: 10,
-    },
+        width: 100,
+        height: 35,
+        backgroundColor: 'white',
+        borderWidth: 1,
+        borderColor: '#AFAFAF',
+        borderRadius: 10,
+        shadowColor: 'gray', 
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 1,
+        elevation: 5,
+      },
     buttonText: {
-        color: '#fff',
-        fontSize: 16,
-    },
+
+    }
 });
 
-export default MyButton;
+export default Button2;

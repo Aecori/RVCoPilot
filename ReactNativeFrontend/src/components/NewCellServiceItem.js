@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Text, View, Button, StyleSheet, TextInput, Switch } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import SignalRating from './SignalRating.js';
+import Button2 from './Button2.js';
 
 
 const NewCellServiceItem = ({ editedData, onSave }) => {
@@ -50,9 +51,6 @@ const NewCellServiceItem = ({ editedData, onSave }) => {
         <Text style={styles.text}>Carrier  </Text>
           <Dropdown
             style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            inputSearchStyle={styles.inputSearchStyle}
             data={availableCarriers.map((item, index) => ({
               label: item,
               value: item,
@@ -89,8 +87,8 @@ const NewCellServiceItem = ({ editedData, onSave }) => {
             emptyIcon="star-o"/>
       </View>
 
-      <View style={{margin: 20}}>
-        <Button title="Save" onPress={handleSave} />
+      <View style={{alignItems: 'center', margin: 20}}>
+        <Button2 title="Save" onPress={handleSave} />
       </View>
       
     </View>
@@ -131,12 +129,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 8,
-  },
-  placeholderStyle: {
-    fontSize: 16,
-  },
-  selectedTextStyle: {
-    fontSize: 16,
   },
 });
 

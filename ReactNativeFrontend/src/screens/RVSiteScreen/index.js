@@ -1,7 +1,10 @@
-import React from 'react';
-import { View, Text, StyleSheet, Button, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Button, ScrollView, Modal, TouchableOpacity, Alert } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome.js';
+import RequestAddress from '../../components/RequestAddress.js';
+import FixedButton from '../../components/FixedButton.js';
+import CommentModal from '../../components/CommentModal.js';
 
 function RVSiteScreen () {
 
@@ -16,6 +19,8 @@ function RVSiteScreen () {
     return <ErrorMessage message="RV site data is not available." />;
   };
 
+  // User interactive screen navigation functions
+
   const goToRVSiteListScreen = () => {
     navigation.navigate('RVSiteListScreen');
   };
@@ -28,20 +33,98 @@ function RVSiteScreen () {
     navigation.navigate('EditRVSiteScreen',{ item: item });
   }
 
+  // Fetch address to display with other backend provided RVSite fields
+
+  const [address, setAddress] = useState('');
+
+  useEffect(() => {
+    const fetchAddress = async () => {
+      const addr = await RequestAddress(siteData.SiteLatitude, siteData.SiteLongitude);
+      setAddress(addr);
+    };
+    fetchAddress();
+  }, [siteData.SiteLatitude, siteData.SiteLongitude]);
+
+  // Manage Updates to Comments
+
+  const [newComment, setNewComment] = useState({
+    // TODO: Get UserName. 
+    Username: "Bob",
+    Comment: '',
+    Rating: '',
+  });
+  const [commentView, setCommentView] = useState(false);
+
+  //TODO: useEffect to update if CommentChanges.
+
+  const toggleAddCommentView = () => {
+    setCommentView(!commentView);
+  }
+  
+  const saveNewComment = (comment, rating) => {
+    if (comment ==='' || rating === '') {
+      setCommentView(false);
+      return;
+    }
+    console.log("This is comment, rating from component", comment, rating);
+
+    setNewComment({
+      ...newComment,
+      "Comment": comment
+  });
+
+    setNewComment({
+      ...newComment,
+      "Rating": rating
+  });
+
+    Alert.alert(
+      'Confirm save?',
+      '',
+      [{text: 'Yes', onPress: () => {
+            console.log('Confirm save');
+            handleConfirmSave();
+          }
+        },
+        {text: 'No', onPress: () => {
+            console.log('Go back');
+          },
+        }],
+        {cancelable: false}
+    ); 
+    setCommentView(false);
+    //setNewComment('');
+  }
+
+  const handleConfirmSave = async () => {
+    console.log("SiteID", siteData.id);
+  
+    try {
+      const response = await fetch(`https://your-rv-copilot.uc.r.appspot.com/sites/${siteData.id}/comments`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        }, 
+        body: JSON.stringify(newComment),
+      });
+      if(!response.ok) {
+        throw new Error(`Failed to add user comment RV Site: ${response.status}`);
+      }
+      const result = await response.json();
+      console.log('Comment update successful:', result);
+    } catch (error) {
+      console.log('Error updating item with comment:', error);
+    }
+  }  
+
   return (
 
     <View style={styles.screenview}>
 
-      <View style={styles.buttonContainer}>
-          
-          <TouchableOpacity style={[styles.homeButton] } onPress={goToRVSiteListScreen}>
-              <Text>RV Site List</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.homeButton } onPress={goToHomeScreen}>
-              <Text>Return Home</Text>
-          </TouchableOpacity>
-
+      <View style={styles.buttonContainer}>      
+          <FixedButton title="RV Site List" onPress={goToRVSiteListScreen}/>
+          <FixedButton title="Return Home" onPress={goToHomeScreen}/>
       </View>
     
       <View style={styles.container}>
@@ -60,10 +143,13 @@ function RVSiteScreen () {
               <Text style={styles.textRVSite}>Site Id: {siteData.id} </Text>
             </View>
             <View style={styles.item}>
-              <Text style={styles.textRVSite}>Site Description: {siteData.SiteDescription} </Text>
+              <Text style={styles.textRVSite}>Site Description: {siteData.SiteDescription !== '' ? siteData.SiteDescription : '(Not available)'} </Text>
             </View>
             <View style={styles.item}>
               <Text style={styles.textRVSite}>Coordinates: {siteData.SiteLatitude}, {siteData.SiteLongitude} </Text>
+            </View>
+            <View style={styles.item}>
+              <Text style={styles.textRVSite}>Region: {address} </Text>
             </View>
             <View style={styles.item}>
               <Text style={styles.textRVSite}>RV Electric Access: {siteData.RVElectricAccess !== undefined ? (siteData.RVElectricAccess ? 'Yes' : 'No') : 'Data Not Available'}</Text>
@@ -73,6 +159,10 @@ function RVSiteScreen () {
             </View>
             <View style={styles.item}>
               <Text style={styles.textRVSite}>Wifi Access: {siteData.WifiAccess !== undefined ? (siteData.WifeAccess ? 'Yes' : 'No') : 'Data Not Available'}</Text>
+            </View>
+
+            <View style={styles.item}>
+              <Text style={styles.textRVSite}>Pets Allowed: {siteData.PetsAllowed !== undefined ? (siteData.PetsAllowed ? 'Yes' : 'No') : 'Data Not Available'}</Text>
             </View>
 
             <View style={styles.item}>
@@ -96,16 +186,11 @@ function RVSiteScreen () {
                     }
                   })
                 ) : (
-                  <Text style={styles.textRVSite}>No carriers with service</Text>
+                  <Text style={[styles.textRVSite,{marginLeft:20}]}>(No known carriers with service)</Text>
                 )
               ) : (
                 <Text style={styles.textRVSite}>Data Not Available</Text>
               )}
-            </View>
-
-
-            <View style={styles.item}>
-              <Text style={styles.textRVSite}>Pets Allowed: {siteData.PetsAllowed !== undefined ? (siteData.PetsAllowed ? 'Yes' : 'No') : 'Data Not Available'}</Text>
             </View>
 
             <View style={styles.item}>
@@ -144,20 +229,53 @@ function RVSiteScreen () {
               )}
             </View>
 
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={commentView}
+              onRequestClose={() => {
+                ()=> setCommentView(false);
+              }}
+            >
+              <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                  <CommentModal 
+                    isOpen={commentView}
+                    onRequestClose={()=> setCommentView(false)}
+                    initialComment={newComment}
+                    onSave={saveNewComment} />
+                  </View>
+              </View>
+
+            </Modal>
+
           </ScrollView>
+
+
       </View>
 
-      <View style={{margin:15}}>
-            <Button 
-              fontStyle='bold'
-              color='#081516'
-              title="Update RV Site Info" 
-              onPress={() => goToEditRVSiteScreen(item)} 
-            />
-          </View>
+      <View style={{flexDirection:'row', marginBottom:20}}>
+        <View style={{margin:20}}>
+              <Button 
+                fontStyle='bold'
+                color='#081516'
+                title="Add Comment" 
+                onPress={() => toggleAddCommentView()} 
+              />
+        </View>
+
+        <View style={{margin:20}}>
+              <Button 
+                fontStyle='bold'
+                color='#081516'
+                title="Update RV Site Info" 
+                onPress={() => goToEditRVSiteScreen(item)} 
+              />
+        </View>
+
+      </View>
     
     </View>
-
     );
   }
 
@@ -220,27 +338,6 @@ const styles = StyleSheet.create({
   textButton: {
     color: '#7CC2D1',
   },
-  
-  homeButton: {
-    width: 126,
-    height: 35,
-    backgroundColor: '#D9D9D9',
-    borderWidth: 1,
-    borderColor: '#AFAFAF',
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: 15
-  },
-
-  buttonText: {
-    fontFamily: 'MarkoOne-Regular',
-    fontStyle: 'normal',
-    fontWeight: '400',
-    lineHeight: 32,
-    textAlign: 'center',
-    color: '#000000',
-  },
   middleBottom: {
     position: 'absoulte', 
     bottom: 5
@@ -248,6 +345,28 @@ const styles = StyleSheet.create({
   carrierRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalView: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+    elevation: 5,
+    alignSelf: 'center', 
+    maxWidth: '85%',
+    maxHeight: '65%',
+  },
+  closeButton: {
+    marginVertical: 5,
+  },
+  closeButtonText: {
+    color: 'gray',
   },
   
 });
