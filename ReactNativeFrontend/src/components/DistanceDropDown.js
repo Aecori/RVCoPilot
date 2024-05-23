@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 
-const DistanceDropdown = ({ distance, setDistanceSelected }) => {
+const DistanceDropdown = ({ distance, onSelect }) => {
 
     const [isFocus, setIsFocus] = useState();
-    const [selectedValue, setSelectedValue] = useState(distance);
+    //const [selectedValue, setSelectedValue] = useState(distance);
 
     const distanceInMiles = [
         "50",
@@ -20,9 +20,7 @@ const DistanceDropdown = ({ distance, setDistanceSelected }) => {
             <Text>Distance to Search  </Text>
           
           <Dropdown
-            style={[styles.distanceDropdown, isFocus && { borderColor: 'blue' }]}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
+            style={styles.distanceDropdown}
             inputSearchStyle={styles.inputSearchStyle}
             data={distanceInMiles.map((item, index) => ({
               label: `${item} miles`,
@@ -32,7 +30,7 @@ const DistanceDropdown = ({ distance, setDistanceSelected }) => {
             valueField= "value"
             labelField="label"
             placeholder={!isFocus ? 'Select distance' : '...'}
-            value={selectedValue}
+            value={distance}
             onFocus={() => setIsFocus(true)}
               onBlur={() => setIsFocus(false)}
             onChange={item=>{
