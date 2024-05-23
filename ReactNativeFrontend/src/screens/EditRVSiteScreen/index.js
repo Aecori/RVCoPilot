@@ -3,6 +3,7 @@ import { Dimensions, View, Text, StyleSheet, Button, TouchableOpacity, TextInput
 import { useRoute, useNavigation} from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FixedButton from '../../components/FixedButton.js';
+import Button2 from '../../components/Button2.js';
 import StarRating from '../../components/StarRating.js';
 import YesNoButtons from '../../components/YesNoButtons.js';
 import CellServiceDataList from '../../components/CellServiceDataList.js';
@@ -74,7 +75,6 @@ function EditRVSiteScreen() {
   const handleRatingChange= (value) => {
     setUserRating(value);
   }
-
   const saveComments = () => {
     // Ensure no new comments added if no comment or rating information provided by user
     if (newComment === '' && userRating === 0) {
@@ -102,6 +102,7 @@ function EditRVSiteScreen() {
   }
   const saveNewCarrier = (newCellServiceItem) => {
     if (newCellServiceItem.Carrier === '') {
+      toggleNewCellServiceView(false);
       return;
     }
     setEditedData(prevData => ({
@@ -301,7 +302,7 @@ function EditRVSiteScreen() {
                             transparent={true}
                             visible={newCellServiceView}
                             onRequestClose={() => {
-                              setNewCellServiceView(!newCellServiceView);
+                              setNewCellServiceView(false);
                             }}
                           >
                             <View style={styles.centeredView}>

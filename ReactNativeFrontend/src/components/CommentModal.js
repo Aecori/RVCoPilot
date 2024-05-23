@@ -1,0 +1,114 @@
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import StarRating from './StarRating';
+import Button2 from './Button2';
+
+const CommentModal = ({ isOpen, onRequestClose, initialComment, onSave}) => {
+
+    const [comment, setComment] = useState(initialComment.comment ? initialComment.Comment : '');
+    const [rating, setRating] = useState(initialComment.Rating);
+
+    const handleCommentChange = (value) => {
+        setComment(value);
+          console.log("Comment", comment);
+    }
+
+    const handleRatingChange = (value) => {
+        setRating(value);
+    }
+
+    const handleSaveComment = () => {
+        onSave(comment, rating);
+        onRequestClose;
+    }
+
+    
+
+    return (
+        <View style={styles.container}>
+            <View style={styles.fieldItem}>
+                <Text style={styles.textRVSite}>Comments on RV Site:</Text>
+                <View style={[styles.inputWrapper]}>
+                    <TextInput
+                        placeholder="Comments here!"
+                        style={{color: '#333333', width: 280}}
+                        value={comment}
+                        maxLength={200}
+                        multiline= {true}
+                        onChangeText={text => handleCommentChange(text)} 
+                    />
+                </View>
+            </View>
+            
+            <View style={styles.fieldItem}>
+                <Text 
+                    style={styles.textRVSite}>How would you rate this RV site? 
+                </Text>
+                <StarRating 
+                    defaultRating={rating} 
+                    maxRating={5} 
+                    onRatingChange={rating => handleRatingChange(rating)} 
+                    icon="star" 
+                    emptyIcon="star-o"/>
+            </View>
+
+            <View style={{flexDirection: "row", justifyContent: 'space-between'}}>
+                <Button2 onPress={handleSaveComment} title="Save"/>
+                <Button2 onPress={onRequestClose} title="Cancel"/>
+            </View>
+            
+      
+        </View>
+    );
+}
+
+const styles = StyleSheet.create({
+    title: {
+      textAlign: 'center',
+      fontSize: 22,
+      padding: 10,
+      marginTop: 15,
+      color: '#375D62',
+      justifyContent: 'center',
+    },
+    container: {
+        flex: 1,
+        padding: 20,
+        justifyContent: 'center',
+        borderColor: '#ccc',
+    },
+    fieldItem: {
+        flex: 1,
+        padding: 5,
+        marginVertical: 10
+    },
+    textRVSite: {
+        color:'#899499',
+        fontSize: 16,
+    },
+    inputWrapper: {
+        marginVertical: 20,
+        width: 300,
+        height: 120,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
+        padding: 5,
+
+    },
+    carrierAttributeContainer: {
+      flex: 1,
+      marginVertical: 15,
+      flexDirection: "row",
+      alignItems: "center",
+    }, 
+    placeholderStyle: {
+      fontSize: 16,
+    },
+    selectedTextStyle: {
+      fontSize: 16,
+    },
+  });
+  
+
+export default CommentModal;

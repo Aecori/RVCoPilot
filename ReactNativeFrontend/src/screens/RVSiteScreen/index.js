@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Button, ScrollView, Modal, TouchableOpacity, Alert } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome.js';
 import RequestAddress from '../../components/RequestAddress.js';
 import FixedButton from '../../components/FixedButton.js';
+import CommentModal from '../../components/CommentModal.js';
 
 function RVSiteScreen () {
 
@@ -18,16 +19,7 @@ function RVSiteScreen () {
     return <ErrorMessage message="RV site data is not available." />;
   };
 
-  const [address, setAddress] = useState('');
-
-  useEffect(() => {
-    const fetchAddress = async () => {
-      const addr = await RequestAddress(siteData.SiteLatitude, siteData.SiteLongitude);
-      setAddress(addr);
-    };
-    fetchAddress();
-  }, [siteData.SiteLatitude, siteData.SiteLongitude]);
-  
+  // User interactive screen navigation functions
 
   const goToRVSiteListScreen = () => {
     navigation.navigate('RVSiteListScreen');
@@ -40,6 +32,90 @@ function RVSiteScreen () {
   const goToEditRVSiteScreen = (item) => {
     navigation.navigate('EditRVSiteScreen',{ item: item });
   }
+
+  // Fetch address to display with other backend provided RVSite fields
+
+  const [address, setAddress] = useState('');
+
+  useEffect(() => {
+    const fetchAddress = async () => {
+      const addr = await RequestAddress(siteData.SiteLatitude, siteData.SiteLongitude);
+      setAddress(addr);
+    };
+    fetchAddress();
+  }, [siteData.SiteLatitude, siteData.SiteLongitude]);
+
+  // Manage Updates to Comments
+
+  const [newComment, setNewComment] = useState({
+    Username: "Bob",
+    Comment: '',
+    Rating: '',
+  });
+  const [commentView, setCommentView] = useState(false);
+
+  //TODO: useEffect to update if CommentChanges.
+
+  const toggleAddCommentView = () => {
+    setCommentView(!commentView);
+  }
+  
+  const saveNewComment = (comment, rating) => {
+    if (comment ==='' || rating === '') {
+      setCommentView(false);
+      return;
+    }
+    console.log("This is comment, rating from component", comment, rating);
+
+    setNewComment({
+      ...newComment,
+      "Comment": comment
+  });
+
+    setNewComment({
+      ...newComment,
+      "Rating": rating
+  });
+
+    Alert.alert(
+      'Confirm save?',
+      '',
+      [{text: 'Yes', onPress: () => {
+            console.log('Confirm save');
+            handleConfirmSave();
+          }
+        },
+        {text: 'No', onPress: () => {
+            console.log('Go back');
+          },
+        }],
+        {cancelable: false}
+    ); 
+    setCommentView(false);
+    //setNewComment('');
+  }
+
+  const handleConfirmSave = async () => {
+    console.log("SiteID", siteData.id);
+  
+    try {
+      const response = await fetch(`https://your-rv-copilot.uc.r.appspot.com/sites/${siteData.id}/comments`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        }, 
+        body: JSON.stringify(newComment),
+      });
+      if(!response.ok) {
+        throw new Error(`Failed to add user comment RV Site: ${response.status}`);
+      }
+      const result = await response.json();
+      console.log('Comment update successful:', result);
+    } catch (error) {
+      console.log('Error updating item with comment:', error);
+    }
+  }  
 
   return (
 
@@ -152,6 +228,26 @@ function RVSiteScreen () {
               )}
             </View>
 
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={commentView}
+              onRequestClose={() => {
+                ()=> setCommentView(false);
+              }}
+            >
+              <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                  <CommentModal 
+                    isOpen={commentView}
+                    onRequestClose={()=> setCommentView(false)}
+                    initialComment={newComment}
+                    onSave={saveNewComment} />
+                  </View>
+              </View>
+
+            </Modal>
+
           </ScrollView>
 
 
@@ -163,7 +259,7 @@ function RVSiteScreen () {
                 fontStyle='bold'
                 color='#081516'
                 title="Add Comment" 
-                onPress={() => addComment(item)} 
+                onPress={() => toggleAddCommentView()} 
               />
         </View>
 
@@ -248,6 +344,28 @@ const styles = StyleSheet.create({
   carrierRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalView: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+    elevation: 5,
+    alignSelf: 'center', 
+    maxWidth: '85%',
+    maxHeight: '65%',
+  },
+  closeButton: {
+    marginVertical: 5,
+  },
+  closeButtonText: {
+    color: 'gray',
   },
   
 });

@@ -1,7 +1,7 @@
 import React from 'react';
 import {TouchableOpacity, Text, StyleSheet} from 'react-native'; 
 
-const FixedButton = ({ onPress, title }) => {
+const Button2 = ({ onPress, title }) => {
     const handlePress = () => {
         if (onPress) {
             onPress();
@@ -17,24 +17,23 @@ const FixedButton = ({ onPress, title }) => {
 
 const styles = StyleSheet.create({
     button: {
-        width: 126,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 100,
         height: 35,
         backgroundColor: 'white',
         borderWidth: 1,
         borderColor: '#AFAFAF',
         borderRadius: 10,
-        justifyContent: 'center',
-        alignItems: 'center',
-        margin: 15,
-        shadowColor: 'black', 
+        shadowColor: 'gray', 
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
         shadowRadius: 1,
         elevation: 5,
       },
-      buttonText: {
+    buttonText: {
 
-      }
+    }
 });
 
-export default FixedButton;
+export default Button2;
