@@ -44,7 +44,7 @@ const CreateAccountScreen = ({ navigation }) => {
                 source={register} 
                 style={{width: 400, height: 400}} 
             />
-                <Text style={{fontSize:28}}>Create Account</Text>
+                <Text style={styles.title}>Create Account</Text>
                 <TextInput
                     style={styles.input}
                     placeholder="Select a username"
@@ -90,7 +90,13 @@ const styles = StyleSheet.create({
       borderColor: 'gray',
       borderWidth: 1,
       padding: 10,
-    }
+    },
+    title: {
+        fontSize: 28,
+        padding: 10,
+        color: '#9A7B5B',
+        textAlign: 'center'
+      },
   });
 
 export default CreateAccountScreen;

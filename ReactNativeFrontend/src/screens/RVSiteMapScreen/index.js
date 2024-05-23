@@ -1,25 +1,51 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, Button, ActivityIndicator } from 'react-native';
+import React, { useContext, useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, Button } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import sampleRVSiteData from '../../assets/data/sampleRVSiteData.js';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
-import Geolocation from '@react-native-community/geolocation';
-
-
+import FixedButton from '../../components/FixedButton.js';
+import RequestLocation from '../../components/RequestLocation.js';
+import RequestAddress from '../../components/RequestAddress.js';
 
 const RVSiteMapScreen = () => {
 
   const route = useRoute();
   const navigation = useNavigation();
   const { siteData } = route.params || {};
-  //const siteData=sampleRVSiteData;
-  //console.log("SiteData on Map View Screen", siteData);
   const userName = "Unverified user";
 
-  const [loading, setLoading] = useState(false);
   const [location, setLocation] = useState(null);
-  const [locationError, setLocationError] = useState(null);
-  const [mapSiteData, setMapSiteData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [locationError, setLocationError] = useState(false);
+  const [region, setRegion] = useState({
+    latitude: 37.78825,
+    longitude: -122.4324,
+    latitudeDelta: 0.015,
+    longitudeDelta: 0.0121,
+  });
+  
+  useEffect(() => {
+    RequestLocation(location, setLocation, setLocationError);
+  }, []);
+
+  useEffect(() => {
+    if (location) {
+      const latitudeDelta = 50 / 69; // 50 miles
+      const longitudeDelta = 50 / (69 * Math.cos(location[0] * Math.PI / 180)); // Adjust for latitude
+
+      setRegion({
+        latitude: location[0],
+        longitude: location[1],
+        latitudeDelta: latitudeDelta,
+        longitudeDelta: longitudeDelta,
+      });
+    
+    }
+  }, [location]);
+
+  useEffect(() => {
+    console.log("REGION",region);
+  }, [region]);
 
   const goToRVSiteScreen = (item) => {
     navigation.navigate('RVSiteScreen', { item: item, userName: userName });
@@ -33,35 +59,22 @@ const RVSiteMapScreen = () => {
     navigation.navigate('RVSiteListScreen');
   };
 
-  const requestLocation = () => {
-    Geolocation.getCurrentPosition(info => {
-      if (info) {
-          setLocation([info.coords.latitude, info.coords.longitude]);
-          console.log("Location", [info.coords.latitude, info.coords.longitude]);
-      } error => {
-        console.error("Error getting location:", error);
-        setLocationError(error.message);
-      }
-  });
+  const handleRequestLocation = () => {
+    setLoading(true); 
+    RequestLocation(setLocation, setLocationError, () => {setLoading(false)
+    });
   }
 
-  if (!location) {
-    requestLocation();
+  const handleRequestAddress = () => {
+    RequestAddress(location[0], location[1]);
   }
   
   return (
     <View style={styles.screenview}>
       
       <View style={styles.buttonContainer}>
-          
-          <TouchableOpacity style={[styles.homeButton] } onPress={goToRVSiteListScreen}>
-              <Text>View as List</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.homeButton } onPress={goToHomeScreen}>
-              <Text>Return Home</Text>
-          </TouchableOpacity>
-
+          <FixedButton title="View as List" onPress={goToRVSiteListScreen}/>
+          <FixedButton title="Return Home" onPress={goToHomeScreen}/>
       </View>
 
       <Text style={styles.title}>Nearby RV Sites</Text>
@@ -70,12 +83,11 @@ const RVSiteMapScreen = () => {
         <MapView
           provider={PROVIDER_GOOGLE} // remove if not using Google Maps
           style={styles.map}
-          region={{
-            latitude: 37.78825,
-            longitude: -122.4324,
-            latitudeDelta: 0.015,
-            longitudeDelta: 0.0121,
-          }}
+          initialRegion={region}
+          region={region}
+          showsMyLocationButton={true}
+          showsCompass={true}
+          scrollDuringRotateOrZoomEnabled={false}
         >
           {siteData && siteData.map((site) => (
           <Marker
@@ -85,18 +97,42 @@ const RVSiteMapScreen = () => {
             onPress={() => goToRVSiteScreen(site)}
           />
         ))}
+        {location && (
+          <Marker
+            coordinate={{
+              latitude: location[0],
+              longitude: location[1],
+            }}
+            title="User Location"
+            pinColor="blue"
+          />
+        )}
         </MapView>
       </View>
+      {location && (
+          <Text>Your current location: {location}</Text>
+        )}
+        {location === null && (
+          <Text>Fetching location...</Text>
+        )}
 
-      <View style={styles.button}>
-        <Button
-          disabled={loading}
-          title="Get Location"
-          onPress={requestLocation}
-        />
+        <View style={{flexDirection:'row'}}>
+            <View style={styles.button}>
+            <Button
+              title="Get Location"
+              onPress={handleRequestLocation}
+            />
+            </View>
 
-      </View>
-      
+          <View style={styles.button}>
+            <Button
+              title="Get Address"
+              onPress={handleRequestAddress}
+            />
+
+          </View>
+
+        </View>
     </View>
     
   );
@@ -159,7 +195,7 @@ const styles = StyleSheet.create({
   homeButton: {
     width: 126,
     height: 35,
-    backgroundColor: '#D9D9D9',
+    backgroundColor: 'white',
     borderWidth: 1,
     borderColor: '#AFAFAF',
     borderRadius: 10,

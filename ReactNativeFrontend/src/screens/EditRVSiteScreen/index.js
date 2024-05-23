@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Dimensions, View, Text, StyleSheet, Button, TouchableOpacity, TextInput, Alert, ScrollView, ErrorMessage, FlatList, Modal } from 'react-native';
 import { useRoute, useNavigation} from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import FixedButton from '../../components/FixedButton.js';
 import StarRating from '../../components/StarRating.js';
 import YesNoButtons from '../../components/YesNoButtons.js';
 import CellServiceDataList from '../../components/CellServiceDataList.js';
@@ -73,6 +74,7 @@ function EditRVSiteScreen() {
   const handleRatingChange= (value) => {
     setUserRating(value);
   }
+
   const saveComments = () => {
     // Ensure no new comments added if no comment or rating information provided by user
     if (newComment === '' && userRating === 0) {
@@ -98,7 +100,6 @@ function EditRVSiteScreen() {
     }
     
   }
-
   const saveNewCarrier = (newCellServiceItem) => {
     if (newCellServiceItem.Carrier === '') {
       return;
@@ -112,7 +113,6 @@ function EditRVSiteScreen() {
     }));
     toggleNewCellServiceView(false);
   }
-
   const deleteCellCarrierItem = (index) => {
     const updatedCellCarrierList = [...editedData.CellService];
     updatedCellCarrierList.splice(index, 1);
@@ -122,7 +122,6 @@ function EditRVSiteScreen() {
     }));
     toggleCellServiceView(false);
   }
-
   const addRecreationItem = () => {
     if (recreationItem == '') {
       return;
@@ -172,45 +171,47 @@ function EditRVSiteScreen() {
         ...editedData
     }
 
-    const handleConfirmChanges = async () => {
+    const handleConfirmUpdate = async () => {
+      console.log("handle confirmed update to rv site");
 
-        /*fetch('url', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: jsonSiteData
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Response from backend:', data);
-    })
-    .catch(error => {
-      console.error('Error sending data to backend:', error);
-    });*/
-
-    }
-
-    const jsonSiteData = JSON.stringify(siteDataToSend);
+      const toSend = JSON.stringify(siteDataToSend);
+      console.log("SiteData TO Send;", toSend);
+      try {
+        const response = await fetch(`https://your-rv-copilot.uc.r.appspot.com/sites/${rvSite.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          }, 
+          body: JSON.stringify(siteDataToSend),
+        });
+        if(!response.ok) {
+          throw new Error(`Failed to update RV Site: ${response.status}`);
+        }
+        const result = await response.json();
+        console.log('Update successful:', result);
+      } catch (error) {
+        console.log('Error updating item:', error);
+      }
+    }  
 
     Alert.alert(
       'Confirm new changes?',
       '',
       [{text: 'Yes', onPress: () => {
             console.log('Confirm save');
+            handleConfirmUpdate();
             console.log(siteDataToSend);
-            
-            //
           }
         },
         {text: 'No', onPress: () => {
             console.log('Go back');
-            //
           },
         }],
         {cancelable: false}
     ); 
 
+    
   }; 
 
   return (
@@ -218,15 +219,8 @@ function EditRVSiteScreen() {
 
         <View style={styles.buttonContainer}>
         
-          
-              <TouchableOpacity style={[styles.homeButton] } onPress={goToRVSiteScreen}>
-                  <Text>Back to Site</Text>
-              </TouchableOpacity>
-              
-
-              <TouchableOpacity style={styles.homeButton } onPress={goToHomeScreen}>
-                  <Text>Return Home</Text>
-              </TouchableOpacity>
+              <FixedButton title="Back to Site" onPress={goToRVSiteScreen}/>
+              <FixedButton title="Return Home" onPress={goToHomeScreen}/>
 
         </View>
 
@@ -281,20 +275,6 @@ function EditRVSiteScreen() {
                       />                    
 
                     <View style={styles.fieldItem}>
-                        <Text style={styles.textRVSite}>Comments:</Text>
-                        <View style={[styles.inputWrapper]}>
-                          <TextInput
-                              placeholder="Additional Comments Here!"
-                              style={{color: '#333333', width: 280}}
-                              value={newComment}
-                              maxLength={200}
-                              multiline= {true}
-                              onChangeText={text => setNewComment(text)} 
-                          />
-                        </View>
-                    </View>
-
-                    <View style={styles.fieldItem}>
         
                       <Text style={styles.textRVSite}>Cell Service at RV Site:</Text>
       
@@ -340,6 +320,20 @@ function EditRVSiteScreen() {
                       <NewCellServiceItem
                         editedData={editedData}
                         onSave={saveNewCarrier}></NewCellServiceItem>}
+                    </View>
+
+                    <View style={styles.fieldItem}>
+                        <Text style={styles.textRVSite}>Comments:</Text>
+                        <View style={[styles.inputWrapper]}>
+                          <TextInput
+                              placeholder="Additional Comments Here!"
+                              style={{color: '#333333', width: 280}}
+                              value={newComment}
+                              maxLength={200}
+                              multiline= {true}
+                              onChangeText={text => setNewComment(text)} 
+                          />
+                        </View>
                     </View>
                     
                     <View style={styles.fieldItem}>
@@ -387,7 +381,17 @@ function EditRVSiteScreen() {
                         scrollEnabled={false}
                       />         
                     </View>
-                        
+                    <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+                        <TouchableOpacity>
+                            <Text
+                              marginTop={40}
+                              color='#899499'
+                              title="Delete Site"
+                              fontSize={8}
+                              onPress = { () => {}} 
+                            >Delete Site</Text>
+                          </TouchableOpacity>
+                    </View>       
                 </ScrollView>    
             
           </View>
@@ -397,7 +401,7 @@ function EditRVSiteScreen() {
         <View style={{margin:15}}>
             <Button 
               borderWidth= {2}
-              borderColor= '#FFFFFF'
+              borderColor= '#D9D9D9'
               boxShadow='0px 4px 4px rgba(0, 0, 0, 0.25)'
               borderRadius={10}
               color='#081516'
@@ -472,7 +476,7 @@ function EditRVSiteScreen() {
     homeButton: {
       width: 126,
       height: 35,
-      backgroundColor: '#D9D9D9',
+      backgroundColor: 'white',
       borderWidth: 1,
       borderColor: '#AFAFAF',
       borderRadius: 10,

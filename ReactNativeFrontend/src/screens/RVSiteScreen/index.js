@@ -1,7 +1,9 @@
-import React from 'react';
-import { View, Text, StyleSheet, Button, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome.js';
+import RequestAddress from '../../components/RequestAddress.js';
+import FixedButton from '../../components/FixedButton.js';
 
 function RVSiteScreen () {
 
@@ -15,6 +17,17 @@ function RVSiteScreen () {
   if (!siteData) {
     return <ErrorMessage message="RV site data is not available." />;
   };
+
+  const [address, setAddress] = useState('');
+
+  useEffect(() => {
+    const fetchAddress = async () => {
+      const addr = await RequestAddress(siteData.SiteLatitude, siteData.SiteLongitude);
+      setAddress(addr);
+    };
+    fetchAddress();
+  }, [siteData.SiteLatitude, siteData.SiteLongitude]);
+  
 
   const goToRVSiteListScreen = () => {
     navigation.navigate('RVSiteListScreen');
@@ -32,16 +45,9 @@ function RVSiteScreen () {
 
     <View style={styles.screenview}>
 
-      <View style={styles.buttonContainer}>
-          
-          <TouchableOpacity style={[styles.homeButton] } onPress={goToRVSiteListScreen}>
-              <Text>RV Site List</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.homeButton } onPress={goToHomeScreen}>
-              <Text>Return Home</Text>
-          </TouchableOpacity>
-
+      <View style={styles.buttonContainer}>      
+          <FixedButton title="RV Site List" onPress={goToRVSiteListScreen}/>
+          <FixedButton title="Return Home" onPress={goToHomeScreen}/>
       </View>
     
       <View style={styles.container}>
@@ -60,10 +66,13 @@ function RVSiteScreen () {
               <Text style={styles.textRVSite}>Site Id: {siteData.id} </Text>
             </View>
             <View style={styles.item}>
-              <Text style={styles.textRVSite}>Site Description: {siteData.SiteDescription} </Text>
+              <Text style={styles.textRVSite}>Site Description: {siteData.SiteDescription !== '' ? siteData.SiteDescription : '(Not available)'} </Text>
             </View>
             <View style={styles.item}>
               <Text style={styles.textRVSite}>Coordinates: {siteData.SiteLatitude}, {siteData.SiteLongitude} </Text>
+            </View>
+            <View style={styles.item}>
+              <Text style={styles.textRVSite}>Region: {address} </Text>
             </View>
             <View style={styles.item}>
               <Text style={styles.textRVSite}>RV Electric Access: {siteData.RVElectricAccess !== undefined ? (siteData.RVElectricAccess ? 'Yes' : 'No') : 'Data Not Available'}</Text>
@@ -73,6 +82,10 @@ function RVSiteScreen () {
             </View>
             <View style={styles.item}>
               <Text style={styles.textRVSite}>Wifi Access: {siteData.WifiAccess !== undefined ? (siteData.WifeAccess ? 'Yes' : 'No') : 'Data Not Available'}</Text>
+            </View>
+
+            <View style={styles.item}>
+              <Text style={styles.textRVSite}>Pets Allowed: {siteData.PetsAllowed !== undefined ? (siteData.PetsAllowed ? 'Yes' : 'No') : 'Data Not Available'}</Text>
             </View>
 
             <View style={styles.item}>
@@ -96,16 +109,11 @@ function RVSiteScreen () {
                     }
                   })
                 ) : (
-                  <Text style={styles.textRVSite}>No carriers with service</Text>
+                  <Text style={[styles.textRVSite,{marginLeft:20}]}>(No known carriers with service)</Text>
                 )
               ) : (
                 <Text style={styles.textRVSite}>Data Not Available</Text>
               )}
-            </View>
-
-
-            <View style={styles.item}>
-              <Text style={styles.textRVSite}>Pets Allowed: {siteData.PetsAllowed !== undefined ? (siteData.PetsAllowed ? 'Yes' : 'No') : 'Data Not Available'}</Text>
             </View>
 
             <View style={styles.item}>
@@ -145,19 +153,32 @@ function RVSiteScreen () {
             </View>
 
           </ScrollView>
+
+
       </View>
 
-      <View style={{margin:15}}>
-            <Button 
-              fontStyle='bold'
-              color='#081516'
-              title="Update RV Site Info" 
-              onPress={() => goToEditRVSiteScreen(item)} 
-            />
-          </View>
+      <View style={{flexDirection:'row', marginBottom:20}}>
+        <View style={{margin:20}}>
+              <Button 
+                fontStyle='bold'
+                color='#081516'
+                title="Add Comment" 
+                onPress={() => addComment(item)} 
+              />
+        </View>
+
+        <View style={{margin:20}}>
+              <Button 
+                fontStyle='bold'
+                color='#081516'
+                title="Update RV Site Info" 
+                onPress={() => goToEditRVSiteScreen(item)} 
+              />
+        </View>
+
+      </View>
     
     </View>
-
     );
   }
 
@@ -219,27 +240,6 @@ const styles = StyleSheet.create({
   },
   textButton: {
     color: '#7CC2D1',
-  },
-  
-  homeButton: {
-    width: 126,
-    height: 35,
-    backgroundColor: '#D9D9D9',
-    borderWidth: 1,
-    borderColor: '#AFAFAF',
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: 15
-  },
-
-  buttonText: {
-    fontFamily: 'MarkoOne-Regular',
-    fontStyle: 'normal',
-    fontWeight: '400',
-    lineHeight: 32,
-    textAlign: 'center',
-    color: '#000000',
   },
   middleBottom: {
     position: 'absoulte', 

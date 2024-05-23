@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import { Dropdown } from 'react-native-element-dropdown';
 import { useNavigation } from '@react-navigation/native';
 import sampleRVSiteData from '../../assets/data/sampleRVSiteData.js';
+import FixedButton from '../../components/FixedButton.js';
+import DistanceDropdown from '../../components/DistanceDropDown.js';
 
 const RVSiteListScreen = () => {
 
@@ -12,6 +15,13 @@ const RVSiteListScreen = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  //Distance dropdown state
+  const [distanceSelected, setDistanceSelected] = useState('');
+
+  const handleDistanceChange = (value) => {
+    setDistanceSelected(value);
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -21,7 +31,7 @@ const RVSiteListScreen = () => {
           },
         });
         if (!response.ok) {
-          throw new Error('Failed to load RV Site Data');
+          throw new Error('Failed to load RV Site Data:', response.status);
         }
         const contentType = response.headers.get('content-type');
         if (contentType && contentType.includes('application/json')) {
@@ -32,7 +42,7 @@ const RVSiteListScreen = () => {
           throw new Error('Response format not JSON');
         }
       } catch (error) {
-        console.log("Error logging site JSON, using default sample");
+        console.log("Error logging site JSON, using default sample RV data");
         setSiteData(sampleRVSiteData);
         setError(error.message);
         setLoading(false);
@@ -68,25 +78,25 @@ const RVSiteListScreen = () => {
     <View style={styles.screenview}>
 
       <View style={styles.buttonContainer}>
-          
-          <TouchableOpacity style={[styles.homeButton] } onPress={goToMapScreen}>
-              <Text>Map View</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.homeButton } onPress={goToHomeScreen}>
-              <Text>Return Home</Text>
-          </TouchableOpacity>
+      
+          <FixedButton title="Map View" onPress={goToMapScreen}/>
+          <FixedButton title="Return Home" onPress={goToHomeScreen}/>
 
       </View>
+  
+      <Text style={styles.title}>Nearby RV Sites</Text>  
 
-      <Text style={styles.title}>Nearby RV Sites</Text>
+      
+      
      
       <View style={styles.container}>
+          {loading ? <ActivityIndicator color="#fff" /> : 
+      
         <FlatList
           data={siteData}
           renderItem={({item}) => <Item item={item} />}
           keyExtractor={keyExtractor}
-        />
+        />}
       </View>
     </View>
     
@@ -104,7 +114,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     padding: 10,
-    marginTop: 15,
+    marginTop: 25,
     color: '#F5F6E4'
   },
   buttonContainer: {
@@ -131,32 +141,22 @@ const styles = StyleSheet.create({
   },
   container: {
     boxSizing: 'border-box',
-    width: '85%',
-    aspectRatio: 0.8,
+    width: '90%',
+    aspectRatio: 0.7,
     alignItems: 'center',
     left: 0,
     right: 0,
     top: 0,
     bottom: 0,
     padding: 5,
-    paddingTop: 60,
+    paddingTop: 20,
     background: '#D9D9D9',
     borderWidth: 2,
     borderColor: '#F6F5E4',
     boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
     borderRadius: 10,
   },
-  homeButton: {
-    width: 126,
-    height: 35,
-    backgroundColor: '#D9D9D9',
-    borderWidth: 1,
-    borderColor: '#AFAFAF',
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: 15
-  },
+  
   buttonText: {
     lineHeight: 32,
     textAlign: 'center',

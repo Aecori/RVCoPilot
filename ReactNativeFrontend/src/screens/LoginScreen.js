@@ -44,7 +44,7 @@ const LoginScreen = ({ navigation }) => {
                 source={register} 
                 style={{width: 400, height: 400}} 
                 />
-                <Text style={{fontSize:28}}>Login</Text>
+                <Text style={styles.title}>Login</Text>
                 <TextInput
                     style={styles.input}
                     placeholder="Username"
@@ -85,7 +85,13 @@ const styles = StyleSheet.create({
       borderColor: 'gray',
       borderWidth: 1,
       padding: 10,
-    }
+    },
+    title: {
+        fontSize: 28,
+        padding: 10,
+        color: '#9A7B5B',
+        textAlign: 'center'
+      },
   });
 
 export default LoginScreen;
