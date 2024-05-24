@@ -195,6 +195,7 @@ async function updateSite(req, results) {
         // Validate the updated site schema
         const { error, value } = siteUpdateSchema.validate(updated_site);
         if(error) {
+            console.log(error);
             return Promise.reject("Invalid site data");
         }
         return datastore.update({"key":key, "data":updated_site}).then(() => {
@@ -246,6 +247,10 @@ async function deleteSite(req){
 router.get('/', (req, res) => {
     getSites(req).then( (results) => {
         res.status(200).json(results);
+    }).catch( (error) => {
+        res.status(400).json({
+            "Error": "Error getting sites"
+        });
     });
 });
 
@@ -322,6 +327,7 @@ router.post('/:id/comments', (req, res) => {
 });
 
 router.patch('/:id', (req, res) => {
+    console.log(req.body);
     updateSite(req).then( (key) => {
         res.status(200).json({
             "id": key
