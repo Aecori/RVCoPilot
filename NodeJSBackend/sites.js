@@ -165,40 +165,85 @@ async function updateSite(req, results) {
 
         // Get values from entity and update them if they are in the request
         const updated_site = {};
-        if(req.body.SiteName) updated_site.SiteName = req.body.SiteName
-        else updated_site.SiteName = entity[0].SiteName;
-        if(req.body.SiteDescription) updated_site.SiteDescription = req.body.SiteDescription
-        else updated_site.SiteDescription = entity[0].SiteDescription;
-        if(req.body.SiteLatitude) updated_site.SiteLatitude = req.body.SiteLatitude
-        else updated_site.SiteLatitude = entity[0].SiteLatitude;
-        if(req.body.SiteLongitude) updated_site.SiteLongitude = req.body.SiteLongitude
-        else updated_site.SiteLongitude = entity[0].SiteLongitude;
-        if(req.body.SiteLongitude) updated_site.SiteLongitude = req.body.SiteLongitude
-        else updated_site.SiteLongitude = entity[0].SiteLongitude;
-        if(req.body.SiteType) updated_site.SiteType = req.body.SiteType
-        else updated_site.SiteType = entity[0].SiteType;
-        if(req.body.RVElectricAccess) updated_site.RVElectricAccess = req.body.RVElectricAccess
-        else updated_site.RVElectricAccess = entity[0].RVElectricAccess;
-        if(req.body.WaterAccess) updated_site.WaterAccess = req.body.WaterAccess
-        else updated_site.WaterAccess = entity[0].WaterAccess;
-        if(req.body.WifiAccess) updated_site.WifiAccess = req.body.WifiAccess
-        else updated_site.WifiAccess = entity[0].WifiAccess;
-        if(req.body.CellService) updated_site.CellService = req.body.CellService
-        else updated_site.CellService = entity[0].CellService;
-        if(req.body.PetsAllowed) updated_site.PetsAllowed = req.body.PetsAllowed
-        else updated_site.PetsAllowed = entity[0].PetsAllowed;
-        if(req.body.Recreation) updated_site.Recreation = req.body.Recreation
-        else updated_site.Recreation = entity[0].Recreation;
+        if(req.body.hasOwnProperty('SiteName')) {
+            updated_site.SiteName = req.body.SiteName;
+        } else {
+            updated_site.SiteName = entity[0].SiteName;
+        }
+        
+        if(req.body.hasOwnProperty('SiteDescription')) {
+            updated_site.SiteDescription = req.body.SiteDescription;
+        } else {
+            updated_site.SiteDescription = entity[0].SiteDescription;
+        }
+        
+        if(req.body.hasOwnProperty('SiteLatitude')) {
+            updated_site.SiteLatitude = req.body.SiteLatitude;
+        } else {
+            updated_site.SiteLatitude = entity[0].SiteLatitude;
+        }
+        
+        if(req.body.hasOwnProperty('SiteLongitude')) {
+            updated_site.SiteLongitude = req.body.SiteLongitude;
+        } else {
+            updated_site.SiteLongitude = entity[0].SiteLongitude;
+        }
+        
+        if(req.body.hasOwnProperty('SiteType')) {
+            updated_site.SiteType = req.body.SiteType;
+        } else {
+            updated_site.SiteType = entity[0].SiteType;
+        }
+        
+        if(req.body.hasOwnProperty('RVElectricAccess')) {
+            updated_site.RVElectricAccess = req.body.RVElectricAccess;
+        } else {
+            updated_site.RVElectricAccess = entity[0].RVElectricAccess;
+        }
+        
+        if(req.body.hasOwnProperty('WaterAccess')) {
+            updated_site.WaterAccess = req.body.WaterAccess;
+        } else {
+            updated_site.WaterAccess = entity[0].WaterAccess;
+        }
+        
+        if(req.body.hasOwnProperty('WifiAccess')) {
+            updated_site.WifiAccess = req.body.WifiAccess;
+        } else {
+            updated_site.WifiAccess = entity[0].WifiAccess;
+        }
+        
+        if(req.body.hasOwnProperty('CellService')) {
+            updated_site.CellService = req.body.CellService;
+        } else {
+            updated_site.CellService = entity[0].CellService;
+        }
+        
+        if(req.body.hasOwnProperty('PetsAllowed')) {
+            updated_site.PetsAllowed = req.body.PetsAllowed;
+        } else {
+            updated_site.PetsAllowed = entity[0].PetsAllowed;
+        }
+        
+        if(req.body.hasOwnProperty('Recreation')) {
+            updated_site.Recreation = req.body.Recreation;
+        } else {
+            updated_site.Recreation = entity[0].Recreation;
+        }
         updated_site.SiteRating = entity[0].SiteRating;
         updated_site.Comments = entity[0].Comments;
         
+        console.log(updated_site["WifiAccess"]);
+        console.log(req.body["WifiAccess"]);
         // Validate the updated site schema
         const { error, value } = siteUpdateSchema.validate(updated_site);
         if(error) {
             console.log(error);
             return Promise.reject("Invalid site data");
         }
+        updated_site.id = key.id;
         return datastore.update({"key":key, "data":updated_site}).then(() => {
+            console.log(updated_site);
             return updated_site;
         });
     });
@@ -328,10 +373,8 @@ router.post('/:id/comments', (req, res) => {
 
 router.patch('/:id', (req, res) => {
     console.log(req.body);
-    updateSite(req).then( (key) => {
-        res.status(200).json({
-            "id": key
-        });
+    updateSite(req).then( (updated_site) => {
+        res.status(200).json(updated_site);
     })
     .catch( (error) => {
         switch (error) {
