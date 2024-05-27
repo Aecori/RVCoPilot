@@ -22,12 +22,10 @@ const CommentModal = ({ isOpen, onRequestClose, initialComment, onSave}) => {
         onRequestClose;
     }
 
-    
-
     return (
         <View style={styles.container}>
             <View style={styles.fieldItem}>
-                <Text style={styles.textRVSite}>Comments on RV Site:</Text>
+                <Text style={styles.title}>Comments on RV Site:</Text>
                 <View style={[styles.inputWrapper]}>
                     <TextInput
                         placeholder="Comments here!"
@@ -49,15 +47,15 @@ const CommentModal = ({ isOpen, onRequestClose, initialComment, onSave}) => {
                     maxRating={5} 
                     onRatingChange={rating => handleRatingChange(rating)} 
                     icon="star" 
-                    emptyIcon="star-o"/>
+                    emptyIcon="star-o"
+                    size={30}/>
             </View>
 
             <View style={{flexDirection: "row", justifyContent: 'space-between'}}>
                 <Button2 onPress={handleSaveComment} title="Save"/>
                 <Button2 onPress={onRequestClose} title="Cancel"/>
             </View>
-            
-      
+
         </View>
     );
 }
@@ -68,7 +66,7 @@ const styles = StyleSheet.create({
       fontSize: 22,
       padding: 10,
       marginTop: 15,
-      color: '#375D62',
+      color: '#9A7B5B',
       justifyContent: 'center',
     },
     container: {
@@ -85,6 +83,7 @@ const styles = StyleSheet.create({
     textRVSite: {
         color:'#899499',
         fontSize: 16,
+        marginVertical: 6
     },
     inputWrapper: {
         marginVertical: 20,

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
-import { Dropdown } from 'react-native-element-dropdown';
 import { useNavigation } from '@react-navigation/native';
+import PropTypes from 'prop-types';
 import sampleRVSiteData from '../../assets/data/sampleRVSiteData.js';
 import FixedButton from '../../components/FixedButton.js';
 import DistanceDropdown from '../../components/DistanceDropDown.js';
@@ -11,9 +11,14 @@ const RVSiteListScreen = () => {
   const navigation = useNavigation();
   const userName = "Unverified user"
 
-  const [siteData, setSiteData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [screenState, setScreenState] = useState({
+      siteData: null,
+      loading: true,
+      error: null,
+    }
+  )
+
+  const { siteData, loading, error } = screenState;
 
   //Distance dropdown state
   const [distanceSelected, setDistanceSelected] = useState('');
@@ -31,48 +36,44 @@ const RVSiteListScreen = () => {
           },
         });
         if (!response.ok) {
-          throw new Error('Failed to load RV Site Data:', response.status);
+          throw new Error(`Failed to load RV Site Data: ${response.status}`);
         }
         const contentType = response.headers.get('content-type');
         if (contentType && contentType.includes('application/json')) {
           const data = await response.json();
-          setSiteData(data);
-          setLoading(false); 
+          setScreenState({ siteData: data, loading: false, error: null });
         } else {
           throw new Error('Response format not JSON');
         }
+
       } catch (error) {
         console.log("Error logging site JSON, using default sample RV data");
-        setSiteData(sampleRVSiteData);
-        setError(error.message);
-        setLoading(false);
+        setScreenState({ siteData: sampleRVSiteData, loading: false, error: error.message });
       }
+      
     };
     fetchData();
   }, []);
 
-  const goToRVSiteScreen = (item) => {
-    navigation.navigate('RVSiteScreen', { item: item, userName: userName });
-  }
+  const goToRVSiteScreen = useCallback((rvItem) => {
+    navigation.navigate('RVSiteScreen', { rvItem, userName });
+  }, [navigation]);
 
-  const goToHomeScreen = () => {
+  const goToHomeScreen = useCallback(() => {
     navigation.navigate('HomeScreen');
-  }
+  }, [navigation]);
 
-  const goToMapScreen = () => {
-    navigation.navigate('MapScreen', { siteData: siteData, userName: userName});
-  }
-  
-  const Item = ({item}) => (
-    <View style={styles.item}>
-      <Text style={styles.textRVSite}>{item.SiteName}</Text>
-        <TouchableOpacity onPress={()=> goToRVSiteScreen(item, userName)}>
-          <Text style={styles.buttonText}>Site Details</Text>
-        </TouchableOpacity>
-      </View>
-  );
+  const goToMapScreen = useCallback(() => {
+    navigation.navigate('MapScreen', { siteData, userName });
+  }, [navigation, siteData]);
 
-  const keyExtractor = (item, index) => `${item.id}`;
+  const renderItem = useCallback(({ item }) => (
+    <RVSiteItem 
+      rvItem={item}
+      userName= {userName}
+      goToRVSiteScreen={goToRVSiteScreen}
+       />
+  ), [goToRVSiteScreen, siteData]);
   
   return (
     <View style={styles.screenview}>
@@ -85,23 +86,34 @@ const RVSiteListScreen = () => {
       </View>
   
       <Text style={styles.title}>Nearby RV Sites</Text>  
-
-      
-      
      
       <View style={styles.container}>
           {loading ? <ActivityIndicator color="#fff" /> : 
-      
-        <FlatList
-          data={siteData}
-          renderItem={({item}) => <Item item={item} />}
-          keyExtractor={keyExtractor}
+            error ? <Text style={styles.errorMessage}>{error}</Text> :
+            <FlatList
+              data={siteData}
+              renderItem={renderItem}
+              keyExtractor={(item)=>`${item.id}`}
         />}
       </View>
     </View>
     
   );
 };
+
+const RVSiteItem = ({ rvItem, goToRVSiteScreen, userName }) => (
+  <View style={styles.item}>
+    <Text style={styles.textRVSite}>{rvItem.SiteName}</Text>
+      <TouchableOpacity onPress={()=> goToRVSiteScreen( rvItem, userName)}>
+        <Text style={styles.buttonText}>Site Details</Text>
+      </TouchableOpacity>
+    </View>
+);
+
+RVSiteItem.propTypes = {
+  rvItem: PropTypes.object.isRequired,
+  goToRVSiteScreen: PropTypes.func.isRequired,
+}
 
 
 const styles = StyleSheet.create({
@@ -156,11 +168,15 @@ const styles = StyleSheet.create({
     boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
     borderRadius: 10,
   },
-  
   buttonText: {
     lineHeight: 32,
     textAlign: 'center',
     color: '#7CC2D1',
   },
+  errorMessage: {
+    color: 'red',
+    textAlign: 'center',
+    marginTop: 20,
+  }
 });
 export default RVSiteListScreen;
