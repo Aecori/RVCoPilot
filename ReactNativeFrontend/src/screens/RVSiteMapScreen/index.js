@@ -47,8 +47,8 @@ const RVSiteMapScreen = () => {
     console.log("REGION",region);
   }, [region]);
 
-  const goToRVSiteScreen = (item) => {
-    navigation.navigate('RVSiteScreen', { item: item, userName: userName });
+  const goToRVSiteScreen = (rvItem) => {
+    navigation.navigate('RVSiteScreen', { rvItem: rvItem, userName: userName });
   }
 
   const goToHomeScreen = () => {
@@ -90,13 +90,14 @@ const RVSiteMapScreen = () => {
           scrollDuringRotateOrZoomEnabled={false}
         >
           {siteData && siteData.map((site) => (
-          <Marker
-            key={site.id}
-            coordinate={{ latitude: site.SiteLatitude, longitude: site.SiteLongitude }}
-            title={site.SiteName}
-            onPress={() => goToRVSiteScreen(site)}
-          />
+              <Marker
+                key={site.id}
+                coordinate={{ latitude: site.SiteLatitude, longitude: site.SiteLongitude }}
+                title={site.SiteName}
+                onPress={() => goToRVSiteScreen(site)}
+              />
         ))}
+        
         {location && (
           <Marker
             coordinate={{

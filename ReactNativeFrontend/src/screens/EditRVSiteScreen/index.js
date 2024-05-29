@@ -8,20 +8,15 @@ import YesNoButtons from '../../components/YesNoButtons.js';
 import CellServiceDataList from '../../components/CellServiceDataList.js';
 import NewCellServiceItem from '../../components/NewCellServiceItem.js';
 
-
 function EditRVSiteScreen() {
 
   const screenWidth  = Dimensions.get('window').width;
 
   const navigation = useNavigation();
   const route = useRoute();
-  const { item } = route.params || {}; 
+  const { rvItem } = route.params || {}; 
 
-  const rvSite = item;
-
-  if (!rvSite) {
-    return <ErrorMessage message="RV site data is not available." />;
-  }
+  const rvSite = rvItem;
 
   const goToRVSiteScreen = () => {
     navigation.goBack();
@@ -32,7 +27,11 @@ function EditRVSiteScreen() {
   }
 
   const [editedData, setEditedData] = useState({
-    // RV site attributes available to user to edit
+    id: rvSite.id,
+    SiteName: rvSite.SiteName,
+    SiteRating: rvSite.SiteRating,
+    SiteLatitude: rvSite.SiteLatitude,
+    SiteLongitude: rvSite.SiteLongitude,
     SiteDescription: '',
     SiteType: '',
     RVElectricAccess: false,
@@ -45,14 +44,14 @@ function EditRVSiteScreen() {
     Comments: []
   });
 
-  const[newComment, setNewComment] = useState('');
-  const[userRating, setUserRating] = useState(0);
-  const[recreationItem, setRecreationItem] = useState('');
+  const [newComment, setNewComment] = useState('');
+  const [userRating, setUserRating] = useState(0);
+  const [recreationItem, setRecreationItem] = useState('');
   const [cellServiceView, setCellServiceView] = useState(null);
   const [newCellServiceView, setNewCellServiceView] = useState(false);
   
   useEffect(() => {
-    if (item) {
+    if (rvSite) {
       setEditedData(rvSite);
     }
   }, [rvSite]);
@@ -74,6 +73,7 @@ function EditRVSiteScreen() {
   const handleRatingChange= (value) => {
     setUserRating(value);
   }
+
   const saveComments = () => {
     // Ensure no new comments added if no comment or rating information provided by user
     if (newComment === '' && userRating === 0) {
@@ -113,6 +113,7 @@ function EditRVSiteScreen() {
     }));
     toggleNewCellServiceView(false);
   }
+
   const deleteCellCarrierItem = (index) => {
     const updatedCellCarrierList = [...editedData.CellService];
     updatedCellCarrierList.splice(index, 1);
@@ -122,6 +123,7 @@ function EditRVSiteScreen() {
     }));
     toggleCellServiceView(false);
   }
+
   const addRecreationItem = () => {
     if (recreationItem == '') {
       return;
@@ -146,6 +148,7 @@ function EditRVSiteScreen() {
     }));
     setRecreationItem('');
   }
+
   const deleteRecreationItem = (index) => {
     const updatedRecList = [...editedData.Recreation];
     updatedRecList.splice(index, 1);
@@ -154,28 +157,33 @@ function EditRVSiteScreen() {
       Recreation: updatedRecList
     }));
   }
+
   const handleInputChange = (value, propertyName) => { 
     setEditedData(prevData => ({
       ...prevData,
       [propertyName]: value
     }));
   }
+
   const handleSaveChanges = () => {
 
-    const siteDataToSend = {
+    /*const siteDataToSend = {
         // Non editable and edited data to be sent to backend after user 'saves'
         SiteName: rvSite.SiteName,
         SiteRating: rvSite.SiteRating,
         SiteLatitude: rvSite.SiteLatitude,
         SiteLongitude: rvSite.SiteLongitude,
         ...editedData
-    }
+    }*/
+
+    const siteDataToSend = editedData;
 
     const handleConfirmUpdate = async () => {
       console.log("handle confirmed update to rv site");
 
       const toSend = JSON.stringify(siteDataToSend);
       console.log("SiteData TO Send;", toSend);
+      console.log("This is rvSite.id", rvSite.id);
       try {
         const response = await fetch(`https://your-rv-copilot.uc.r.appspot.com/sites/${rvSite.id}`, {
           method: 'PATCH',
@@ -183,7 +191,7 @@ function EditRVSiteScreen() {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
           }, 
-          body: JSON.stringify(siteDataToSend),
+          body: toSend
         });
         if(!response.ok) {
           throw new Error(`Failed to update RV Site: ${response.status}`);
@@ -338,7 +346,11 @@ function EditRVSiteScreen() {
                     
                     <View style={styles.fieldItem}>
                         <Text style={styles.textRVSite}>How would you rate this RV site? </Text>
-                        <StarRating defaultRating={userRating} maxRating={5} onRatingChange={handleRatingChange} icon="star" emptyIcon="star-o"/>
+                        <StarRating 
+                          defaultRating={userRating} 
+                          maxRating={5} 
+                          onRatingChange={handleRatingChange} icon="star" 
+                          emptyIcon="star-o"/>
                     </View>
 
                     <View style={styles.fieldItem}>
@@ -570,6 +582,7 @@ function EditRVSiteScreen() {
     closeButtonText: {
       color: 'gray',
     },
+    
   });
       
   export default EditRVSiteScreen;
