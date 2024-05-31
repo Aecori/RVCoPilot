@@ -11,7 +11,6 @@ function RVSiteScreen () {
   const route = useRoute();
   const navigation = useNavigation();
   const { rvItem } = route.params || {};
-  console.log("Item on RV Screen", rvItem);
 
   const [siteData, setSiteData] = useState(rvItem);
 
@@ -28,6 +27,14 @@ function RVSiteScreen () {
   const goToEditRVSiteScreen = useCallback((rvItem) => {
     navigation.navigate('EditRVSiteScreen',{ rvItem: rvItem });
   },[navigation, siteData]);
+
+  // Update RV Site Screen after changes saved in EditRVSiteScreen
+
+  useEffect(() => {
+    if (route.params?.rvItem) {
+      setSiteData(rvItem);
+    }
+  }, [route.params?.rvItem]);
 
   // Fetch address to display with other backend provided RVSite fields
 
@@ -64,21 +71,17 @@ function RVSiteScreen () {
     const newDisplayedComments = Math.min(displayedComments + additionalComments, totalComments);
     setDisplayedComments(newDisplayedComments);
   };
-  
-
 
   // Manage Updates to Comments
 
   const [newComment, setNewComment] = useState({
     // TODO: Get UserName. 
-    Username: "Bob",
+    Username: "Anonymous",
     Comment: '',
     Rating: '',
   });
   
   const [commentView, setCommentView] = useState(false);
-
-  //TODO: useEffect to update if CommentChanges.
 
   const toggleAddCommentView = () => {
     setCommentView(!commentView);
@@ -134,9 +137,22 @@ function RVSiteScreen () {
       }
       const result = await response.json();
       console.log('Comment update successful:', result);
-      setSiteData(result);
-      setTotalComments(result.Comments.length);
-      setDisplayedComments(Math.min(displayedComments + 1, totalComments));
+
+      const updatedDataResponse = await fetch(`https://your-rv-copilot.uc.r.appspot.com/sites/${siteData.id}`, {
+        headers: {
+          Accept: 'application/json'
+        }
+      });
+
+      if (!updatedDataResponse.ok) {
+          throw new Error(`Failed to fetch updated RV Site data with new comment: ${updatedDataResponse.status}`);
+      }
+      const updatedSite = await updatedDataResponse.json();
+      console.log("Updated Site:", updatedSite);
+      setSiteData(updatedSite);
+      setTotalComments(updatedSite.Comments.length);
+      setDisplayedComments(Math.min(displayedComments + 1, updatedSite.Comments.length));
+
     } catch (error) {
       console.log('Error updating item with comment:', error);
     }
