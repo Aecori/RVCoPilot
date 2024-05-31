@@ -152,7 +152,6 @@ function RVSiteScreen () {
       setSiteData(updatedSite);
       setTotalComments(updatedSite.Comments.length);
       setDisplayedComments(Math.min(displayedComments + 1, updatedSite.Comments.length));
-
     } catch (error) {
       console.log('Error updating item with comment:', error);
     }
