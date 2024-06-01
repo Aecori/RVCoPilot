@@ -18,7 +18,7 @@ function RVSiteScreen () {
 
   const goToRVSiteListScreen = useCallback(() => {
     navigation.navigate('RVSiteListScreen');
-  },[navigation, siteData]);
+  },[navigation]);
 
   const goToHomeScreen = useCallback(() => {
       navigation.navigate('HomeScreen');
@@ -199,7 +199,7 @@ function RVSiteScreen () {
               <Text style={styles.textRVSite}>Water Access: {siteData.WaterAccess !== undefined ? (siteData.WaterAccess ? 'Yes' : 'No') : 'Data Not Available'}</Text>
             </View>
             <View style={styles.item}>
-              <Text style={styles.textRVSite}>Wifi Access: {siteData.WifiAccess !== undefined ? (siteData.WifeAccess ? 'Yes' : 'No') : 'Data Not Available'}</Text>
+              <Text style={styles.textRVSite}>Wifi Access: {siteData.WifiAccess !== undefined ? (siteData.WifiAccess ? 'Yes' : 'No') : 'Data Not Available'}</Text>
             </View>
 
             <View style={styles.item}>
