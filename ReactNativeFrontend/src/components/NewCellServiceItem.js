@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, Button, StyleSheet, TextInput, Switch } from 'react-native';
+import { Text, View, StyleSheet, Switch } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import SignalRating from './SignalRating.js';
 import Button2 from './Button2.js';

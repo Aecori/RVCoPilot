@@ -12,7 +12,7 @@ const RVSiteMapScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { siteData } = route.params || {};
-  const userName = "Unverified user";
+  const userName = "Anonymous";
 
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);

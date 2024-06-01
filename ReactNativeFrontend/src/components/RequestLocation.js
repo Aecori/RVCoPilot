@@ -1,6 +1,8 @@
 import Geolocation from '@react-native-community/geolocation';
 
 const RequestLocation = async (location, setLocation, setLocationError) => {
+
+    const defaultLocation = [38.890, -120.388];
     
     try {
         Geolocation.requestAuthorization();
@@ -12,12 +14,15 @@ const RequestLocation = async (location, setLocation, setLocationError) => {
             },
             error => {
                 console.error("Error getting location:", error);
+                console.log("Using default location");
+                setLocation(defaultLocation);
                 setLocationError(error.message);
             }
         );
     } catch (error) {
         console.error("Error requesting location authorization:", error);
         setLocationError(error.message);
+        setLocation(defaultLocation);
     }
 }
 

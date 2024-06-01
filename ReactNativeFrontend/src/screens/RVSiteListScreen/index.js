@@ -4,12 +4,27 @@ import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import sampleRVSiteData from '../../assets/data/sampleRVSiteData.js';
 import FixedButton from '../../components/FixedButton.js';
-import DistanceDropdown from '../../components/DistanceDropDown.js';
+import DistanceDropdown from '../../components/DistanceDropdown.js';
+import RequestLocation from '../../components/RequestLocation.js';
 
 const RVSiteListScreen = () => {
 
+  const [location, setLocation] = useState(null);
+  const [locationError, setLocationError] = useState(false);
+  const [region, setRegion] = useState({
+    latitude: 37.78825,
+    longitude: -122.4324,
+    latitudeDelta: 0.015,
+    longitudeDelta: 0.0121,
+  });
+  
+  useEffect(() => {
+    RequestLocation(location, setLocation, setLocationError);
+    console.log(location);
+  }, []);
+
   const navigation = useNavigation();
-  const userName = "Unverified user"
+  const userName = "Anonymous"
 
   const [screenState, setScreenState] = useState({
       siteData: null,
@@ -25,12 +40,20 @@ const RVSiteListScreen = () => {
 
   const handleDistanceChange = (value) => {
     setDistanceSelected(value);
-  }
+    //console.log("Distance selected", distanceSelected);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
+      
       try {
-        const response = await fetch('https://your-rv-copilot.uc.r.appspot.com/sites', {
+        let url = 'https://your-rv-copilot.uc.r.appspot.com/sites';
+      
+        // Search with latitude and longitude parameters if distance (distanceSelected) is specified
+        if (distanceSelected) {
+          url += `/latitude/${location[0]}/longitude/${location[1]}/distance/${distanceSelected}`;
+        }
+        const response = await fetch(url, {
           headers: {
             Accept: 'application/json',
           },
@@ -53,7 +76,7 @@ const RVSiteListScreen = () => {
       
     };
     fetchData();
-  }, []);
+  }, [distanceSelected]);
 
   const goToRVSiteScreen = useCallback((rvItem) => {
     navigation.navigate('RVSiteScreen', { rvItem, userName });
@@ -84,18 +107,30 @@ const RVSiteListScreen = () => {
           <FixedButton title="Return Home" onPress={goToHomeScreen}/>
 
       </View>
-  
-      <Text style={styles.title}>Nearby RV Sites</Text>  
-     
-      <View style={styles.container}>
-          {loading ? <ActivityIndicator color="#fff" /> : 
-            error ? <Text style={styles.errorMessage}>{error}</Text> :
-            <FlatList
-              data={siteData}
-              renderItem={renderItem}
-              keyExtractor={(item)=>`${item.id}`}
-        />}
+
+      <View style={{marginTop: 150}}>
+          <View style={styles.distanceAttributeContainer}>
+            <Text style={styles.title}>Nearby RV Sites</Text>  
+            
+            <DistanceDropdown
+              onSave={handleDistanceChange}/>
+          
+          </View>
+          
+        
+          <View style={styles.container}>
+              {loading ? <ActivityIndicator color="#fff" /> : 
+                error ? <Text style={styles.errorMessage}>{error}</Text> :
+                <FlatList
+                  data={siteData}
+                  renderItem={renderItem}
+                  keyExtractor={(item)=>`${item.id}`}
+            />}
+          </View>
+
       </View>
+  
+      
     </View>
     
   );
@@ -154,7 +189,7 @@ const styles = StyleSheet.create({
   container: {
     boxSizing: 'border-box',
     width: '90%',
-    aspectRatio: 0.7,
+    aspectRatio: .6,
     alignItems: 'center',
     left: 0,
     right: 0,
@@ -177,6 +212,12 @@ const styles = StyleSheet.create({
     color: 'red',
     textAlign: 'center',
     marginTop: 20,
-  }
+  },
+  distanceAttributeContainer: {
+    alignItems: 'center',
+    marginVertical: 10,
+    maxWidth: '100%',
+  },
+  
 });
 export default RVSiteListScreen;

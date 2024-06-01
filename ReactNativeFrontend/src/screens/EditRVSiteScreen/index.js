@@ -88,7 +88,7 @@ function EditRVSiteScreen() {
           ...(prevData.Comments || []), {
             comment: newComment,
           //TODO: User name needs to be filled in
-          Username: "A User Name", 
+          Username: "anonymous", 
           Rating: userRating,
           }]
         })
@@ -167,15 +167,6 @@ function EditRVSiteScreen() {
 
   const handleSaveChanges = () => {
 
-    /*const siteDataToSend = {
-        // Non editable and edited data to be sent to backend after user 'saves'
-        SiteName: rvSite.SiteName,
-        SiteRating: rvSite.SiteRating,
-        SiteLatitude: rvSite.SiteLatitude,
-        SiteLongitude: rvSite.SiteLongitude,
-        ...editedData
-    }*/
-
     const siteDataToSend = editedData;
 
     const handleConfirmUpdate = async () => {
@@ -198,6 +189,8 @@ function EditRVSiteScreen() {
         }
         const result = await response.json();
         console.log('Update successful:', result);
+        // Return to updated RV Site Screen after successful update
+        navigation.navigate('RVSiteScreen', { rvItem: result });
       } catch (error) {
         console.log('Error updating item:', error);
       }
