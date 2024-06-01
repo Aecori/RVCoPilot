@@ -136,7 +136,7 @@ const RVSiteListScreen = () => {
                   keyExtractor={(item)=>`${item.id}`}
             />}
           </View>
-          
+
       </View>
       
   
