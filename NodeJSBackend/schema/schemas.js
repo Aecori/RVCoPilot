@@ -1,9 +1,9 @@
 const Joi = require('joi');
 
 const commentSchema = Joi.object({
-    id: Joi.number().integer().required(),
+    id: Joi.number().integer(),
     Username: Joi.string().required(),
-    Comment: Joi.string().required(),
+    Comment: Joi.string().required().allow(''),
     Rating: Joi.number().integer().min(0).max(5).required(),
     Date: Joi.date().required()
 });
@@ -27,13 +27,13 @@ const siteSchema = Joi.object({
     CellService: Joi.array().items(cellphoneSchema),
     PetsAllowed: Joi.boolean().required(),
     Recreation: Joi.array().items(Joi.string()),
-    SiteRating: Joi.number().integer().min(0).max(5),
+    SiteRating: Joi.number().min(0).max(5),
     Comments: Joi.array().items(commentSchema)
 });
 
 const siteUpdateSchema = Joi.object({
     SiteName: Joi.string(),
-    SiteDescription: Joi.string(),
+    SiteDescription: Joi.string().allow(''),
     SiteLatitude: Joi.number().min(-90).max(90),
     SiteLongitude: Joi.number().min(-180).max(180),
     SiteType: Joi.string(),
@@ -42,7 +42,9 @@ const siteUpdateSchema = Joi.object({
     WifiAccess: Joi.boolean(),
     CellService: Joi.array().items(cellphoneSchema),
     PetsAllowed: Joi.boolean(),
-    Recreation: Joi.array().items(Joi.string())
+    Recreation: Joi.array().items(Joi.string()),
+    SiteRating: Joi.number().min(0).max(5),
+    Comments: Joi.array().items(commentSchema)
 });
 
 const userSchema = Joi.object({

@@ -13,6 +13,11 @@ app.use('/', require('./index'));
 // Error handling
 app.use(function(err, req, res, next) {
   if (err.name === 'No JWT' || err.name === 'UnauthorizedError') {
+    console.log(req.headers);
+    if (err.name === 'UnauthorizedError') {
+        console.log(err);
+          return res.status(401).json({'Error': 'Invalid or missing JWT because of UnauthorizedError.'});
+      }
       res.status(401).json({'Error': 'Invalid or missing JWT.'})
   } else {
       next(err);

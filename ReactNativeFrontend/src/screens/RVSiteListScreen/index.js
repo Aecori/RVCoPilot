@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+
 import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
+
 import PropTypes from 'prop-types';
 import sampleRVSiteData from '../../assets/data/sampleRVSiteData.js';
 import FixedButton from '../../components/FixedButton.js';
@@ -11,11 +13,13 @@ const RVSiteListScreen = () => {
 
   const route = useRoute();
   const navigation = useNavigation();
+
+
   const { distanceFromMapView } = route.params || {};
-  const { userName = "Anonymous"} = route.params || {};
+  const { username = "Anonymous"} = route.params || {};
   const { email } = route.params || {};
 
-  //console.log("This is userName:", userName,);
+  const userName = username;
 
   const [location, setLocation] = useState(null);
   const [locationError, setLocationError] = useState(false);

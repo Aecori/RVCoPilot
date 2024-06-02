@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
 router.use(bodyParser.json());
-const ds = require('./datastore');
+const ds = require('./datastore.js');
 const datastore = ds.datastore;
 const math = require('mathjs');
 const { PropertyFilter } = require('@google-cloud/datastore');
@@ -11,7 +11,7 @@ const USER = 'User';
 
 const { expressjwt: jwt } = require('express-jwt');
 const jwksRsa = require('jwks-rsa');
-const { DOMAIN } = require('./auth');
+const { DOMAIN } = require('./auth.js');
 
 /* ------------- Begin Users Middleware ------------- */
 const { authorizationHeaderExists } = require('./middleware/middleware.js');
@@ -58,9 +58,10 @@ function putSiteInUserList(user_id, site_id) {
 }
 
 function checkIfUserExists(user_id) {
-    const key = datastore.key([USER, parseInt(user_id, 10)]);
-    return datastore.get(key).then( (entity) => {
-        if (entity[0] === undefined) {
+    // Search for user with user_id (User_id is email address)
+    const q = datastore.createQuery(USER).filter('Username', '=', user_id);
+    return datastore.runQuery(q).then( (entities) => {
+        if (entities[0].length === 0) {
             return false;
         }
         return true;
@@ -68,13 +69,32 @@ function checkIfUserExists(user_id) {
 }
 
 function createNewUser(user_id) {
-    const key = datastore.key([USER, parseInt(user_id, 10)]);
+    const key = datastore.key(USER);
     const user = {
         id: key.id,
         "Username": user_id,
         "SavedSites": [],
         "Bio": ""
     };
+    return datastore.save({ "key": key, "data": user }).then( () => {
+        return user;
+    });
+}
+
+function updateUserBio(user_id, bio) {
+    const key = datastore.key([USER, parseInt(user_id, 10)]);
+    return datastore.get(key).then( (entity) => {
+        if (entity[0] === undefined) {
+            return null;
+        }
+        const user = {
+            id: entity[0].id,
+            Username: entity[0].Username,
+            SavedSites: entity[0].SavedSites,
+            Bio: bio
+        };
+        return datastore.save({ "key": key, "data": user });
+    });
 }
 
 router.get('/', authorizationHeaderExists, checkJwt, (req, res) => {
@@ -93,7 +113,7 @@ router.put('/', authorizationHeaderExists, checkJwt, (req, res) => {
     // Check if user exists
     checkIfUserExists(req.body.Username)
     .then( (exists) => {
-        if (exists) {
+        if (exists === true) {
             res.status(409).json({Error: "User already exists"});
             return;
         }
@@ -102,14 +122,40 @@ router.put('/', authorizationHeaderExists, checkJwt, (req, res) => {
     });
 });
 
-
 router.put('/sites/:site_id', authorizationHeaderExists, checkJwt, (req, res) => {
-    putSiteInUserList(req.body.Username, req.params.site_id)
-    .then( (result) => {
-        if (result === null) {
+    // Check if user exists
+    checkIfUserExists(req.body.Username).then( (exists) => {
+        if (exists === false) {
             res.status(404).json({Error: "No user with this user_id exists"});
             return;
         }
-        res.status(204).end();
+        putSiteInUserList(req.body.Username, req.params.site_id)
+        .then( (result) => {
+            if (result === null) {
+                res.status(404).json({Error: "No user with this user_id exists"});
+                return;
+            }
+            res.status(204).end();
+        });
     });
 });
+
+router.put('/bio', authorizationHeaderExists, checkJwt, (req, res) => {
+    // Check if user exists
+    checkIfUserExists(req.body.Username).then( (exists) => {
+        if (exists === false) {
+            res.status(404).json({Error: "No user with this user_id exists"});
+            return;
+        }
+        updateUserBio(req.body.Username, req.body.Bio)
+        .then( (result) => {
+            if (result === null) {
+                res.status(404).json({Error: "No user with this user_id exists"});
+                return;
+            }
+            res.status(204).end();
+        });
+    });
+});
+
+module.exports = router;
