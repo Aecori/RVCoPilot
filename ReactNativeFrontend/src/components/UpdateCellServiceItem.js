@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, View, Button, StyleSheet, TextInput, Switch } from 'react-native';
+import { Text, View, StyleSheet, Switch } from 'react-native';
 import SignalRating from './SignalRating.js';
 import Button2 from './Button2.js';
 

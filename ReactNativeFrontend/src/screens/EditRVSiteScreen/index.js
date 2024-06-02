@@ -3,7 +3,6 @@ import { Dimensions, View, Text, StyleSheet, Button, TouchableOpacity, TextInput
 import { useRoute, useNavigation} from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FixedButton from '../../components/FixedButton.js';
-import StarRating from '../../components/StarRating.js';
 import YesNoButtons from '../../components/YesNoButtons.js';
 import CellServiceDataList from '../../components/CellServiceDataList.js';
 import NewCellServiceItem from '../../components/NewCellServiceItem.js';
@@ -41,11 +40,9 @@ function EditRVSiteScreen() {
     PetsAllowed: false,
     Recreation: [],
     SiteRating: 0,
-    Comments: []
+    Comments: rvSite.Comments
   });
 
-  const [newComment, setNewComment] = useState('');
-  const [userRating, setUserRating] = useState(0);
   const [recreationItem, setRecreationItem] = useState('');
   const [cellServiceView, setCellServiceView] = useState(null);
   const [newCellServiceView, setNewCellServiceView] = useState(false);
@@ -55,6 +52,8 @@ function EditRVSiteScreen() {
       setEditedData(rvSite);
     }
   }, [rvSite]);
+
+  // Update functions related to cell service attribute
 
   const handleCellularDataChange = (index, newCellularData) => {
     const updatedCellService = [...editedData.CellService];
@@ -69,36 +68,7 @@ function EditRVSiteScreen() {
   const toggleNewCellServiceView =() => {
     setNewCellServiceView(!newCellServiceView);
   }
-
-  const handleRatingChange= (value) => {
-    setUserRating(value);
-  }
-
-  const saveComments = () => {
-    // Ensure no new comments added if no comment or rating information provided by user
-    if (newComment === '' && userRating === 0) {
-      handleSaveChanges();
-    }
-
-    else {
-      setEditedData(prevData => ({
-        ...prevData,
-        Comments: [
-          // check if comments initialized properly
-          ...(prevData.Comments || []), {
-            comment: newComment,
-          //TODO: User name needs to be filled in
-          Username: "anonymous", 
-          Rating: userRating,
-          }]
-        })
-      );
-      //console.log("Saved comments",editedData)
-      setNewComment('');
-      handleSaveChanges();
-    }
-    
-  }
+  
   const saveNewCarrier = (newCellServiceItem) => {
     if (newCellServiceItem.Carrier === '') {
       toggleNewCellServiceView(false);
@@ -123,6 +93,8 @@ function EditRVSiteScreen() {
     }));
     toggleCellServiceView(false);
   }
+
+  // Update functions related to recreation attribute
 
   const addRecreationItem = () => {
     if (recreationItem == '') {
@@ -210,9 +182,7 @@ function EditRVSiteScreen() {
           },
         }],
         {cancelable: false}
-    ); 
-
-    
+    );  
   }; 
 
   return (
@@ -220,8 +190,8 @@ function EditRVSiteScreen() {
 
         <View style={styles.buttonContainer}>
         
-              <FixedButton title="Back to Site" onPress={goToRVSiteScreen}/>
-              <FixedButton title="Return Home" onPress={goToHomeScreen}/>
+            <FixedButton title="Back to Site" onPress={goToRVSiteScreen}/>
+            <FixedButton title="Return Home" onPress={goToHomeScreen}/>
 
         </View>
 
@@ -324,29 +294,6 @@ function EditRVSiteScreen() {
                     </View>
 
                     <View style={styles.fieldItem}>
-                        <Text style={styles.textRVSite}>Comments:</Text>
-                        <View style={[styles.inputWrapper]}>
-                          <TextInput
-                              placeholder="Additional Comments Here!"
-                              style={{color: '#333333', width: 280}}
-                              value={newComment}
-                              maxLength={200}
-                              multiline= {true}
-                              onChangeText={text => setNewComment(text)} 
-                          />
-                        </View>
-                    </View>
-                    
-                    <View style={styles.fieldItem}>
-                        <Text style={styles.textRVSite}>How would you rate this RV site? </Text>
-                        <StarRating 
-                          defaultRating={userRating} 
-                          maxRating={5} 
-                          onRatingChange={handleRatingChange} icon="star" 
-                          emptyIcon="star-o"/>
-                    </View>
-
-                    <View style={styles.fieldItem}>
                       <Text style={styles.textRVSite}>Recreational activities:</Text>
 
                       <View style={styles.recreationInputWrapper}>
@@ -386,7 +333,7 @@ function EditRVSiteScreen() {
                         scrollEnabled={false}
                       />         
                     </View>
-                    <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+                    {/*<View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
                         <TouchableOpacity>
                             <Text
                               marginTop={40}
@@ -396,7 +343,7 @@ function EditRVSiteScreen() {
                               onPress = { () => {}} 
                             >Delete Site</Text>
                           </TouchableOpacity>
-                    </View>       
+                    </View> */}     
                 </ScrollView>    
             
           </View>
@@ -411,7 +358,7 @@ function EditRVSiteScreen() {
               borderRadius={10}
               color='#081516'
               title="Save Changes" 
-              onPress = { () => {saveComments();}} 
+              onPress = { () => {handleSaveChanges();}} 
             />
           </View>
 

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+
+import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
+
 import PropTypes from 'prop-types';
 import sampleRVSiteData from '../../assets/data/sampleRVSiteData.js';
 import FixedButton from '../../components/FixedButton.js';
@@ -9,31 +11,23 @@ import RequestLocation from '../../components/RequestLocation.js';
 
 const RVSiteListScreen = () => {
 
+  const route = useRoute();
+  const navigation = useNavigation();
+
+  const {userName} = route.params;
+
+  const { distanceFromMapView } = route.params || {};
+
+
   const [location, setLocation] = useState(null);
   const [locationError, setLocationError] = useState(false);
-  const [region, setRegion] = useState({
-    latitude: 37.78825,
-    longitude: -122.4324,
-    latitudeDelta: 0.015,
-    longitudeDelta: 0.0121,
-  });
-  
-  useEffect(() => {
-    RequestLocation(location, setLocation, setLocationError);
-    console.log(location);
-  }, []);
-
-  const navigation = useNavigation();
-  const route = useRoute();
-  const {userName, email} = route.params;
-
+  const [loadingLocation, setLoadingLocation] = useState(true);
   const [screenState, setScreenState] = useState({
       siteData: null,
       loading: true,
       error: null,
     }
   )
-
   const { siteData, loading, error } = screenState;
 
   //Distance dropdown state
@@ -41,8 +35,11 @@ const RVSiteListScreen = () => {
 
   const handleDistanceChange = (value) => {
     setDistanceSelected(value);
-    //console.log("Distance selected", distanceSelected);
   };
+  
+  useEffect(() => {
+    RequestLocation(setLocation, setLocationError, setLoadingLocation);
+  }, [distanceSelected]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -69,18 +66,40 @@ const RVSiteListScreen = () => {
         } else {
           throw new Error('Response format not JSON');
         }
-
       } catch (error) {
         console.log("Error logging site JSON, using default sample RV data");
         setScreenState({ siteData: sampleRVSiteData, loading: false, error: error.message });
       }
-      
     };
     fetchData();
   }, [distanceSelected]);
 
-  const goToRVSiteScreen = useCallback((rvItem) => {
-    navigation.navigate('RVSiteScreen', { rvItem, userName });
+
+  // Function to fetch RV item details by id - pass up to date RV site information to RV site Screen view
+  const fetchRVSiteDetails = async (rvItemId) => {
+    try {
+      const response = await fetch(`https://your-rv-copilot.uc.r.appspot.com/sites/${rvItemId}`);
+      if (!response.ok) {
+        throw new Error(`Failed to load RV Site Data: ${response.status}`);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error fetching RV site details:", error);
+      return null;
+    }
+  };
+
+  // Navigation functions to other screens
+
+  const goToRVSiteScreen = useCallback(async (rvItem) => {
+    const rvItemDetails = await fetchRVSiteDetails(rvItem.id);
+    if (rvItemDetails) {
+      navigation.navigate('RVSiteScreen', { rvItem: rvItemDetails, userName });
+    } else {
+      console.log("Unable to navigate to RV Site Details Page");
+    }
+    //navigation.navigate('RVSiteScreen', { rvItem, userName });
   }, [navigation]);
 
   const goToHomeScreen = useCallback(() => {
@@ -91,6 +110,8 @@ const RVSiteListScreen = () => {
     navigation.navigate('MapScreen', { siteData, userName });
   }, [navigation, siteData]);
 
+  // Render items for FlatList of RV Sites
+
   const renderItem = useCallback(({ item }) => (
     <RVSiteItem 
       rvItem={item}
@@ -98,6 +119,7 @@ const RVSiteListScreen = () => {
       goToRVSiteScreen={goToRVSiteScreen}
        />
   ), [goToRVSiteScreen, siteData]);
+  
   
   return (
     <View style={styles.screenview}>
@@ -109,15 +131,19 @@ const RVSiteListScreen = () => {
 
       </View>
 
-      <View style={{marginTop: 150}}>
+      <View style={styles.contentContainer}>
           <View style={styles.distanceAttributeContainer}>
             <Text style={styles.title}>Nearby RV Sites</Text>  
             
             <DistanceDropdown
               onSave={handleDistanceChange}/>
-          
+
+              {locationError && (
+                <Text
+                  style={{color:'black', fontSize: 14}}>*(Unable to get current location, using default coordinates)</Text>
+              )}
+
           </View>
-          
         
           <View style={styles.container}>
               {loading ? <ActivityIndicator color="#fff" /> : 
@@ -125,13 +151,12 @@ const RVSiteListScreen = () => {
                 <FlatList
                   data={siteData}
                   renderItem={renderItem}
-                  keyExtractor={(item)=>`${item.id}`}
+                  //keyExtractor={(item)=>`${item.id}`}  // ?causing warning for possibly not unique id/flatlist
+                  keyExtractor={(item)=> item.id.toString()}
             />}
           </View>
 
-      </View>
-  
-      
+      </View>    
     </View>
     
   );
@@ -150,7 +175,6 @@ RVSiteItem.propTypes = {
   rvItem: PropTypes.object.isRequired,
   goToRVSiteScreen: PropTypes.func.isRequired,
 }
-
 
 const styles = StyleSheet.create({
   screenview: { 
@@ -181,16 +205,24 @@ const styles = StyleSheet.create({
     marginVertical: 6,
     marginHorizontal: 6,
     borderRadius: 5,
+    width: '100%'
   },
   textRVSite: {
     textAlign: 'center',
     color:'#97AFA9',
     fontSize: 20
   },
+  contentContainer: {
+    marginTop: 60,
+    flex: 1,
+    width: '100%',
+    alignItems: 'center',
+    maxHeight: '90%'
+  },
   container: {
+    flex: 1,
     boxSizing: 'border-box',
     width: '90%',
-    aspectRatio: .6,
     alignItems: 'center',
     left: 0,
     right: 0,
@@ -198,7 +230,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     padding: 5,
     paddingTop: 20,
-    background: '#D9D9D9',
     borderWidth: 2,
     borderColor: '#F6F5E4',
     boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
@@ -219,6 +250,6 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     maxWidth: '100%',
   },
-  
 });
+
 export default RVSiteListScreen;
