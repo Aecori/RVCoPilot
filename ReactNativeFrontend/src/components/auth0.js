@@ -11,7 +11,33 @@ const handleAuthLogin = async (navigation) => {
             audience: 'https://dev-zifkiob8dukhcy86.us.auth0.com/userinfo',
         });
         console.log(credentials);
-        // Store the credentials - maybe?  
+        const accessToken = credentials.accessToken;
+        // Fetch user profile
+        const userInfo = await auth0.auth.userInfo({ token: accessToken });
+        console.log(userInfo.nickname);
+
+        // Extract the username from the user profile and set it in state
+        const username = userInfo.nickname; // or userInfo.givenName or userInfo.name
+        const email = userInfo.email;
+        //setUsername(username);
+        //setEmail(email);
+
+        //  PUT request 
+        const response = await fetch('https://your-rv-copilot.uc.r.appspot.com/user/', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            },
+            body: JSON.stringify({
+                username: username,
+                email: email
+            })
+        });
+        
+        const responseData = await response.json();
+        console.log(responseData);
+
         // Navigate to the homescreen/RV List
         navigation.navigate('RVSiteListScreen');
     } catch (error) {
