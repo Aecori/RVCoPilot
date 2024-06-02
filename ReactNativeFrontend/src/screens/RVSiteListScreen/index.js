@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
-import { useRoute, useNavigation } from '@react-navigation/native';
+import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import sampleRVSiteData from '../../assets/data/sampleRVSiteData.js';
 import FixedButton from '../../components/FixedButton.js';
@@ -11,15 +11,31 @@ const RVSiteListScreen = () => {
 
   const route = useRoute();
   const navigation = useNavigation();
-  const { distanceFromMapView } = route.params || {};
+  const { distanceFromMapView, refresh } = route.params || {};
+
 
   const [location, setLocation] = useState(null);
   const [locationError, setLocationError] = useState(false);
   const [loadingLocation, setLoadingLocation] = useState(true);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const unsubscribe = navigation.addListener('focus', () => {
+        if (refresh) {
+          fetchData();
+        }
+      });
+      return unsubscribe;
+    }, [navigation, refresh])
+  );
   
   useEffect(() => {
     RequestLocation(setLocation, setLocationError, setLoadingLocation);
     console.log("Current location",location);
+  }, [distanceSelected]);
+
+  useEffect(()=> {
+    fetchData();
   }, [distanceSelected]);
  
   const userName = "Anonymous"
@@ -44,38 +60,38 @@ const RVSiteListScreen = () => {
     //console.log("SiteData",screenState.siteData);
   }, [siteData]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      
-      try {
-        let url = 'https://your-rv-copilot.uc.r.appspot.com/sites';
-      
-        // Search with latitude and longitude parameters if distance (distanceSelected) is specified
-        if (distanceSelected) {
-          url += `/latitude/${location[0]}/longitude/${location[1]}/distance/${distanceSelected}`;
-        }
-        const response = await fetch(url, {
-          headers: {
-            Accept: 'application/json',
-          },
-        });
-        if (!response.ok) {
-          throw new Error(`Failed to load RV Site Data: ${response.status}`);
-        }
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-          const data = await response.json();
-          setScreenState({ siteData: data, loading: false, error: null });
-        } else {
-          throw new Error('Response format not JSON');
-        }
-      } catch (error) {
-        console.log("Error logging site JSON, using default sample RV data");
-        setScreenState({ siteData: sampleRVSiteData, loading: false, error: error.message });
+
+  const fetchData = async () => {
+    
+    try {
+      let url = 'https://your-rv-copilot.uc.r.appspot.com/sites';
+    
+      // Search with latitude and longitude parameters if distance (distanceSelected) is specified
+      if (distanceSelected) {
+        url += `/latitude/${location[0]}/longitude/${location[1]}/distance/${distanceSelected}`;
       }
-    };
+      const response = await fetch(url, {
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to load RV Site Data: ${response.status}`);
+      }
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const data = await response.json();
+        setScreenState({ siteData: data, loading: false, error: null });
+      } else {
+        throw new Error('Response format not JSON');
+      }
+    } catch (error) {
+      console.log("Error logging site JSON, using default sample RV data");
+      setScreenState({ siteData: sampleRVSiteData, loading: false, error: error.message });
+    }
+  };
     fetchData();
-  }, [distanceSelected]);
+
 
   // Navigation functions to other screens
 
@@ -133,7 +149,8 @@ const RVSiteListScreen = () => {
                 <FlatList
                   data={siteData}
                   renderItem={renderItem}
-                  keyExtractor={(item)=>`${item.id}`}
+                  //keyExtractor={(item)=>`${item.id}`}  // ?causing warning for possibly not unique id/flatlist
+                  keyExtractor={(item)=> item.id.toString()}
             />}
           </View>
 

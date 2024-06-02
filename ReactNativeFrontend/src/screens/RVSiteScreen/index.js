@@ -17,7 +17,7 @@ function RVSiteScreen () {
   // User interactive screen navigation functions
 
   const goToRVSiteListScreen = useCallback(() => {
-    navigation.navigate('RVSiteListScreen');
+    navigation.navigate('RVSiteListScreen', { refresh: true });
   },[navigation]);
 
   const goToHomeScreen = useCallback(() => {
