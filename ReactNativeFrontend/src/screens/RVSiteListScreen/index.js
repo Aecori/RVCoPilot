@@ -12,7 +12,10 @@ const RVSiteListScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { distanceFromMapView } = route.params || {};
-  const { userName } = route.params || "Anonymous";
+  const { userName = "Anonymous"} = route.params || {};
+  const { accessToken = '' } = route.params || {};
+
+  console.log("This is userName, this is accessToken", userName, accessToken);
 
   const [location, setLocation] = useState(null);
   const [locationError, setLocationError] = useState(false);
@@ -90,7 +93,7 @@ const RVSiteListScreen = () => {
   const goToRVSiteScreen = useCallback(async (rvItem) => {
     const rvItemDetails = await fetchRVSiteDetails(rvItem.id);
     if (rvItemDetails) {
-      navigation.navigate('RVSiteScreen', { rvItem: rvItemDetails, userName });
+      navigation.navigate('RVSiteScreen', { rvItem: rvItemDetails, userName, accessToken });
     } else {
       console.log("Unable to navigate to RV Site Details Page");
     }
@@ -102,7 +105,7 @@ const RVSiteListScreen = () => {
   }, [navigation]);
 
   const goToMapScreen = useCallback(() => {
-    navigation.navigate('MapScreen', { siteData, userName });
+    navigation.navigate('MapScreen', { siteData, userName, accessToken });
   }, [navigation, siteData]);
 
   // Render items for FlatList of RV Sites
