@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import sampleRVSiteData from '../../assets/data/sampleRVSiteData.js';
 import FixedButton from '../../components/FixedButton.js';
@@ -24,7 +24,8 @@ const RVSiteListScreen = () => {
   }, []);
 
   const navigation = useNavigation();
-  const userName = "Anonymous"
+  const route = useRoute();
+  const {userName, email} = route.params;
 
   const [screenState, setScreenState] = useState({
       siteData: null,
