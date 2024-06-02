@@ -5,7 +5,7 @@ import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import FixedButton from '../../components/FixedButton.js';
 import RequestLocation from '../../components/RequestLocation.js';
 import RequestAddress from '../../components/RequestAddress.js';
-import DistanceDropdown from '../../components/DistanceDropdown.js';
+import DistanceDropdown from '../../components/DistanceDropDown.js';
 
 const RVSiteMapScreen = () => {
 

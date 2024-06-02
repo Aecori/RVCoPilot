@@ -12,8 +12,7 @@ const RequestAddress = async (latitude, longitude) => {
   
       if (data.status === 'OK') {
         const address = data.results[0].formatted_address;
-        console.log('Reverse Geocoding Result:', address);
-        console.log("Address",address);
+        //console.log('Reverse Geocoding Result:', address);
         return address;
         
       } else {
