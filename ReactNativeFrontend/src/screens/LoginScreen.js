@@ -1,19 +1,20 @@
 import React from 'react';
-import { View, Text, TextInput, Alert, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Alert, StyleSheet, Image, TouchableOpacity, useState } from 'react-native';
 
 import { useAuth0, Auth0Provider } from 'react-native-auth0';
 
 import handleAuthLogin from '../components/auth0';
 
-import google from '../assets/google.svg';
 import register from '../assets/register.png';
 import MyButton from '../components/button1';
 import { ScrollView } from 'react-native-gesture-handler';
 
 const LoginScreen = ({ navigation }) => {
 
-    const [username, setUsername] = React.useState('');
-    const [password, setPassword] = React.useState('');
+    // const [username, setUsername] = React.useState('');
+    const [password, setPassword] = React.useState(null);
+    const [username, setUsername] = React.useState(null);
+    const [email, setEmail] = React.useState(null);
 
     const handleLogin = () => {
         // Logic for handling login
@@ -61,7 +62,7 @@ const LoginScreen = ({ navigation }) => {
                     keyboardType='default'
                 />        
                 <MyButton title="Login and go see RV sites" onPress={handleLogin} />
-                <MyButton title="Login with Auth0" onPress={() => handleAuthLogin(navigation)} />
+                <MyButton title="Login with Auth0" onPress={() => handleAuthLogin(navigation, username, email)} />
                 {/* Button to navigate to CreateAccount screen */}
                 <TouchableOpacity onPress={() => navigation.navigate('CreateAccountScreen')}>
                     <Text style={{color: '#007bff'}}>New user? Create account</Text>

@@ -4,7 +4,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import sampleRVSiteData from '../../assets/data/sampleRVSiteData.js';
 import FixedButton from '../../components/FixedButton.js';
-import DistanceDropdown from '../../components/DistanceDropdown.js';
+import DistanceDropdown from '../../components/DistanceDropDown.js';
 import RequestLocation from '../../components/RequestLocation.js';
 
 const RVSiteListScreen = () => {
