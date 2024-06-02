@@ -75,9 +75,8 @@ async function getFenceSites(req){
     } else if (req.params.latitude < -90 || req.params.latitude > 90 || req.params.longitude < -180 || req.params.longitude > 180) {
         return Promise.reject('Latitude must be between -90 and 90, and longitude must be between -180 and 180');
     }
-
-    // TODO: May have to migrate to Firestore because geospatial queries require
-    // the ability to use multiple filters on the same field
+    
+    // Calculate the geofence and query the datastore
     const fence = calculateFence(req.params.latitude, req.params.longitude);
     const query = datastore.createQuery(SITE)
     .filter('SiteLongitude', '>=', fence.lonMin)
@@ -194,7 +193,7 @@ async function updateSite(req, results) {
         } else {
             updated_site.SiteType = entity[0].SiteType;
         }
-        
+
         if(req.body.hasOwnProperty('RVElectricAccess')) {
             updated_site.RVElectricAccess = req.body.RVElectricAccess;
         } else {
@@ -233,8 +232,6 @@ async function updateSite(req, results) {
         updated_site.SiteRating = entity[0].SiteRating;
         updated_site.Comments = entity[0].Comments;
         
-        console.log(updated_site["WifiAccess"]);
-        console.log(req.body["WifiAccess"]);
         // Validate the updated site schema
         const { error, value } = siteUpdateSchema.validate(updated_site);
         if(error) {
@@ -258,12 +255,12 @@ async function postComment(req){
         const site = entity[0];
         const new_comment_key = datastore.key(COMMENT);
         let new_comment = {
-            "id": new_comment_key.id,
             "Username": req.body.Username,
             "Comment": req.body.Comment, 
             "Rating": req.body.Rating,
             "Date": new Date()
         }
+        console.log(new_comment);
         const { error, value } = commentSchema.validate(new_comment);
         if(error) {
             return Promise.reject("Invalid comment data");
@@ -275,8 +272,11 @@ async function postComment(req){
             total += site.Comments[i].Rating;
         }
         site.SiteRating = math.round(total / site.Comments.length, 2);
-        return datastore.update({"key":key, "data":site}).then(() => {
-            return datastore.save({"key":new_comment_key, "data":new_comment}).then(() => {
+
+        // Post the new comment as a comment
+        return datastore.save({"key":new_comment_key, "data":new_comment}).then(() => {
+            new_comment.id = new_comment_key.id;
+            return datastore.update({"key":key, "data":site}).then(() => {
                 return site;
             });
         });
@@ -286,6 +286,35 @@ async function postComment(req){
 async function deleteSite(req){
     const key = datastore.key([SITE, parseInt(req.params.id,10)]);
     return datastore.delete(key);
+}
+
+async function deleteComment(siteID, commentID, username) {
+    const siteKey = datastore.key([SITE, parseInt(siteID, 10)]);
+    const commentKey = datastore.key([SITE, siteKey, COMMENT, parseInt(commentID, 10)]);
+    const [comment] = await datastore.get(commentKey);
+    if (comment === undefined) {
+        return false;
+    }
+    // Get site to update comment count and recalculate average rating
+    const site = await datastore.get(siteKey);
+    let newRating = 0;
+    // Check if username is the same as the one who posted the comment
+    if (comment[0].Username !== username) {
+        return false;
+    }
+    for (let i = 0; i < site[0].Comments.length; i++) {
+        if (site[0].Comments[i].id === parseInt(commentID, 10) && site[0].Comments[i].Username === username) {
+            site[0].Comments.splice(i, 1);
+            continue;
+        }
+        newRating += site[0].Comments[i].Rating;
+    }
+    // Round to 2 decimal places
+    newRating = math.round(newRating / site[0].Comments.length, 2);
+    site[0].AverageRating = newRating;
+    await datastore.save({ "key": siteKey, "data": site[0] });
+    await datastore.delete(commentKey);
+    return true;
 }
 
 /* ------------- Begin Controller Functions ------------- */
@@ -354,7 +383,7 @@ router.post('/', (req, res) => {
 });
 
 router.post('/:id/comments', (req, res) => {
-    postComment(req, results).then( (updated_site) => {
+    postComment(req).then( (updated_site) => {
         res.status(200).json(updated_site);
     })
     .catch( (error) => {
@@ -400,6 +429,25 @@ router.delete('/:id', (req, res) => {
         });
     });
 })
+
+router.delete('/:siteID/comments/:commentID', async (req, res) => {
+    const siteID = req.params.siteID;
+    const commentID = req.params.commentID;
+    const username = req.body.Username;
+    if (!username) {
+        res.status(400).json({ Error: "Username is required" });
+        return;
+    } else if (!siteID || !commentID || isNaN(siteID) || isNaN(commentID)) {
+        res.status(400).json({ Error: "Site ID or Comment ID missing/incorrect" });
+        return;
+    }
+    const deleted = await deleteComment(siteID, commentID, username);
+    if (deleted) {
+        res.status(204).end();
+    } else {
+        res.status(404).json({ Error: "No comment with this comment_id exists" });
+    }
+});
 
 /* ------------- End Controller Functions ------------- */
 
