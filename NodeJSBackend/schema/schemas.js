@@ -1,7 +1,7 @@
 const Joi = require('joi');
 
 const commentSchema = Joi.object({
-    id: Joi.number().integer().required(),
+    id: Joi.number().integer(),
     Username: Joi.string().required(),
     Comment: Joi.string().required().allow(''),
     Rating: Joi.number().integer().min(0).max(5).required(),
@@ -27,7 +27,7 @@ const siteSchema = Joi.object({
     CellService: Joi.array().items(cellphoneSchema),
     PetsAllowed: Joi.boolean().required(),
     Recreation: Joi.array().items(Joi.string()),
-    SiteRating: Joi.number().integer().min(0).max(5),
+    SiteRating: Joi.number().min(0).max(5),
     Comments: Joi.array().items(commentSchema)
 });
 
@@ -43,7 +43,7 @@ const siteUpdateSchema = Joi.object({
     CellService: Joi.array().items(cellphoneSchema),
     PetsAllowed: Joi.boolean(),
     Recreation: Joi.array().items(Joi.string()),
-    SiteRating: Joi.number().integer().min(0).max(5),
+    SiteRating: Joi.number().min(0).max(5),
     Comments: Joi.array().items(commentSchema)
 });
 
