@@ -64,7 +64,7 @@ const NewCellServiceItem = ({ editedData, onSave }) => {
               onBlur={() => setIsFocus(false)}
             onChange={item=>{
               handleInputChange("Carrier",item.value);
-            setIsFocus(false);
+              setIsFocus(false);
           }}/>
           
       </View>

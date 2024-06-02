@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TextInput } from 'react-native';
 import StarRating from './StarRating';
 import Button2 from './Button2';
 
@@ -10,7 +10,6 @@ const CommentModal = ({ isOpen, onRequestClose, initialComment, onSave}) => {
 
     const handleCommentChange = (value) => {
         setComment(value);
-          console.log("Comment", comment);
     }
 
     const handleRatingChange = (value) => {
@@ -94,18 +93,6 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         padding: 5,
 
-    },
-    carrierAttributeContainer: {
-      flex: 1,
-      marginVertical: 15,
-      flexDirection: "row",
-      alignItems: "center",
-    }, 
-    placeholderStyle: {
-      fontSize: 16,
-    },
-    selectedTextStyle: {
-      fontSize: 16,
     },
   });
   

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import sampleRVSiteData from '../../assets/data/sampleRVSiteData.js';
 import FixedButton from '../../components/FixedButton.js';
@@ -9,21 +9,19 @@ import RequestLocation from '../../components/RequestLocation.js';
 
 const RVSiteListScreen = () => {
 
+  const route = useRoute();
+  const navigation = useNavigation();
+  const { distanceFromMapView } = route.params || {};
+
   const [location, setLocation] = useState(null);
   const [locationError, setLocationError] = useState(false);
-  const [region, setRegion] = useState({
-    latitude: 37.78825,
-    longitude: -122.4324,
-    latitudeDelta: 0.015,
-    longitudeDelta: 0.0121,
-  });
+  const [loadingLocation, setLoadingLocation] = useState(true);
   
   useEffect(() => {
-    RequestLocation(location, setLocation, setLocationError);
-    console.log(location);
-  }, []);
-
-  const navigation = useNavigation();
+    RequestLocation(setLocation, setLocationError, setLoadingLocation);
+    console.log("Current location",location);
+  }, [distanceSelected]);
+ 
   const userName = "Anonymous"
 
   const [screenState, setScreenState] = useState({
@@ -40,8 +38,11 @@ const RVSiteListScreen = () => {
 
   const handleDistanceChange = (value) => {
     setDistanceSelected(value);
-    //console.log("Distance selected", distanceSelected);
   };
+
+  useEffect(()=>{
+    //console.log("SiteData",screenState.siteData);
+  }, [siteData]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,15 +69,15 @@ const RVSiteListScreen = () => {
         } else {
           throw new Error('Response format not JSON');
         }
-
       } catch (error) {
         console.log("Error logging site JSON, using default sample RV data");
         setScreenState({ siteData: sampleRVSiteData, loading: false, error: error.message });
       }
-      
     };
     fetchData();
   }, [distanceSelected]);
+
+  // Navigation functions to other screens
 
   const goToRVSiteScreen = useCallback((rvItem) => {
     navigation.navigate('RVSiteScreen', { rvItem, userName });
@@ -90,6 +91,8 @@ const RVSiteListScreen = () => {
     navigation.navigate('MapScreen', { siteData, userName });
   }, [navigation, siteData]);
 
+  // Render items for FlatList of RV Sites
+
   const renderItem = useCallback(({ item }) => (
     <RVSiteItem 
       rvItem={item}
@@ -97,6 +100,7 @@ const RVSiteListScreen = () => {
       goToRVSiteScreen={goToRVSiteScreen}
        />
   ), [goToRVSiteScreen, siteData]);
+  
   
   return (
     <View style={styles.screenview}>
@@ -108,12 +112,17 @@ const RVSiteListScreen = () => {
 
       </View>
 
-      <View style={{marginTop: 150}}>
+      <View style={styles.contentContainer}>
           <View style={styles.distanceAttributeContainer}>
             <Text style={styles.title}>Nearby RV Sites</Text>  
             
             <DistanceDropdown
               onSave={handleDistanceChange}/>
+
+            {locationError && (
+              <Text
+                style={{color:'black', fontSize: 14}}>*(Unable to get current location, using default coordinates)</Text>
+            )}
           
           </View>
           
@@ -129,6 +138,7 @@ const RVSiteListScreen = () => {
           </View>
 
       </View>
+      
   
       
     </View>
@@ -180,16 +190,24 @@ const styles = StyleSheet.create({
     marginVertical: 6,
     marginHorizontal: 6,
     borderRadius: 5,
+    width: '100%'
   },
   textRVSite: {
     textAlign: 'center',
     color:'#97AFA9',
     fontSize: 20
   },
+  contentContainer: {
+    marginTop: 60,
+    flex: 1,
+    width: '100%',
+    alignItems: 'center',
+    maxHeight: '90%'
+  },
   container: {
+    flex: 1,
     boxSizing: 'border-box',
     width: '90%',
-    aspectRatio: .6,
     alignItems: 'center',
     left: 0,
     right: 0,
@@ -197,7 +215,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     padding: 5,
     paddingTop: 20,
-    background: '#D9D9D9',
     borderWidth: 2,
     borderColor: '#F6F5E4',
     boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
@@ -218,6 +235,5 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     maxWidth: '100%',
   },
-  
 });
 export default RVSiteListScreen;

@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, TextInput, Switch } from 'react-native';
+import React, { useState } from 'react';
+import { Text, View, StyleSheet } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import Button2 from './Button2.js';
-
 
 const DistanceDropdown = ({onSave}) => {
 
@@ -31,12 +30,16 @@ const DistanceDropdown = ({onSave}) => {
           <Text style={styles.title}>Search By Distance (miles)</Text>
 
           <View style={styles.container}>
-          <View style={{alignItems: 'center', margin: 20}}>
-                  <Button2 title="Search" onPress={handleSave} />
-              </View>
+
+            <View style={{alignItems: 'center', marginHorizontal: 20, marginVertical: 5}}>
+              <Button2 title="Search" onPress={handleSave} />
+            </View>
               
             <Dropdown
               style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+              itemTextStyle={{color: 'black'}}
+              itemContainerStyle={{}}
+              selectedTextStyle={{color: '#F5F6E4', fontWeight: 'bold'}}
               data={distanceInMiles.map((item, index) => ({
                 label: item,
                 value: item,
@@ -50,22 +53,20 @@ const DistanceDropdown = ({onSave}) => {
               onBlur={() => setIsFocus(false)}
               onChange={item=>{
                 handleInputChange(item.value);
-              setIsFocus(false);
+                setIsFocus(false);
               }}/>   
 
           </View>
-
-        </View>
-        
+        </View> 
     )
 }
 
 const styles = StyleSheet.create({
     title: {
       textAlign: 'center',
-      fontSize: 20,
+      fontSize: 18,
       padding: 2,
-      marginTop: 5,
+      marginTop: 0,
       color: '#375D62',
       justifyContent: 'center',
     },
