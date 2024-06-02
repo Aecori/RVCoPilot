@@ -11,37 +11,18 @@ const RVSiteListScreen = () => {
 
   const route = useRoute();
   const navigation = useNavigation();
-  const { distanceFromMapView, refresh } = route.params || {};
+  const { distanceFromMapView } = route.params || {};
+  const { userName } = route.params || "Anonymous";
 
   const [location, setLocation] = useState(null);
   const [locationError, setLocationError] = useState(false);
   const [loadingLocation, setLoadingLocation] = useState(true);
-  
-  useEffect(() => {
-    RequestLocation(setLocation, setLocationError, setLoadingLocation);
-    //console.log("Current location",location);
-  }, [distanceSelected]);
-
-  useEffect(()=> {
-    fetchData();
-  }, []);
-
-  // Reload page every time navigated to - make sure any RV Site changes up to date
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-    }, [])
-  );
- 
-  const userName = "Anonymous"
-
   const [screenState, setScreenState] = useState({
       siteData: null,
       loading: true,
       error: null,
     }
   )
-
   const { siteData, loading, error } = screenState;
 
   //Distance dropdown state
@@ -50,42 +31,70 @@ const RVSiteListScreen = () => {
   const handleDistanceChange = (value) => {
     setDistanceSelected(value);
   };
+  
+  useEffect(() => {
+    RequestLocation(setLocation, setLocationError, setLoadingLocation);
+  }, [distanceSelected]);
 
-  const fetchData = async () => {
-    
-    try {
-      let url = 'https://your-rv-copilot.uc.r.appspot.com/sites';
-    
-      // Search with latitude and longitude parameters if distance (distanceSelected) is specified
-      if (distanceSelected) {
-        url += `/latitude/${location[0]}/longitude/${location[1]}/distance/${distanceSelected}`;
+  useEffect(() => {
+    const fetchData = async () => {
+      
+      try {
+        let url = 'https://your-rv-copilot.uc.r.appspot.com/sites';
+      
+        // Search with latitude and longitude parameters if distance (distanceSelected) is specified
+        if (distanceSelected) {
+          url += `/latitude/${location[0]}/longitude/${location[1]}/distance/${distanceSelected}`;
+        }
+        const response = await fetch(url, {
+          headers: {
+            Accept: 'application/json',
+          },
+        });
+        if (!response.ok) {
+          throw new Error(`Failed to load RV Site Data: ${response.status}`);
+        }
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const data = await response.json();
+          setScreenState({ siteData: data, loading: false, error: null });
+        } else {
+          throw new Error('Response format not JSON');
+        }
+      } catch (error) {
+        console.log("Error logging site JSON, using default sample RV data");
+        setScreenState({ siteData: sampleRVSiteData, loading: false, error: error.message });
       }
-      const response = await fetch(url, {
-        headers: {
-          Accept: 'application/json',
-        },
-      });
+    };
+    fetchData();
+  }, [distanceSelected]);
+
+
+  // Function to fetch RV item details by id - pass up to date RV site information to RV site Screen view
+  const fetchRVSiteDetails = async (rvItemId) => {
+    try {
+      const response = await fetch(`https://your-rv-copilot.uc.r.appspot.com/sites/${rvItemId}`);
       if (!response.ok) {
         throw new Error(`Failed to load RV Site Data: ${response.status}`);
       }
-      const contentType = response.headers.get('content-type');
-      if (contentType && contentType.includes('application/json')) {
-        const data = await response.json();
-        setScreenState({ siteData: data, loading: false, error: null });
-      } else {
-        throw new Error('Response format not JSON');
-      }
+      const data = await response.json();
+      return data;
     } catch (error) {
-      console.log("Error logging site JSON, using default sample RV data");
-      setScreenState({ siteData: sampleRVSiteData, loading: false, error: error.message });
+      console.error("Error fetching RV site details:", error);
+      return null;
     }
   };
 
-
   // Navigation functions to other screens
 
-  const goToRVSiteScreen = useCallback((rvItem) => {
-    navigation.navigate('RVSiteScreen', { rvItem, userName });
+  const goToRVSiteScreen = useCallback(async (rvItem) => {
+    const rvItemDetails = await fetchRVSiteDetails(rvItem.id);
+    if (rvItemDetails) {
+      navigation.navigate('RVSiteScreen', { rvItem: rvItemDetails, userName });
+    } else {
+      console.log("Unable to navigate to RV Site Details Page");
+    }
+    //navigation.navigate('RVSiteScreen', { rvItem, userName });
   }, [navigation]);
 
   const goToHomeScreen = useCallback(() => {
@@ -124,13 +133,12 @@ const RVSiteListScreen = () => {
             <DistanceDropdown
               onSave={handleDistanceChange}/>
 
-            {locationError && (
-              <Text
-                style={{color:'black', fontSize: 14}}>*(Unable to get current location, using default coordinates)</Text>
-            )}
-          
+              {locationError && (
+                <Text
+                  style={{color:'black', fontSize: 14}}>*(Unable to get current location, using default coordinates)</Text>
+              )}
+
           </View>
-          
         
           <View style={styles.container}>
               {loading ? <ActivityIndicator color="#fff" /> : 
@@ -238,4 +246,5 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
   },
 });
+
 export default RVSiteListScreen;
