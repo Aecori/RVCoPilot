@@ -11,15 +11,14 @@ function RVSiteScreen () {
   const route = useRoute();
   const navigation = useNavigation();
   const { rvItem } = route.params || {};
-  const { userName } = route.params || {};
-  const { accessToken } = route.params || {};
+  const { username: userName } = route.params || {};
 
   const [siteData, setSiteData] = useState(rvItem);
 
   // User interactive screen navigation functions
 
   const goToRVSiteListScreen = useCallback(() => {
-    navigation.navigate('RVSiteListScreen', userName, accessToken);
+    navigation.navigate('RVSiteListScreen', userName);
   },[navigation]);
 
   const goToHomeScreen = useCallback(() => {
@@ -27,7 +26,7 @@ function RVSiteScreen () {
     }, [navigation, siteData]);
 
   const goToEditRVSiteScreen = useCallback((rvItem) => {
-    navigation.navigate('EditRVSiteScreen',{ rvItem: rvItem, userName, accessToken });
+    navigation.navigate('EditRVSiteScreen',{ rvItem: rvItem, userName });
   },[navigation, siteData]);
 
   // Update RV Site Screen after changes saved in EditRVSiteScreen
@@ -130,7 +129,7 @@ function RVSiteScreen () {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}2`,
+          //'Authorization': `Bearer ${accessToken}`,
         }, 
         body: dataToSend,
       });

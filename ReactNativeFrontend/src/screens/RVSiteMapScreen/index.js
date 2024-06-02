@@ -13,7 +13,6 @@ const RVSiteMapScreen = () => {
   const navigation = useNavigation();
   const { siteData } = route.params || {};
   const { userName } = route.params || {};
-  const { accessToken } = route.params || {};
 
   const [screenState, setScreenState] = useState({
     siteDataMap: siteData || null,
@@ -124,7 +123,7 @@ const RVSiteMapScreen = () => {
 
    // Navigation functions to other screens
   const goToRVSiteScreen = (rvItem) => {
-    navigation.navigate('RVSiteScreen', { rvItem: rvItem, userName: userName, accessToken });
+    navigation.navigate('RVSiteScreen', { rvItem: rvItem, userName: userName });
   }
 
   const goToHomeScreen = () => {
@@ -132,7 +131,7 @@ const RVSiteMapScreen = () => {
   }
 
   const goToRVSiteListScreen = () => {
-    navigation.navigate('RVSiteListScreen', {distanceFromMapView: distanceSelected, userName, accessToken});
+    navigation.navigate('RVSiteListScreen', {distanceFromMapView: distanceSelected, userName });
   };
 
   const handleRequestLocation = () => {

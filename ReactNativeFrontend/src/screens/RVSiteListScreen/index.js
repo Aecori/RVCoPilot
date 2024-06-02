@@ -13,9 +13,9 @@ const RVSiteListScreen = () => {
   const navigation = useNavigation();
   const { distanceFromMapView } = route.params || {};
   const { userName = "Anonymous"} = route.params || {};
-  const { accessToken = '' } = route.params || {};
+  const { email } = route.params || {};
 
-  console.log("This is userName, this is accessToken", userName, accessToken);
+  //console.log("This is userName:", userName,);
 
   const [location, setLocation] = useState(null);
   const [locationError, setLocationError] = useState(false);
@@ -76,7 +76,11 @@ const RVSiteListScreen = () => {
   // Function to fetch RV item details by id - pass up to date RV site information to RV site Screen view
   const fetchRVSiteDetails = async (rvItemId) => {
     try {
-      const response = await fetch(`https://your-rv-copilot.uc.r.appspot.com/sites/${rvItemId}`);
+      const response = await fetch(`https://your-rv-copilot.uc.r.appspot.com/sites/${rvItemId}`, {
+        headers: {
+          Accept: 'application/json',
+        },
+      });
       if (!response.ok) {
         throw new Error(`Failed to load RV Site Data: ${response.status}`);
       }
@@ -93,7 +97,7 @@ const RVSiteListScreen = () => {
   const goToRVSiteScreen = useCallback(async (rvItem) => {
     const rvItemDetails = await fetchRVSiteDetails(rvItem.id);
     if (rvItemDetails) {
-      navigation.navigate('RVSiteScreen', { rvItem: rvItemDetails, userName, accessToken });
+      navigation.navigate('RVSiteScreen', { rvItem: rvItemDetails, userName });
     } else {
       console.log("Unable to navigate to RV Site Details Page");
     }
@@ -105,7 +109,7 @@ const RVSiteListScreen = () => {
   }, [navigation]);
 
   const goToMapScreen = useCallback(() => {
-    navigation.navigate('MapScreen', { siteData, userName, accessToken });
+    navigation.navigate('MapScreen', { siteData, userName });
   }, [navigation, siteData]);
 
   // Render items for FlatList of RV Sites

@@ -15,7 +15,6 @@ function EditRVSiteScreen() {
   const route = useRoute();
   const { rvItem } = route.params || {};
   const { userName } = route.params || {};
-  const { accessToken } = route.params || {};
 
   const rvSite = rvItem;
 
@@ -177,7 +176,7 @@ function EditRVSiteScreen() {
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`,
+            //'Authorization': `Bearer ${accessToken}`,
           }, 
           body: toSend
         });
@@ -187,7 +186,7 @@ function EditRVSiteScreen() {
         const result = await response.json();
         console.log('Update successful:', result);
         // Return to updated RV Site Screen after successful update
-        navigation.navigate('RVSiteScreen', { rvItem: result, userName, accessToken });
+        navigation.navigate('RVSiteScreen', { rvItem: result, userName });
       } catch (error) {
         console.log('Error updating item:', error);
       }
