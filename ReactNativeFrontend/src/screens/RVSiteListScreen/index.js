@@ -13,30 +13,25 @@ const RVSiteListScreen = () => {
   const navigation = useNavigation();
   const { distanceFromMapView, refresh } = route.params || {};
 
-
   const [location, setLocation] = useState(null);
   const [locationError, setLocationError] = useState(false);
   const [loadingLocation, setLoadingLocation] = useState(true);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      const unsubscribe = navigation.addListener('focus', () => {
-        if (refresh) {
-          fetchData();
-        }
-      });
-      return unsubscribe;
-    }, [navigation, refresh])
-  );
   
   useEffect(() => {
     RequestLocation(setLocation, setLocationError, setLoadingLocation);
-    console.log("Current location",location);
+    //console.log("Current location",location);
   }, [distanceSelected]);
 
   useEffect(()=> {
     fetchData();
-  }, [distanceSelected]);
+  }, []);
+
+  // Reload page every time navigated to - make sure any RV Site changes up to date
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [])
+  );
  
   const userName = "Anonymous"
 
@@ -55,11 +50,6 @@ const RVSiteListScreen = () => {
   const handleDistanceChange = (value) => {
     setDistanceSelected(value);
   };
-
-  useEffect(()=>{
-    //console.log("SiteData",screenState.siteData);
-  }, [siteData]);
-
 
   const fetchData = async () => {
     
@@ -90,7 +80,6 @@ const RVSiteListScreen = () => {
       setScreenState({ siteData: sampleRVSiteData, loading: false, error: error.message });
     }
   };
-    fetchData();
 
 
   // Navigation functions to other screens
@@ -154,10 +143,7 @@ const RVSiteListScreen = () => {
             />}
           </View>
 
-      </View>
-      
-  
-      
+      </View>    
     </View>
     
   );
@@ -176,7 +162,6 @@ RVSiteItem.propTypes = {
   rvItem: PropTypes.object.isRequired,
   goToRVSiteScreen: PropTypes.func.isRequired,
 }
-
 
 const styles = StyleSheet.create({
   screenview: { 
