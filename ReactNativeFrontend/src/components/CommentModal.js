@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Alert } from 'react-native';
 import StarRating from './StarRating';
 import Button2 from './Button2';
 
@@ -17,8 +17,17 @@ const CommentModal = ({ isOpen, onRequestClose, initialComment, onSave}) => {
     }
 
     const handleSaveComment = () => {
-        onSave(comment, rating);
-        onRequestClose;
+        if (comment && rating) {
+           onSave(comment, rating)
+        } else {
+            Alert.alert(
+                'Please include both rating and a comment to save changes', '',
+                [{text: 'Ok', onPress: () => {
+                }}, {text: "Leave without saving", onPress: () => {
+                    onRequestClose();
+                }}]
+            );
+        }
     }
 
     return (

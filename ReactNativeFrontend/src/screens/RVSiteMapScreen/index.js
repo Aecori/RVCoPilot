@@ -143,12 +143,12 @@ const RVSiteMapScreen = () => {
   }
   
   return (
-    <View style={styles.screenview}>
-           
+    <View style={styles.screenview}> 
+      
       <View style={styles.buttonContainer}>
           <FixedButton title="View as List" onPress={goToRVSiteListScreen}/>
           <FixedButton title="Return Home" onPress={goToHomeScreen}/>
-      </View>   
+      </View>
 
       <View style={styles.contentContainer}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
