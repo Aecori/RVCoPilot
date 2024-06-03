@@ -39,7 +39,7 @@ const handleAuthLogin = async (navigation) => {
         console.log(responseData);
 
         // Navigate to the homescreen/RV List
-        navigation.navigate('RVSiteListScreen', {userName: userInfo.nickname});
+        navigation.navigate('RVSiteListScreen', { username, email });
     } catch (error) {
         console.error(error);
         Alert.alert('Login failed', error.message);

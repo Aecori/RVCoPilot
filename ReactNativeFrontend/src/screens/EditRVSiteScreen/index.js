@@ -13,7 +13,8 @@ function EditRVSiteScreen() {
 
   const navigation = useNavigation();
   const route = useRoute();
-  const { rvItem } = route.params || {}; 
+  const { rvItem } = route.params || {};
+  const { userName } = route.params || {};
 
   const rvSite = rvItem;
 
@@ -40,7 +41,7 @@ function EditRVSiteScreen() {
     PetsAllowed: false,
     Recreation: [],
     SiteRating: 0,
-    Comments: rvSite.Comments
+    Comments: [],
   });
 
   const [recreationItem, setRecreationItem] = useState('');
@@ -130,6 +131,30 @@ function EditRVSiteScreen() {
     }));
   }
 
+  const deleteCommentItem = (index) => {
+    //TODO: Determine why updates not reflected when sorted to display by current user/why updates not saving/deleted comments.
+    Alert.alert(
+      'Are you sure you want to delete this comment?',
+      '',
+      [{text: 'Yes', onPress: () => {
+            console.log("Index to delete", index);
+            const updatedCommentList = [...editedData.Comments];
+            updatedCommentList.splice(index, 1);
+            console.log("Updated Comment List", updatedCommentList);
+            setEditedData(prevData => ({
+              ...prevData,
+              Comments: updatedCommentList
+            }));
+          }
+        },
+        {text: 'No', onPress: () => {
+            return;
+          },
+        }],
+        {cancelable: false}
+    );  
+  }
+
   const handleInputChange = (value, propertyName) => { 
     setEditedData(prevData => ({
       ...prevData,
@@ -142,17 +167,16 @@ function EditRVSiteScreen() {
     const siteDataToSend = editedData;
 
     const handleConfirmUpdate = async () => {
-      console.log("handle confirmed update to rv site");
 
       const toSend = JSON.stringify(siteDataToSend);
       console.log("SiteData TO Send;", toSend);
-      console.log("This is rvSite.id", rvSite.id);
       try {
         const response = await fetch(`https://your-rv-copilot.uc.r.appspot.com/sites/${rvSite.id}`, {
           method: 'PATCH',
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
+            //'Authorization': `Bearer ${accessToken}`,
           }, 
           body: toSend
         });
@@ -162,7 +186,7 @@ function EditRVSiteScreen() {
         const result = await response.json();
         console.log('Update successful:', result);
         // Return to updated RV Site Screen after successful update
-        navigation.navigate('RVSiteScreen', { rvItem: result });
+        navigation.navigate('RVSiteScreen', { rvItem: result, userName });
       } catch (error) {
         console.log('Error updating item:', error);
       }
@@ -333,17 +357,39 @@ function EditRVSiteScreen() {
                         scrollEnabled={false}
                       />         
                     </View>
-                    {/*<View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
-                        <TouchableOpacity>
-                            <Text
-                              marginTop={40}
-                              color='#899499'
-                              title="Delete Site"
-                              fontSize={8}
-                              onPress = { () => {}} 
-                            >Delete Site</Text>
-                          </TouchableOpacity>
-                    </View> */}     
+
+                    <View style={styles.fieldItem}>
+                      <Text style={styles.textRVSite}>Comments:</Text>
+
+                        <FlatList
+                          data={editedData.Comments}
+                          renderItem={({ item, index }) => (
+                            <View style={[{ flexDirection: 'row',  marginVertical: 10, padding: 5, alignItems: 'center'}]}>
+                              <View style={{flex:1}}>
+                                {Object.entries(item).map(([key, value]) => (
+                                  <View key={key} style={{ flexDirection: 'row' }}>
+                                    <Text style={[styles.textRVSiteComment, {  color: 'gray' }]}>
+                                      {`${key}: ${value}`}
+                                    </Text>
+                                  </View>
+                                ))}
+                              </View>
+            
+                              <TouchableOpacity
+                                onPress={() => deleteCommentItem(index)}>
+                                  <FontAwesome
+                                    name="times"
+                                    size={15}
+                                    style={[styles.deleteButtonX, {color:'gray'}]}
+                                  />
+                              </TouchableOpacity>
+                              
+                            </View>
+                          )}
+                          keyExtractor={(item, index) => index.toString()}
+                          scrollEnabled={false}
+                        />
+                    </View> 
                 </ScrollView>    
             
           </View>
@@ -417,6 +463,12 @@ function EditRVSiteScreen() {
       color:'#899499',
       fontSize: 16,
       padding: 5
+    },
+    textRVSiteComment: {
+      flex: 1,
+      color:'gray',
+      fontSize: 14,
+      padding: 1
     },
     deleteButtonX: {
       position: 'absolute',

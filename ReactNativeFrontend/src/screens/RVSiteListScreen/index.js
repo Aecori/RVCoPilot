@@ -14,10 +14,12 @@ const RVSiteListScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
 
-  const {userName} = route.params;
 
   const { distanceFromMapView } = route.params || {};
+  const { username = "Anonymous"} = route.params || {};
+  const { email } = route.params || {};
 
+  const userName = username;
 
   const [location, setLocation] = useState(null);
   const [locationError, setLocationError] = useState(false);
@@ -78,7 +80,11 @@ const RVSiteListScreen = () => {
   // Function to fetch RV item details by id - pass up to date RV site information to RV site Screen view
   const fetchRVSiteDetails = async (rvItemId) => {
     try {
-      const response = await fetch(`https://your-rv-copilot.uc.r.appspot.com/sites/${rvItemId}`);
+      const response = await fetch(`https://your-rv-copilot.uc.r.appspot.com/sites/${rvItemId}`, {
+        headers: {
+          Accept: 'application/json',
+        },
+      });
       if (!response.ok) {
         throw new Error(`Failed to load RV Site Data: ${response.status}`);
       }

@@ -12,14 +12,14 @@ const RVSiteMapScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { siteData } = route.params || {};
-  const userName = "Anonymous";
+  const { userName } = route.params || {};
 
   const [screenState, setScreenState] = useState({
     siteDataMap: siteData || null,
     loading: true,
     error: null,
     }
-  )
+  );
 
   const { siteDataMap, loading, error } = screenState;
 
@@ -61,7 +61,6 @@ const RVSiteMapScreen = () => {
 
   useEffect(() => {
     if (location) {
-      console.log("There is location", location);
       if (!distanceSelected) {
         //if user selects 'Search All' - widen map view
         setDistanceSelected(5000);
@@ -132,7 +131,7 @@ const RVSiteMapScreen = () => {
   }
 
   const goToRVSiteListScreen = () => {
-    navigation.navigate('RVSiteListScreen', {distanceFromMapView: distanceSelected});
+    navigation.navigate('RVSiteListScreen', {distanceFromMapView: distanceSelected, userName });
   };
 
   const handleRequestLocation = () => {
@@ -144,15 +143,12 @@ const RVSiteMapScreen = () => {
   }
   
   return (
-    <View style={styles.screenview}>
-      
+    <View style={styles.screenview}> 
       
       <View style={styles.buttonContainer}>
           <FixedButton title="View as List" onPress={goToRVSiteListScreen}/>
           <FixedButton title="Return Home" onPress={goToHomeScreen}/>
       </View>
-
-      
 
       <View style={styles.contentContainer}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
