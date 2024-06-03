@@ -11,7 +11,9 @@ function RVSiteScreen () {
   const route = useRoute();
   const navigation = useNavigation();
   const { rvItem } = route.params || {};
-  const { username: userName } = route.params || {};
+  const { userName } = route.params || {};
+
+  console.log("Logged in as", userName);
 
   const [siteData, setSiteData] = useState(rvItem);
 
@@ -170,11 +172,13 @@ function RVSiteScreen () {
       <View style={styles.container}>
 
         <View 
-          style={styles.titleContainer}>
+          style={styles.titleContainer}
+          key={siteData.id}>
             <Text numberOfLines={2} style={[styles.title, {flexShrink: 1}]}>{siteData.SiteName}</Text>
             <SaveHeart
               style={{ position: 'absolute', right: 10 }}
-              onSaveChange={handleSaveTripChange}/>
+              onSaveChange={handleSaveTripChange}
+              userName={userName}/>
         </View>
 
 
