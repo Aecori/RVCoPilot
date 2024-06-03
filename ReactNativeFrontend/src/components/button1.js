@@ -3,7 +3,6 @@ import {TouchableOpacity, Text, StyleSheet} from 'react-native';
 
 const MyButton = ({ onPress, title }) => {
     const handlePress = () => {
-        console.log('Button pressed!');
         if (onPress) {
             onPress();
         }

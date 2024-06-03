@@ -33,7 +33,6 @@ const RequestLocation = async (setLocation, setLocationError, setLoadingLocation
         await Promise.race([authorizationPromise, locationPromise]);
 
         const result = await locationPromise;
-        console.log("This is result", result);
         setLocation(result);
         setLoadingLocation(false);
     } catch (error) {

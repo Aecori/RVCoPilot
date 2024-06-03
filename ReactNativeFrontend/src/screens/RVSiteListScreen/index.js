@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
-
-import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
-
+import { useRoute, useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import sampleRVSiteData from '../../assets/data/sampleRVSiteData.js';
 import FixedButton from '../../components/FixedButton.js';
@@ -14,10 +12,12 @@ const RVSiteListScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
 
-  const {userName} = route.params;
 
   const { distanceFromMapView } = route.params || {};
+  const { userName = "Anonymous"} = route.params || {};
+  const { email } = route.params || {};
 
+  //console.log(userName);
 
   const [location, setLocation] = useState(null);
   const [locationError, setLocationError] = useState(false);
@@ -78,7 +78,11 @@ const RVSiteListScreen = () => {
   // Function to fetch RV item details by id - pass up to date RV site information to RV site Screen view
   const fetchRVSiteDetails = async (rvItemId) => {
     try {
-      const response = await fetch(`https://your-rv-copilot.uc.r.appspot.com/sites/${rvItemId}`);
+      const response = await fetch(`https://your-rv-copilot.uc.r.appspot.com/sites/${rvItemId}`, {
+        headers: {
+          Accept: 'application/json',
+        },
+      });
       if (!response.ok) {
         throw new Error(`Failed to load RV Site Data: ${response.status}`);
       }
@@ -162,14 +166,14 @@ const RVSiteListScreen = () => {
   );
 };
 
-const RVSiteItem = ({ rvItem, goToRVSiteScreen, userName }) => (
+const RVSiteItem = React.memo(({ rvItem, goToRVSiteScreen, userName }) => (
   <View style={styles.item}>
     <Text style={styles.textRVSite}>{rvItem.SiteName}</Text>
       <TouchableOpacity onPress={()=> goToRVSiteScreen( rvItem, userName)}>
         <Text style={styles.buttonText}>Site Details</Text>
       </TouchableOpacity>
     </View>
-);
+));
 
 RVSiteItem.propTypes = {
   rvItem: PropTypes.object.isRequired,
