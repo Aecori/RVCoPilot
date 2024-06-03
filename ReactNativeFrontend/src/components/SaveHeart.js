@@ -51,7 +51,7 @@ const SaveHeart = ({ onSaveChange, size, userName }) => {
                 onPress={() => handleSavePress()}>
 
                     {!selectedHeart ? 
-                    <View>
+                    <View key="heart-o-view-key">
                         <FontAwesome
                         name="heart-o" 
                         color="gray" 
@@ -59,7 +59,7 @@ const SaveHeart = ({ onSaveChange, size, userName }) => {
                 
                     </View>
                     :
-                    <View>
+                    <View key="heart-view-key">
                         <FontAwesome
                         name="heart" 
                         color="gray" 

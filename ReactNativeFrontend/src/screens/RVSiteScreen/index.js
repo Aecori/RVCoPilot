@@ -13,7 +13,7 @@ function RVSiteScreen () {
   const { rvItem } = route.params || {};
   const { userName } = route.params || {};
 
-  console.log("RV Site Screen", userName);
+  console.log("Logged in as", userName);
 
   const [siteData, setSiteData] = useState(rvItem);
 
