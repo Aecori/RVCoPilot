@@ -8,22 +8,25 @@ const handleAuthLogin = async (navigation) => {
     try {
         const credentials = await auth0.webAuth.authorize({
             scope: 'openid profile email',
-            audience: 'https://dev-zifkiob8dukhcy86.us.auth0.com/userinfo',
+            audience: 'https://dev-zifkiob8dukhcy86.us.auth0.com/api/v2/'
         });
-        console.log(credentials);
+        console.log('Credentials:', credentials);
         const accessToken = credentials.accessToken;
+        console.log('Access Token:', accessToken);
+
         // Fetch user profile
         const userInfo = await auth0.auth.userInfo({ token: accessToken });
-        console.log(userInfo.nickname);
+        console.log('User Info:', userInfo);
 
-        // Extract the username from the user profile and set it in state
+        // Extract the username from the user profile 
         const username = userInfo.nickname; // or userInfo.givenName or userInfo.name
         const email = userInfo.email;
-        //setUsername(username);
-        //setEmail(email);
 
-        //  PUT request 
-        const response = await fetch('https://your-rv-copilot.uc.r.appspot.com/user/', {
+        // PUT request
+        const url = 'http://localhost:8080/user/';
+        console.log('Request URL:', url);
+
+        const response = await fetch(url, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -34,14 +37,24 @@ const handleAuthLogin = async (navigation) => {
                 email: email
             })
         });
-        
-        const responseData = await response.json();
-        console.log(responseData);
 
-        // Navigate to the homescreen/RV List
-        navigation.navigate('RVSiteListScreen', {userName: userInfo.nickname});
+        // Check if the response status is 200 or 201
+        if (response.status === 200 || response.status === 201) {
+            console.log(`Success: Received ${response.status} status`);
+            const responseData = await response.json();
+            console.log(responseData);
+
+            // Navigate to the homescreen/RV List
+            navigation.navigate('RVSiteListScreen', { userName: userInfo.nickname });
+        } else {
+            console.log(`Unexpected status code: ${response.status}`);
+            const responseText = await response.text(); // Get raw response text
+            console.log('Response Text:', responseText); // Log raw response text
+            throw new Error(`Unexpected status code: ${response.status}`);
+        }
+
     } catch (error) {
-        console.error(error);
+        console.error('Error:', error);
         Alert.alert('Login failed', error.message);
     }
 };
