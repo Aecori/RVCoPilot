@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { View, TouchableOpacity, StyleSheet, Animated, Text } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-const SaveHeart = ({ onSaveChange, size }) => {
+const SaveHeart = ({ onSaveChange, size, userName }) => {
 
     const heartSize = size !== undefined ? size : 25
 
@@ -15,7 +15,12 @@ const SaveHeart = ({ onSaveChange, size }) => {
     const handleSavePress = () => {
         const newSelectedHeart = !selectedHeart;
         setSelectedHeart(newSelectedHeart);
-        setPopUpMessage(newSelectedHeart ? 'Trip added to saved!' : 'Trip removed from saved');
+        if (userName !== 'Anonymous') {
+            setPopUpMessage(newSelectedHeart ? 'Trip added to saved!' : 'Trip removed from saved');
+        }
+        else {
+            setPopUpMessage('Unable to update saved trips - user not logged in');
+        }
         showPopup();
         onSaveChange(newSelectedHeart);
     }
@@ -27,7 +32,7 @@ const SaveHeart = ({ onSaveChange, size }) => {
         duration: 500,
         useNativeDriver: true,
         }).start(() => {
-        setTimeout(() => hidePopup(), 2000);
+        setTimeout(() => hidePopup(), 1000);
         });
     };
 

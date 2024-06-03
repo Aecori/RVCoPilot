@@ -16,10 +16,10 @@ const RVSiteListScreen = () => {
 
 
   const { distanceFromMapView } = route.params || {};
-  const { username = "Anonymous"} = route.params || {};
+  const { userName = "Anonymous"} = route.params || {};
   const { email } = route.params || {};
 
-  const userName = username;
+  console.log(userName);
 
   const [location, setLocation] = useState(null);
   const [locationError, setLocationError] = useState(false);
@@ -168,14 +168,14 @@ const RVSiteListScreen = () => {
   );
 };
 
-const RVSiteItem = ({ rvItem, goToRVSiteScreen, userName }) => (
+const RVSiteItem = React.memo(({ rvItem, goToRVSiteScreen, userName }) => (
   <View style={styles.item}>
     <Text style={styles.textRVSite}>{rvItem.SiteName}</Text>
       <TouchableOpacity onPress={()=> goToRVSiteScreen( rvItem, userName)}>
         <Text style={styles.buttonText}>Site Details</Text>
       </TouchableOpacity>
     </View>
-);
+));
 
 RVSiteItem.propTypes = {
   rvItem: PropTypes.object.isRequired,
