@@ -32,9 +32,9 @@ checkJwt = jwt({
 
 /* ------------- End Users Middleware ------------- */
 
-function getUser(user_id) {
-    // Search for the user with their email address
-    const q = datastore.createQuery(USER).filter('Username', '=', user_id);
+function getUser(username) {
+    // Search for the user with their username
+    const q = datastore.createQuery(USER).filter('Username', '=', username);
     return datastore.runQuery(q).then( (entities) => {
         if (entities[0].length === 0) {
             return null;
@@ -44,23 +44,25 @@ function getUser(user_id) {
     });
 };
 
-function putSiteInUserList(user_id, site_id) {
-    // Search for the user with their email address
-    const q = datastore.createQuery(USER).filter('Username', '=', user_id);
+function putSiteInUserList(username, site_id) {
+    // Search for the user with their username
+    const q = datastore.createQuery(USER).filter('Username', '=', username);
     return datastore.runQuery(q).then( (entities) => {
         if (entities[0].length === 0) {
             return null;
         }
         const user = entities[0].map(ds.fromDatastore)[0];
         user.SavedSites.push(site_id);
-        const key = datastore.key([USER, parseInt(user_id, 10)]);
+        // Username is nickname, get the ID from user object
+        const key = datastore.key([USER, parseInt(username, 10)]);
+        con
         return datastore.save({ "key": key, "data": user });
     });
 };
 
-function deleteSiteFromUserList(user_id, site_id) {
-    // Search for the user with their email address
-    const q = datastore.createQuery(USER).filter('Username', '=', user_id);
+function deleteSiteFromUserList(username, site_id) {
+    // Search for the user with their username
+    const q = datastore.createQuery(USER).filter('Username', '=', username);
     return datastore.runQuery(q).then( (entities) => {
         if (entities[0].length === 0) {
             return null;
@@ -70,14 +72,14 @@ function deleteSiteFromUserList(user_id, site_id) {
         if (index > -1) {
             user.SavedSites.splice(index, 1);
         }
-        const key = datastore.key([USER, parseInt(user_id, 10)]);
+        const key = datastore.key([USER, parseInt(username, 10)]);
         return datastore.save({ "key": key, "data": user });
     });
 };
 
-function checkIfUserExists(user_id) {
-    // Search for user with user_id (User_id is email address)
-    const q = datastore.createQuery(USER).filter('Username', '=', user_id);
+function checkIfUserExists(username) {
+    // Search for user with usernmae
+    const q = datastore.createQuery(USER).filter('Username', '=', username);
     return datastore.runQuery(q).then( (entities) => {
         if (entities[0].length === 0) {
             return false;
@@ -86,11 +88,11 @@ function checkIfUserExists(user_id) {
     });
 }
 
-function createNewUser(user_id) {
+function createNewUser(username) {
     const key = datastore.key(USER);
     const user = {
         id: key.id,
-        "Username": user_id,
+        "Username": username,
         "SavedSites": [],
         "Bio": ""
     };
@@ -99,15 +101,15 @@ function createNewUser(user_id) {
     });
 }
 
-function updateUserBio(user_id, bio) {
-    const q = datastore.createQuery(USER).filter('Username', '=', user_id);
+function updateUserBio(username, bio) {
+    const q = datastore.createQuery(USER).filter('Username', '=', username);
     return datastore.runQuery(q).then( (entities) => {
         if (entities[0].length === 0) {
             return null;
         }
         const user = entities[0].map(ds.fromDatastore)[0];
         user.Bio = bio;
-        const key = datastore.key([USER, parseInt(user_id, 10)]);
+        const key = datastore.key([USER, parseInt(username, 10)]);
         return datastore.save({ "key": key, "data": user });
     });
 }
@@ -121,8 +123,7 @@ router.get('/:username', authorizationHeaderExists, checkJwt, (req, res) => {
     }
 
     const decoded = jwtlib.decode(req.headers.authorization.split(' ')[1], {complete: true});
-    // Get the payload email and check if it matches the user_id
-    if (decoded.payload.email !== req.params.username) {
+    if (decoded.payload.nickname !== req.params.username) {
         res.status(403).json({Error: "You are not authorized to access this user's information"});
         return;
     }
@@ -130,7 +131,7 @@ router.get('/:username', authorizationHeaderExists, checkJwt, (req, res) => {
     getUser(req.params.username)
     .then( (user) => {
         if (user === null) {
-            res.status(404).json({Error: "No user with this user_id exists"});
+            res.status(404).json({Error: "No user with this username exists"});
             return;
         } else if (user === false) {
             // Wrong user to be accessing this
@@ -148,11 +149,13 @@ router.put('/', authorizationHeaderExists, checkJwt, (req, res) => {
     checkIfUserExists(req.body.Username)
     .then( (exists) => {
         if (exists === true) {
-            // Then allow login with 200 status
             res.status(200).end();
-        }
-        createNewUser(req.body.Username);
-        res.status(201).end();
+            return;
+        } else {
+            createNewUser(req.body.Username);
+            res.status(201).end();
+            return;
+        };
     });
 });
 
@@ -160,17 +163,20 @@ router.put('/sites/:site_id', authorizationHeaderExists, checkJwt, (req, res) =>
     // Check if user exists
     checkIfUserExists(req.body.Username).then( (exists) => {
         if (exists === false) {
-            res.status(404).json({Error: "No user with this user_id exists"});
+            res.status(404).json({Error: "No user with this username exists"});
+            return;
+        } else {
+            putSiteInUserList(req.body.Username, req.params.site_id)
+            .then( (result) => {
+                if (result === null) {
+                    res.status(404).json({Error: "No user with this username exists"});
+                    return;
+                }
+                res.status(204).end();
+                return;
+            });
             return;
         }
-        putSiteInUserList(req.body.Username, req.params.site_id)
-        .then( (result) => {
-            if (result === null) {
-                res.status(404).json({Error: "No user with this user_id exists"});
-                return;
-            }
-            res.status(204).end();
-        });
     });
 });
 
@@ -178,13 +184,13 @@ router.delete('/sites/:site_id', authorizationHeaderExists, checkJwt, (req, res)
     // Check if user exists
     checkIfUserExists(req.body.Username).then( (exists) => {
         if (exists === false) {
-            res.status(404).json({Error: "No user with this user_id exists"});
+            res.status(404).json({Error: "No user with this username exists"});
             return;
         }
         deleteSiteFromUserList(req.body.Username, req.params.site_id)
         .then( (result) => {
             if (result === null) {
-                res.status(404).json({Error: "No user with this user_id exists"});
+                res.status(404).json({Error: "No user with this username exists"});
                 return;
             }
             res.status(204).end();
@@ -193,16 +199,15 @@ router.delete('/sites/:site_id', authorizationHeaderExists, checkJwt, (req, res)
 });
 
 router.put('/bio', authorizationHeaderExists, checkJwt, (req, res) => {
-    // Check if user exists
     checkIfUserExists(req.body.Username).then( (exists) => {
         if (exists === false) {
-            res.status(404).json({Error: "No user with this user_id exists"});
+            res.status(404).json({Error: "No user with this username exists"});
             return;
         }
         updateUserBio(req.body.Username, req.body.Bio)
         .then( (result) => {
             if (result === null) {
-                res.status(404).json({Error: "No user with this user_id exists"});
+                res.status(404).json({Error: "No user with this username exists"});
                 return;
             }
             res.status(204).end();
