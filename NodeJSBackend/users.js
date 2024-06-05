@@ -7,6 +7,7 @@ const datastore = ds.datastore;
 const math = require('mathjs');
 const { PropertyFilter } = require('@google-cloud/datastore');
 const e = require('express');
+const jwtlib = require('jsonwebtoken');
 const USER = 'User';
 
 const { expressjwt: jwt } = require('express-jwt');
@@ -31,31 +32,48 @@ checkJwt = jwt({
 
 /* ------------- End Users Middleware ------------- */
 
-function getUser(id) {
-    const key = datastore.key([USER, parseInt(id, 10)]);
-    return datastore.get(key).then( (entity) => {
-        if (entity[0] === undefined) {
+function getUser(user_id) {
+    // Search for the user with their email address
+    const q = datastore.createQuery(USER).filter('Username', '=', user_id);
+    return datastore.runQuery(q).then( (entities) => {
+        if (entities[0].length === 0) {
             return null;
         }
-        return entity;
+        const user = entities[0].map(ds.fromDatastore)[0];
+        return user;
     });
-}
+};
 
 function putSiteInUserList(user_id, site_id) {
-    const key = datastore.key([USER, parseInt(user_id, 10)]);
-    return datastore.get(key).then( (entity) => {
-        if (entity[0] === undefined) {
+    // Search for the user with their email address
+    const q = datastore.createQuery(USER).filter('Username', '=', user_id);
+    return datastore.runQuery(q).then( (entities) => {
+        if (entities[0].length === 0) {
             return null;
         }
-        const user = {
-            id: entity[0].id,
-            Username: entity[0].Username,
-            SavedSites: entity[0].SavedSites
-        };
+        const user = entities[0].map(ds.fromDatastore)[0];
         user.SavedSites.push(site_id);
+        const key = datastore.key([USER, parseInt(user_id, 10)]);
         return datastore.save({ "key": key, "data": user });
     });
-}
+};
+
+function deleteSiteFromUserList(user_id, site_id) {
+    // Search for the user with their email address
+    const q = datastore.createQuery(USER).filter('Username', '=', user_id);
+    return datastore.runQuery(q).then( (entities) => {
+        if (entities[0].length === 0) {
+            return null;
+        }
+        const user = entities[0].map(ds.fromDatastore)[0];
+        const index = user.SavedSites.indexOf(site_id);
+        if (index > -1) {
+            user.SavedSites.splice(index, 1);
+        }
+        const key = datastore.key([USER, parseInt(user_id, 10)]);
+        return datastore.save({ "key": key, "data": user });
+    });
+};
 
 function checkIfUserExists(user_id) {
     // Search for user with user_id (User_id is email address)
@@ -82,30 +100,46 @@ function createNewUser(user_id) {
 }
 
 function updateUserBio(user_id, bio) {
-    const key = datastore.key([USER, parseInt(user_id, 10)]);
-    return datastore.get(key).then( (entity) => {
-        if (entity[0] === undefined) {
+    const q = datastore.createQuery(USER).filter('Username', '=', user_id);
+    return datastore.runQuery(q).then( (entities) => {
+        if (entities[0].length === 0) {
             return null;
         }
-        const user = {
-            id: entity[0].id,
-            Username: entity[0].Username,
-            SavedSites: entity[0].SavedSites,
-            Bio: bio
-        };
+        const user = entities[0].map(ds.fromDatastore)[0];
+        user.Bio = bio;
+        const key = datastore.key([USER, parseInt(user_id, 10)]);
         return datastore.save({ "key": key, "data": user });
     });
 }
 
-router.get('/', authorizationHeaderExists, checkJwt, (req, res) => {
-    // Get user ID from JSON
-    const user = getUser(req.body.Username)
+// ----------------- ROUTES ----------------- //
+
+router.get('/:username', authorizationHeaderExists, checkJwt, (req, res) => {
+    if (!req.params.username) {
+        res.status(400).json({Error: "Username is required"});
+        return;
+    }
+
+    const decoded = jwtlib.decode(req.headers.authorization.split(' ')[1], {complete: true});
+    // Get the payload email and check if it matches the user_id
+    if (decoded.payload.email !== req.params.username) {
+        res.status(403).json({Error: "You are not authorized to access this user's information"});
+        return;
+    }
+
+    getUser(req.params.username)
     .then( (user) => {
         if (user === null) {
             res.status(404).json({Error: "No user with this user_id exists"});
             return;
+        } else if (user === false) {
+            // Wrong user to be accessing this
+            res.status(403).json({Error: "You are not authorized to access this user's information"});
+            return;
+        } else {
+            res.status(200).json(user);
+            return ;
         }
-        res.status(200).json(user);
     });
 });
 
@@ -114,8 +148,8 @@ router.put('/', authorizationHeaderExists, checkJwt, (req, res) => {
     checkIfUserExists(req.body.Username)
     .then( (exists) => {
         if (exists === true) {
-            res.status(409).json({Error: "User already exists"});
-            return;
+            // Then allow login with 200 status
+            res.status(200).end();
         }
         createNewUser(req.body.Username);
         res.status(201).end();
@@ -130,6 +164,24 @@ router.put('/sites/:site_id', authorizationHeaderExists, checkJwt, (req, res) =>
             return;
         }
         putSiteInUserList(req.body.Username, req.params.site_id)
+        .then( (result) => {
+            if (result === null) {
+                res.status(404).json({Error: "No user with this user_id exists"});
+                return;
+            }
+            res.status(204).end();
+        });
+    });
+});
+
+router.delete('/sites/:site_id', authorizationHeaderExists, checkJwt, (req, res) => {
+    // Check if user exists
+    checkIfUserExists(req.body.Username).then( (exists) => {
+        if (exists === false) {
+            res.status(404).json({Error: "No user with this user_id exists"});
+            return;
+        }
+        deleteSiteFromUserList(req.body.Username, req.params.site_id)
         .then( (result) => {
             if (result === null) {
                 res.status(404).json({Error: "No user with this user_id exists"});
