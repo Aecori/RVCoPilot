@@ -369,7 +369,6 @@ router.get('/latitude/:latitude/longitude/:longitude/distance/:distance', (req, 
 
 router.post('/', (req, res) => {
     // Console log contents of request
-    console.log(req.body);
     postSite(req).then( (key) => {
         res.status(201).json({
             "id": key

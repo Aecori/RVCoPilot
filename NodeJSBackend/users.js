@@ -115,6 +115,19 @@ function updateUserBio(username, bio) {
 }
 
 // ----------------- ROUTES ----------------- //
+router.put('/', authorizationHeaderExists, checkJwt, (req, res) => {
+    checkIfUserExists(req.body.Username)
+    .then( (exists) => {
+        if (exists === true) {
+            res.status(200).end();
+            return;
+        } else {
+            createNewUser(req.body.Username);
+            res.status(201).end();
+            return;
+        };
+    });
+});
 
 router.get('/:username', authorizationHeaderExists, checkJwt, (req, res) => {
     if (!req.params.username) {
@@ -144,23 +157,18 @@ router.get('/:username', authorizationHeaderExists, checkJwt, (req, res) => {
     });
 });
 
-router.put('/', authorizationHeaderExists, checkJwt, (req, res) => {
-    // Check if user exists
-    checkIfUserExists(req.body.Username)
-    .then( (exists) => {
-        if (exists === true) {
-            res.status(200).end();
-            return;
-        } else {
-            createNewUser(req.body.Username);
-            res.status(201).end();
-            return;
-        };
-    });
-});
-
 router.put('/sites/:site_id', authorizationHeaderExists, checkJwt, (req, res) => {
-    // Check if user exists
+    if (!req.body.Username) {
+        res.status(400).json({Error: "Username is required"});
+        return;
+    }
+
+    const decoded = jwtlib.decode(req.headers.authorization.split(' ')[1], {complete: true});
+    if (decoded.payload.nickname !== req.body.Username) {
+        res.status(403).json({Error: "You are not authorized to access this user's information"});
+        return;
+    }
+
     checkIfUserExists(req.body.Username).then( (exists) => {
         if (exists === false) {
             res.status(404).json({Error: "No user with this username exists"});
@@ -182,6 +190,17 @@ router.put('/sites/:site_id', authorizationHeaderExists, checkJwt, (req, res) =>
 
 router.delete('/sites/:site_id', authorizationHeaderExists, checkJwt, (req, res) => {
     // Check if user exists
+    if (!req.body.Username) {
+        res.status(400).json({Error: "Username is required"});
+        return;
+    }
+
+    const decoded = jwtlib.decode(req.headers.authorization.split(' ')[1], {complete: true});
+    if (decoded.payload.nickname !== req.body.Username) {
+        res.status(403).json({Error: "You are not authorized to access this user's information"});
+        return;
+    }
+
     checkIfUserExists(req.body.Username).then( (exists) => {
         if (exists === false) {
             res.status(404).json({Error: "No user with this username exists"});
@@ -198,7 +217,19 @@ router.delete('/sites/:site_id', authorizationHeaderExists, checkJwt, (req, res)
     });
 });
 
-router.put('/bio', authorizationHeaderExists, checkJwt, (req, res) => {
+router.put('/bio', authorizationHeaderExists, checkJwt, (req, res) => {7
+    if (!req.body.Username) {
+        res.status(400).json({Error: "Username is required"});
+        return;
+    }
+
+    // Username is nickname for now, but we want to use something unique in the future.
+    const decoded = jwtlib.decode(req.headers.authorization.split(' ')[1], {complete: true});
+    if (decoded.payload.nickname !== req.body.Username) {
+        res.status(403).json({Error: "You are not authorized to access this user's information"});
+        return;
+    }
+
     checkIfUserExists(req.body.Username).then( (exists) => {
         if (exists === false) {
             res.status(404).json({Error: "No user with this username exists"});
