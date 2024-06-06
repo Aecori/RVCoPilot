@@ -217,18 +217,150 @@ Failure | 404 Not Found | Site not found
 }
 ```
 
-**Example for User (not directly linked to any endpoint in the provided documentation)**
+**Get Sites within a specified distance of a given point** <br>
+Allows you to get information about all sites within a specified distance of a given point. <br>
+GET /sites/latitude/:latitude/longitude/:longitude/distance/:distance <br>
+Request Path Parameters: latitude, longitude, distance <br>
+Request Body: None <br>
+Request Body Format: JSON Request <br> 
+Header:
+
+Header | Required Value | Optional Value | Notes
+--- | --- | --- | ---
+Accept | application/json | N/A | Request will fail without the required value
+
+Response Statuses:
+Outcome | Status Code | Notes
+--- | --- | ---
+Success | 200 OK | 
+Failure	| 400 Bad Request | Distance must be a number
+
+**Delete a Comment** <br>
+Allows you to delete a comment from a site. <br>
+DELETE /sites/:siteID/comments/:commentID <br> 
+Request Path Parameters: siteID, commentID <br>
+Request Body: Username <br> 
+Request Body Format: JSON <br>
+Request Header:
+
+Header | Required Value | Optional Value | Notes
+--- | --- | --- | ---
+Accept | application/json | N/A | Request will fail without the required value
+
+Response Statuses:
+Outcome | Status Code | Notes
+--- | --- | ---
+Success | 204 No Content | 
+Failure | 400 Bad Request | Username is required
+Failure | 400 Bad Request | Site ID or Comment ID missing/incorrect
+Failure | 404 Not Found | No comment with this comment_id exists
+
+
+Example for Delete Comment (used in DELETE /sites/:siteID/comments/:commentID)
 
 ```json
 {
-    "Username": "godfre",
-    "SavedSites": [
-        1,
-        2,
-        3
-    ]
+    "Username": "godfre"
 }
 ```
-```
 
-These examples are based on expected values, but are likely not contained in the actual database itself.
+**Users**
+
+**Get User Information** <br>
+Allows you to get information about a specific user. <br>
+GET /users/:username <br>
+Request Path Parameters: username <br> 
+Request Body: None <br> 
+Request Body Format: JSON <br>
+
+Request Header:
+Header | Required Value | Optional Value | Notes
+--- | --- | --- | ---
+Accept | application/json | N/A | Request will fail without the required value
+Authorization | Bearer {token} | N/A | JWT token is required
+
+Response Statuses:
+Outcome | Status Code | Notes
+--- | --- | ---
+Success | 200 OK	
+Failure | 400 Bad Request | Username is required
+Failure | 403 Forbidden | You are not authorized to access this user's information (currently only supporting users to access their own data)
+Failure | 404 Not Found | No user with this username exists
+
+**Update User** 
+Allows you to update a user's information or create a new user if the user does not exist. <br>
+PUT /users <br>
+Request Path Parameters: None <br>
+Request Body: Username <br>
+Request Body Format: JSON <br>
+
+Request Header:
+Header | Required Value | Optional Value | Notes
+--- | --- | --- | ---
+Accept | application/json | N/A | Request will fail without the required value
+Authorization | Bearer {token} | N/A | JWT token is required
+
+Response Statuses:
+Outcome | Status Code | Notes
+--- | --- | ---
+Success | 200 OK | User exists
+Success | 201 Created | New user created
+
+**Update User's Site List** <br> 
+Allows you to add a site to a user's list of sites. <br> 
+PUT /users/sites/:site_id <br>
+Request Path Parameters: site_id <br>
+Request Body: Username <br> 
+Request Body Format: JSON <br>
+
+Request Header:
+Header | Required Value | Optional Value | Notes
+--- | --- | --- | ---
+Accept | application/json | N/A | Request will fail without the required value
+Authorization | Bearer {token} | N/A | JWT token is required
+
+Response Statuses:
+Outcome | Status Code | Notes
+--- | --- | ---
+Success | 204 No Content | Site added to user's list
+Failure | 404 Not Found | No user with this username exists
+
+**Delete Site from User's List** 
+Allows you to remove a site from a user's list of sites. <br>
+DELETE /users/sites/:site_id <br>
+Request Path Parameters: site_id <br>
+Request Body: Username <br> 
+Request Body Format: JSON <br> 
+
+Request Header:
+Header | Required Value | Optional Value | Notes
+--- | --- | --- | ---
+Accept | application/json | N/A | Request will fail without the required value
+Authorization | Bearer {token} | N/A | JWT token is required
+
+Response Statuses:
+Outcome | Status Code | Notes
+--- | --- | ---
+Success | 204 No Content | Site removed from user's list
+Failure | 404 Not Found | No user with this username exists
+
+
+**Update User's Bio** <br> 
+Allows you to update a user's bio. <br> 
+PUT /users/bio <br>
+Request Path Parameters: None <br>
+Request Body: Username, Bio <br>
+Request Body Format: JSON <br>
+
+Request Header:
+Header | Required Value | Optional Value | Notes
+--- | --- | --- | ---
+Accept | application/json | N/A | Request will fail without the required value
+Authorization | Bearer {token} | N/A | JWT token is required
+
+Response Statuses:
+Outcome | Status Code | Notes
+--- | --- | ---
+Success | 204 No Content | Bio updated
+Failure | 404 Not Found | No user with this username exists
+
