@@ -1,0 +1,1632 @@
+{
+	"info": {
+		"_postman_id": "93d699f3-300f-4039-8110-a1148a1a1446",
+		"name": "RV Copilot API Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25540642"
+	},
+	"item": [
+		{
+			"name": "GET /sites",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is a JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has expected properties\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an(\"array\");\r",
+							"    jsonData.forEach(function(item) {\r",
+							"        pm.expect(item).to.have.property(\"SiteLatitude\");\r",
+							"        pm.expect(item).to.have.property(\"WifiAccess\");\r",
+							"        pm.expect(item).to.have.property(\"WaterAccess\");\r",
+							"        pm.expect(item).to.have.property(\"SiteName\");\r",
+							"        pm.expect(item).to.have.property(\"Comments\");\r",
+							"        pm.expect(item).to.have.property(\"RVElectricAccess\");\r",
+							"        pm.expect(item).to.have.property(\"PetsAllowed\");\r",
+							"        pm.expect(item).to.have.property(\"Recreation\");\r",
+							"        pm.expect(item).to.have.property(\"SiteType\");\r",
+							"        pm.expect(item).to.have.property(\"SiteDescription\");\r",
+							"        pm.expect(item).to.have.property(\"SiteLongitude\");\r",
+							"        pm.expect(item).to.have.property(\"CellService\");\r",
+							"        pm.expect(item).to.have.property(\"SiteRating\");\r",
+							"        pm.expect(item).to.have.property(\"id\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"const jsonData = pm.response.json();\r",
+							"pm.environment.set(\"SiteLatitude\", jsonData.SiteLatitude);\r",
+							"pm.environment.set(\"WifiAccess\", jsonData.WifiAccess);\r",
+							"pm.environment.set(\"WaterAccess\", jsonData.WaterAccess);\r",
+							"pm.environment.set(\"SiteName\", jsonData.SiteName);\r",
+							"pm.environment.set(\"Comments\", JSON.stringify(jsonData.Comments));\r",
+							"pm.environment.set(\"RVElectricAccess\", jsonData.RVElectricAccess);\r",
+							"pm.environment.set(\"PetsAllowed\", jsonData.PetsAllowed);\r",
+							"pm.environment.set(\"Recreation\", JSON.stringify(jsonData.Recreation));\r",
+							"pm.environment.set(\"SiteType\", jsonData.SiteType);\r",
+							"pm.environment.set(\"SiteDescription\", jsonData.SiteDescription);\r",
+							"pm.environment.set(\"SiteLongitude\", jsonData.SiteLongitude);\r",
+							"pm.environment.set(\"CellService\", JSON.stringify(jsonData.CellService));\r",
+							"pm.environment.set(\"SiteRating\", jsonData.SiteRating);\r",
+							"pm.environment.set(\"id\", jsonData.id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/sites/",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"sites",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /sites/:id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is a valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has expected properties\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an(\"object\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteLatitude\");\r",
+							"    pm.expect(jsonData).to.have.property(\"WifiAccess\");\r",
+							"    pm.expect(jsonData).to.have.property(\"WaterAccess\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteName\");\r",
+							"    pm.expect(jsonData).to.have.property(\"Comments\");\r",
+							"    pm.expect(jsonData).to.have.property(\"RVElectricAccess\");\r",
+							"    pm.expect(jsonData).to.have.property(\"PetsAllowed\");\r",
+							"    pm.expect(jsonData).to.have.property(\"Recreation\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteType\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteDescription\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteLongitude\");\r",
+							"    pm.expect(jsonData).to.have.property(\"CellService\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteRating\");\r",
+							"    pm.expect(jsonData).to.have.property(\"id\");\r",
+							"});\r",
+							"\r",
+							"const jsonData = pm.response.json();\r",
+							"pm.environment.set(\"SiteLatitude\", jsonData.SiteLatitude);\r",
+							"pm.environment.set(\"WifiAccess\", jsonData.WifiAccess);\r",
+							"pm.environment.set(\"WaterAccess\", jsonData.WaterAccess);\r",
+							"pm.environment.set(\"SiteName\", jsonData.SiteName);\r",
+							"pm.environment.set(\"Comments\", JSON.stringify(jsonData.Comments));\r",
+							"pm.environment.set(\"RVElectricAccess\", jsonData.RVElectricAccess);\r",
+							"pm.environment.set(\"PetsAllowed\", jsonData.PetsAllowed);\r",
+							"pm.environment.set(\"Recreation\", JSON.stringify(jsonData.Recreation));\r",
+							"pm.environment.set(\"SiteType\", jsonData.SiteType);\r",
+							"pm.environment.set(\"SiteDescription\", jsonData.SiteDescription);\r",
+							"pm.environment.set(\"SiteLongitude\", jsonData.SiteLongitude);\r",
+							"pm.environment.set(\"CellService\", JSON.stringify(jsonData.CellService));\r",
+							"pm.environment.set(\"SiteRating\", jsonData.SiteRating);\r",
+							"pm.environment.set(\"id\", jsonData.id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/sites/{{id}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"sites",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /sites/:id (404)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is a valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has expected error message\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an(\"object\");\r",
+							"    pm.expect(jsonData).to.have.property(\"Error\");\r",
+							"    pm.expect(jsonData.Error).to.eql(\"Site not found\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/sites/12345",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"sites",
+						"12345"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /sites/latitude/:latitude/longitude/:longitude",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is a valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has expected properties\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an(\"array\");\r",
+							"    jsonData.forEach(function(item) {\r",
+							"        pm.expect(item).to.have.property(\"SiteLatitude\");\r",
+							"        pm.expect(item).to.have.property(\"WifiAccess\");\r",
+							"        pm.expect(item).to.have.property(\"WaterAccess\");\r",
+							"        pm.expect(item).to.have.property(\"SiteName\");\r",
+							"        pm.expect(item).to.have.property(\"Comments\");\r",
+							"        pm.expect(item).to.have.property(\"RVElectricAccess\");\r",
+							"        pm.expect(item).to.have.property(\"PetsAllowed\");\r",
+							"        pm.expect(item).to.have.property(\"Recreation\");\r",
+							"        pm.expect(item).to.have.property(\"SiteType\");\r",
+							"        pm.expect(item).to.have.property(\"SiteDescription\");\r",
+							"        pm.expect(item).to.have.property(\"SiteLongitude\");\r",
+							"        pm.expect(item).to.have.property(\"CellService\");\r",
+							"        pm.expect(item).to.have.property(\"SiteRating\");\r",
+							"        pm.expect(item).to.have.property(\"id\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response contains one site with exact latitude and longitude\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    const expectedLatitude = 40.155364; // replace with actual value\r",
+							"    const expectedLongitude = -122.20211; // replace with actual value\r",
+							"    let found = false;\r",
+							"\r",
+							"    jsonData.forEach(function(item) {\r",
+							"        if (item.SiteLatitude === expectedLatitude && item.SiteLongitude === expectedLongitude) {\r",
+							"            found = true;\r",
+							"        }\r",
+							"    });\r",
+							"\r",
+							"    pm.expect(found).to.be.true;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response contains one site with nearby site of differing latitude and longitude\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    var expectedLatitude = 40.155364; \r",
+							"    var expectedLongitude = -122.20211;\r",
+							"    var nearbyThreshold = 1.00;\r",
+							"    var found = false;\r",
+							"\r",
+							"    jsonData.forEach(function(item) {\r",
+							"        var latDiff = Math.abs(item.SiteLatitude - expectedLatitude);\r",
+							"        var lonDiff = Math.abs(item.SiteLongitude - expectedLongitude);\r",
+							"        if (latDiff <= nearbyThreshold && lonDiff <= nearbyThreshold && (latDiff > 0 || lonDiff > 0)) {\r",
+							"            found = true;\r",
+							"        }\r",
+							"    });\r",
+							"\r",
+							"    pm.expect(found).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/sites/latitude/40.155364/longitude/-122.20211",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"sites",
+						"latitude",
+						"40.155364",
+						"longitude",
+						"-122.20211"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /sites 10 miles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is a valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has expected properties\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an(\"array\");\r",
+							"    jsonData.forEach(function(item) {\r",
+							"        pm.expect(item).to.have.property(\"SiteLatitude\");\r",
+							"        pm.expect(item).to.have.property(\"WifiAccess\");\r",
+							"        pm.expect(item).to.have.property(\"WaterAccess\");\r",
+							"        pm.expect(item).to.have.property(\"SiteName\");\r",
+							"        pm.expect(item).to.have.property(\"Comments\");\r",
+							"        pm.expect(item).to.have.property(\"RVElectricAccess\");\r",
+							"        pm.expect(item).to.have.property(\"PetsAllowed\");\r",
+							"        pm.expect(item).to.have.property(\"Recreation\");\r",
+							"        pm.expect(item).to.have.property(\"SiteType\");\r",
+							"        pm.expect(item).to.have.property(\"SiteDescription\");\r",
+							"        pm.expect(item).to.have.property(\"SiteLongitude\");\r",
+							"        pm.expect(item).to.have.property(\"CellService\");\r",
+							"        pm.expect(item).to.have.property(\"SiteRating\");\r",
+							"        pm.expect(item).to.have.property(\"id\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response contains one site with exact latitude and longitude\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    const expectedLatitude = 40.155364;\r",
+							"    const expectedLongitude = -122.20211;\r",
+							"    let found = false;\r",
+							"\r",
+							"    jsonData.forEach(function(item) {\r",
+							"        if (item.SiteLatitude === expectedLatitude && item.SiteLongitude === expectedLongitude) {\r",
+							"            found = true;\r",
+							"        }\r",
+							"    });\r",
+							"\r",
+							"    pm.expect(found).to.be.true;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Only one site\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an(\"array\");\r",
+							"    pm.expect(jsonData.length).to.eql(1);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/sites/latitude/40.155364/longitude/-122.20211/distance/10",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"sites",
+						"latitude",
+						"40.155364",
+						"longitude",
+						"-122.20211",
+						"distance",
+						"10"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /sites 50 miles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is a valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has expected properties\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an(\"array\");\r",
+							"    jsonData.forEach(function(item) {\r",
+							"        pm.expect(item).to.have.property(\"SiteLatitude\");\r",
+							"        pm.expect(item).to.have.property(\"WifiAccess\");\r",
+							"        pm.expect(item).to.have.property(\"WaterAccess\");\r",
+							"        pm.expect(item).to.have.property(\"SiteName\");\r",
+							"        pm.expect(item).to.have.property(\"Comments\");\r",
+							"        pm.expect(item).to.have.property(\"RVElectricAccess\");\r",
+							"        pm.expect(item).to.have.property(\"PetsAllowed\");\r",
+							"        pm.expect(item).to.have.property(\"Recreation\");\r",
+							"        pm.expect(item).to.have.property(\"SiteType\");\r",
+							"        pm.expect(item).to.have.property(\"SiteDescription\");\r",
+							"        pm.expect(item).to.have.property(\"SiteLongitude\");\r",
+							"        pm.expect(item).to.have.property(\"CellService\");\r",
+							"        pm.expect(item).to.have.property(\"SiteRating\");\r",
+							"        pm.expect(item).to.have.property(\"id\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response contains one site with exact latitude and longitude\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    const expectedLatitude = 40.155364;\r",
+							"    const expectedLongitude = -122.20211;\r",
+							"    let found = false;\r",
+							"\r",
+							"    jsonData.forEach(function(item) {\r",
+							"        if (item.SiteLatitude === expectedLatitude && item.SiteLongitude === expectedLongitude) {\r",
+							"            found = true;\r",
+							"        }\r",
+							"    });\r",
+							"\r",
+							"    pm.expect(found).to.be.true;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Two sites\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an(\"array\");\r",
+							"    pm.expect(jsonData.length).to.eql(2);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/sites/latitude/40.155364/longitude/-122.20211/distance/50",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"sites",
+						"latitude",
+						"40.155364",
+						"longitude",
+						"-122.20211",
+						"distance",
+						"50"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /sites 100 miles",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is a valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has expected properties\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an(\"array\");\r",
+							"    jsonData.forEach(function(item) {\r",
+							"        pm.expect(item).to.have.property(\"SiteLatitude\");\r",
+							"        pm.expect(item).to.have.property(\"WifiAccess\");\r",
+							"        pm.expect(item).to.have.property(\"WaterAccess\");\r",
+							"        pm.expect(item).to.have.property(\"SiteName\");\r",
+							"        pm.expect(item).to.have.property(\"Comments\");\r",
+							"        pm.expect(item).to.have.property(\"RVElectricAccess\");\r",
+							"        pm.expect(item).to.have.property(\"PetsAllowed\");\r",
+							"        pm.expect(item).to.have.property(\"Recreation\");\r",
+							"        pm.expect(item).to.have.property(\"SiteType\");\r",
+							"        pm.expect(item).to.have.property(\"SiteDescription\");\r",
+							"        pm.expect(item).to.have.property(\"SiteLongitude\");\r",
+							"        pm.expect(item).to.have.property(\"CellService\");\r",
+							"        pm.expect(item).to.have.property(\"SiteRating\");\r",
+							"        pm.expect(item).to.have.property(\"id\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response contains one site with exact latitude and longitude\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    const expectedLatitude = 40.155364;\r",
+							"    const expectedLongitude = -122.20211;\r",
+							"    let found = false;\r",
+							"\r",
+							"    jsonData.forEach(function(item) {\r",
+							"        if (item.SiteLatitude === expectedLatitude && item.SiteLongitude === expectedLongitude) {\r",
+							"            found = true;\r",
+							"        }\r",
+							"    });\r",
+							"\r",
+							"    pm.expect(found).to.be.true;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Greater than two sites\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an(\"array\");\r",
+							"    pm.expect(jsonData.length).to.be.greaterThan(2);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/sites/latitude/40.155364/longitude/-122.20211/distance/100",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"sites",
+						"latitude",
+						"40.155364",
+						"longitude",
+						"-122.20211",
+						"distance",
+						"100"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST /sites",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();\r",
+							"pm.environment.set(\"id_todelete\", jsonData.id);\r",
+							"\r",
+							"pm.test(\"Status Code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"SiteLatitude\": 40.155364,\n    \"WifiAccess\": true,\n    \"WaterAccess\": true,\n    \"SiteName\": \"TESTING SITE\",\n    \"Comments\": [],\n    \"RVElectricAccess\": true,\n    \"PetsAllowed\": false,\n    \"Recreation\": [\n        \"BIKING\",\n        \"BOATING\",\n        \"CAMPING\",\n        \"INTERPRETIVE PROGRAMS\",\n        \"FISHING\",\n        \"HIKING\",\n        \"PICNICKING\",\n        \"WILDLIFE VIEWING\",\n        \"DAY USE AREA\",\n        \"PHOTOGRAPHY\",\n        \"WATER ACTIVITIES\",\n        \"KAYAKING\",\n        \"CANOEING\",\n        \"BIRDING\",\n        \"WATER ACCESS\",\n        \"JET SKIING\"\n    ],\n    \"SiteType\": \"Campground\",\n    \"SiteDescription\": \"\",\n    \"SiteLongitude\": -122.20211,\n    \"CellService\": [],\n    \"SiteRating\": 0\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/sites",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"sites"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST /sites/:id/comment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response must have an id\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Comment must exist\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    let comment = jsonData.Comments[0];\r",
+							"    pm.expect(comment).to.have.property('id');\r",
+							"    pm.expect(comment).to.have.property('Username');\r",
+							"    pm.expect(comment.Username).to.equal('Test5');\r",
+							"    pm.expect(comment).to.have.property('Rating');\r",
+							"    pm.expect(comment).to.have.property('Date');\r",
+							"    pm.expect(comment).to.have.property('Comment');\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Username\": \"Test5\",\r\n    \"Comment\": \"This is a test 5\",\r\n    \"Rating\": 5\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/sites/{{id_todelete}}/comments",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"sites",
+						"{{id_todelete}}",
+						"comments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE /sites/:id (TESTING PURPOSES ONLY)",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/sites/{{id_todelete}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"sites",
+						"{{id_todelete}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PATCH /sites/:id Update Wifi",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is a valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has expected properties\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an(\"object\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteLatitude\");\r",
+							"    pm.expect(jsonData).to.have.property(\"WifiAccess\");\r",
+							"    pm.expect(jsonData).to.have.property(\"WaterAccess\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteName\");\r",
+							"    pm.expect(jsonData).to.have.property(\"Comments\");\r",
+							"    pm.expect(jsonData).to.have.property(\"RVElectricAccess\");\r",
+							"    pm.expect(jsonData).to.have.property(\"PetsAllowed\");\r",
+							"    pm.expect(jsonData).to.have.property(\"Recreation\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteType\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteDescription\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteLongitude\");\r",
+							"    pm.expect(jsonData).to.have.property(\"CellService\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteRating\");\r",
+							"    pm.expect(jsonData).to.have.property(\"id\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"WifiAccess doesn't match from first get ID request\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(jsonData.WifiAccess).to.not.eql(pm.environment.get(\"WifiAccess\") === jsonData.WifiAccess);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"SiteLatitude\": 40.155364,\n    \"WifiAccess\": true,\n    \"WaterAccess\": true,\n    \"SiteName\": \"SYCAMORE GROVE (RED BLUFF) CAMPGROUND\",\n    \"Comments\": [],\n    \"RVElectricAccess\": true,\n    \"PetsAllowed\": false,\n    \"Recreation\": [\n        \"BIKING\",\n        \"BOATING\",\n        \"CAMPING\",\n        \"INTERPRETIVE PROGRAMS\",\n        \"FISHING\",\n        \"HIKING\",\n        \"PICNICKING\",\n        \"WILDLIFE VIEWING\",\n        \"DAY USE AREA\",\n        \"PHOTOGRAPHY\",\n        \"WATER ACTIVITIES\",\n        \"KAYAKING\",\n        \"CANOEING\",\n        \"BIRDING\",\n        \"WATER ACCESS\",\n        \"JET SKIING\"\n    ],\n    \"SiteType\": \"Campground\",\n    \"SiteDescription\": \"\",\n    \"SiteLongitude\": -122.20211,\n    \"CellService\": [],\n    \"SiteRating\": 0\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/sites/{{id}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"sites",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PATCH /sites/:id Update Wifi 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is a valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has expected properties\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an(\"object\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteLatitude\");\r",
+							"    pm.expect(jsonData).to.have.property(\"WifiAccess\");\r",
+							"    pm.expect(jsonData).to.have.property(\"WaterAccess\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteName\");\r",
+							"    pm.expect(jsonData).to.have.property(\"Comments\");\r",
+							"    pm.expect(jsonData).to.have.property(\"RVElectricAccess\");\r",
+							"    pm.expect(jsonData).to.have.property(\"PetsAllowed\");\r",
+							"    pm.expect(jsonData).to.have.property(\"Recreation\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteType\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteDescription\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteLongitude\");\r",
+							"    pm.expect(jsonData).to.have.property(\"CellService\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteRating\");\r",
+							"    pm.expect(jsonData).to.have.property(\"id\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"WifiAccess matches again\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(jsonData.WifiAccess).to.eql(pm.environment.get(\"WifiAccess\") === jsonData.WifiAccess);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"SiteName\": \"SYCAMORE GROVE (RED BLUFF) CAMPGROUND\",\n    \"SiteDescription\": \"\",\n    \"SiteLatitude\": 40.155364,\n    \"SiteLongitude\": -122.20211,\n    \"SiteType\": \"Campground\",\n    \"RVElectricAccess\": true,\n    \"WaterAccess\": true,\n    \"WifiAccess\": false,\n    \"CellService\": [],\n    \"PetsAllowed\": false,\n    \"Recreation\": [\n        \"BIKING\",\n        \"BOATING\",\n        \"CAMPING\",\n        \"INTERPRETIVE PROGRAMS\",\n        \"FISHING\",\n        \"HIKING\",\n        \"PICNICKING\",\n        \"WILDLIFE VIEWING\",\n        \"DAY USE AREA\",\n        \"PHOTOGRAPHY\",\n        \"WATER ACTIVITIES\",\n        \"KAYAKING\",\n        \"CANOEING\",\n        \"BIRDING\",\n        \"WATER ACCESS\",\n        \"JET SKIING\"\n    ],\n    \"SiteRating\": 0,\n    \"Comments\": [],\n    \"id\": 5710353417633792\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/sites/{{id}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"sites",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PATCH /sites/:id Update Wifi (404)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"SiteName\": \"SYCAMORE GROVE (RED BLUFF) CAMPGROUND\",\n    \"SiteDescription\": \"\",\n    \"SiteLatitude\": 40.155364,\n    \"SiteLongitude\": -122.20211,\n    \"SiteType\": \"Campground\",\n    \"RVElectricAccess\": true,\n    \"WaterAccess\": true,\n    \"WifiAccess\": false,\n    \"CellService\": [],\n    \"PetsAllowed\": false,\n    \"Recreation\": [\n        \"BIKING\",\n        \"BOATING\",\n        \"CAMPING\",\n        \"INTERPRETIVE PROGRAMS\",\n        \"FISHING\",\n        \"HIKING\",\n        \"PICNICKING\",\n        \"WILDLIFE VIEWING\",\n        \"DAY USE AREA\",\n        \"PHOTOGRAPHY\",\n        \"WATER ACTIVITIES\",\n        \"KAYAKING\",\n        \"CANOEING\",\n        \"BIRDING\",\n        \"WATER ACCESS\",\n        \"JET SKIING\"\n    ],\n    \"SiteRating\": 0,\n    \"Comments\": [],\n    \"id\": 5710353417633792\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/sites/12345",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"sites",
+						"12345"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PATCH /sites/:id Update Water Access",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is a valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has expected properties\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an(\"object\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteLatitude\");\r",
+							"    pm.expect(jsonData).to.have.property(\"WifiAccess\");\r",
+							"    pm.expect(jsonData).to.have.property(\"WaterAccess\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteName\");\r",
+							"    pm.expect(jsonData).to.have.property(\"Comments\");\r",
+							"    pm.expect(jsonData).to.have.property(\"RVElectricAccess\");\r",
+							"    pm.expect(jsonData).to.have.property(\"PetsAllowed\");\r",
+							"    pm.expect(jsonData).to.have.property(\"Recreation\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteType\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteDescription\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteLongitude\");\r",
+							"    pm.expect(jsonData).to.have.property(\"CellService\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteRating\");\r",
+							"    pm.expect(jsonData).to.have.property(\"id\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"WaterAccess doesn't match from first get ID request\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(jsonData.WifiAccess).to.not.eql(pm.environment.get(\"WaterAccess\") === jsonData.WaterAccess);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"SiteLatitude\": 40.155364,\n    \"WifiAccess\": true,\n    \"WaterAccess\": false,\n    \"SiteName\": \"SYCAMORE GROVE (RED BLUFF) CAMPGROUND\",\n    \"Comments\": [],\n    \"RVElectricAccess\": true,\n    \"PetsAllowed\": false,\n    \"Recreation\": [\n        \"BIKING\",\n        \"BOATING\",\n        \"CAMPING\",\n        \"INTERPRETIVE PROGRAMS\",\n        \"FISHING\",\n        \"HIKING\",\n        \"PICNICKING\",\n        \"WILDLIFE VIEWING\",\n        \"DAY USE AREA\",\n        \"PHOTOGRAPHY\",\n        \"WATER ACTIVITIES\",\n        \"KAYAKING\",\n        \"CANOEING\",\n        \"BIRDING\",\n        \"WATER ACCESS\",\n        \"JET SKIING\"\n    ],\n    \"SiteType\": \"Campground\",\n    \"SiteDescription\": \"\",\n    \"SiteLongitude\": -122.20211,\n    \"CellService\": [],\n    \"SiteRating\": 0,\n    \"id\": \"5710353417633792\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/sites/{{id}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"sites",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PATCH /sites/:id Update Water Access 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is a valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has expected properties\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an(\"object\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteLatitude\");\r",
+							"    pm.expect(jsonData).to.have.property(\"WifiAccess\");\r",
+							"    pm.expect(jsonData).to.have.property(\"WaterAccess\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteName\");\r",
+							"    pm.expect(jsonData).to.have.property(\"Comments\");\r",
+							"    pm.expect(jsonData).to.have.property(\"RVElectricAccess\");\r",
+							"    pm.expect(jsonData).to.have.property(\"PetsAllowed\");\r",
+							"    pm.expect(jsonData).to.have.property(\"Recreation\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteType\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteDescription\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteLongitude\");\r",
+							"    pm.expect(jsonData).to.have.property(\"CellService\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteRating\");\r",
+							"    pm.expect(jsonData).to.have.property(\"id\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"WaterAccess matches again.\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(jsonData.WifiAccess).to.eql(pm.environment.get(\"WaterAccess\") === jsonData.WaterAccess);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"SiteLatitude\": 40.155364,\n    \"WifiAccess\": true,\n    \"WaterAccess\": true,\n    \"SiteName\": \"SYCAMORE GROVE (RED BLUFF) CAMPGROUND\",\n    \"Comments\": [],\n    \"RVElectricAccess\": true,\n    \"PetsAllowed\": false,\n    \"Recreation\": [\n        \"BIKING\",\n        \"BOATING\",\n        \"CAMPING\",\n        \"INTERPRETIVE PROGRAMS\",\n        \"FISHING\",\n        \"HIKING\",\n        \"PICNICKING\",\n        \"WILDLIFE VIEWING\",\n        \"DAY USE AREA\",\n        \"PHOTOGRAPHY\",\n        \"WATER ACTIVITIES\",\n        \"KAYAKING\",\n        \"CANOEING\",\n        \"BIRDING\",\n        \"WATER ACCESS\",\n        \"JET SKIING\"\n    ],\n    \"SiteType\": \"Campground\",\n    \"SiteDescription\": \"\",\n    \"SiteLongitude\": -122.20211,\n    \"CellService\": [],\n    \"SiteRating\": 0,\n    \"id\": \"5710353417633792\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/sites/{{id}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"sites",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PATCH /sites/:id Update Recreation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is a valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has expected properties\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an(\"object\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteLatitude\");\r",
+							"    pm.expect(jsonData).to.have.property(\"WifiAccess\");\r",
+							"    pm.expect(jsonData).to.have.property(\"WaterAccess\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteName\");\r",
+							"    pm.expect(jsonData).to.have.property(\"Comments\");\r",
+							"    pm.expect(jsonData).to.have.property(\"RVElectricAccess\");\r",
+							"    pm.expect(jsonData).to.have.property(\"PetsAllowed\");\r",
+							"    pm.expect(jsonData).to.have.property(\"Recreation\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteType\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteDescription\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteLongitude\");\r",
+							"    pm.expect(jsonData).to.have.property(\"CellService\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteRating\");\r",
+							"    pm.expect(jsonData).to.have.property(\"id\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Recreation doesn't match from first get ID request\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(jsonData.WifiAccess).to.not.eql(pm.environment.get(\"Recreation\") === jsonData.Recreation);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"SiteLatitude\": 40.155364,\n    \"WifiAccess\": true,\n    \"WaterAccess\": false,\n    \"SiteName\": \"SYCAMORE GROVE (RED BLUFF) CAMPGROUND\",\n    \"Comments\": [],\n    \"RVElectricAccess\": true,\n    \"PetsAllowed\": false,\n    \"Recreation\": [\n    ],\n    \"SiteType\": \"Campground\",\n    \"SiteDescription\": \"\",\n    \"SiteLongitude\": -122.20211,\n    \"CellService\": [],\n    \"SiteRating\": 0,\n    \"id\": \"5710353417633792\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/sites/{{id}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"sites",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PATCH /sites/:id Update Recreation 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is a valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has expected properties\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an(\"object\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteLatitude\");\r",
+							"    pm.expect(jsonData).to.have.property(\"WifiAccess\");\r",
+							"    pm.expect(jsonData).to.have.property(\"WaterAccess\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteName\");\r",
+							"    pm.expect(jsonData).to.have.property(\"Comments\");\r",
+							"    pm.expect(jsonData).to.have.property(\"RVElectricAccess\");\r",
+							"    pm.expect(jsonData).to.have.property(\"PetsAllowed\");\r",
+							"    pm.expect(jsonData).to.have.property(\"Recreation\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteType\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteDescription\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteLongitude\");\r",
+							"    pm.expect(jsonData).to.have.property(\"CellService\");\r",
+							"    pm.expect(jsonData).to.have.property(\"SiteRating\");\r",
+							"    pm.expect(jsonData).to.have.property(\"id\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Recreation matches again.\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    var recreationFromEnv = JSON.parse(pm.environment.get(\"Recreation\"));\r",
+							"\r",
+							"    pm.expect(jsonData.Recreation).to.eql(recreationFromEnv);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"SiteLatitude\": 40.155364,\n    \"WifiAccess\": true,\n    \"WaterAccess\": true,\n    \"SiteName\": \"SYCAMORE GROVE (RED BLUFF) CAMPGROUND\",\n    \"Comments\": [],\n    \"RVElectricAccess\": true,\n    \"PetsAllowed\": false,\n    \"Recreation\": [\n        \"BIKING\",\n        \"BOATING\",\n        \"CAMPING\",\n        \"INTERPRETIVE PROGRAMS\",\n        \"FISHING\",\n        \"HIKING\",\n        \"PICNICKING\",\n        \"WILDLIFE VIEWING\",\n        \"DAY USE AREA\",\n        \"PHOTOGRAPHY\",\n        \"WATER ACTIVITIES\",\n        \"KAYAKING\",\n        \"CANOEING\",\n        \"BIRDING\",\n        \"WATER ACCESS\",\n        \"JET SKIING\"\n    ],\n    \"SiteType\": \"Campground\",\n    \"SiteDescription\": \"\",\n    \"SiteLongitude\": -122.20211,\n    \"CellService\": [],\n    \"SiteRating\": 0,\n    \"id\": \"5710353417633792\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{URL}}/sites/{{id}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"sites",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /users/:username",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is a valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has expected properties\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an(\"object\");\r",
+							"    pm.expect(jsonData).to.have.property(\"id\");\r",
+							"    pm.expect(jsonData).to.have.property(\"username\");\r",
+							"    pm.expect(jsonData).to.have.property(\"sites\");\r",
+							"    pm.expect(jsonData).to.have.property(\"bio\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt}}"
+					}
+				],
+				"url": {
+					"raw": "{{URL}}/users/:username",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"users",
+						":username"
+					],
+					"variable": [
+						{
+							"key": "username",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT /users/sites/:site_id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is empty\", function () {\r",
+							"    pm.response.to.be.empty;\r",
+							"});\r"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"Username\": \"{{Username}}\"\n}"
+				},
+				"url": {
+					"raw": "{{URL}}/users/sites/:site_id",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"users",
+						"sites",
+						":site_id"
+					],
+					"variable": [
+						{
+							"key": "site_id",
+							"value": "{{id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /users/:username (Check if site added)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is a valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has expected properties\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an(\"object\");\r",
+							"    pm.expect(jsonData).to.have.property(\"id\");\r",
+							"    pm.expect(jsonData).to.have.property(\"username\");\r",
+							"    pm.expect(jsonData).to.have.property(\"sites\");\r",
+							"    pm.expect(jsonData).to.have.property(\"bio\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check if sites array length is 1\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.sites).to.be.an('array').that.has.lengthOf(1);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt}}"
+					}
+				],
+				"url": {
+					"raw": "{{URL}}/users/:username",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"users",
+						":username"
+					],
+					"variable": [
+						{
+							"key": "username",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE /sites/:site_id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is empty\", function () {\r",
+							"    pm.response.to.be.empty;\r",
+							"});\r"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"Username\": \"{{Username}}\"\n}"
+				},
+				"url": {
+					"raw": "{{URL}}/users/sites/:site_id",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"users",
+						"sites",
+						":site_id"
+					],
+					"variable": [
+						{
+							"key": "site_id",
+							"value": "{{id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /users/:username (Check if site deleted)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is a valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has expected properties\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an(\"object\");\r",
+							"    pm.expect(jsonData).to.have.property(\"id\");\r",
+							"    pm.expect(jsonData).to.have.property(\"username\");\r",
+							"    pm.expect(jsonData).to.have.property(\"sites\");\r",
+							"    pm.expect(jsonData).to.have.property(\"bio\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check if sites array length is 1\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.sites).to.be.an('array').that.has.lengthOf(0);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt}}"
+					}
+				],
+				"url": {
+					"raw": "{{URL}}/users/:username",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"users",
+						":username"
+					],
+					"variable": [
+						{
+							"key": "username",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT /users/bio",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is empty\", function () {\r",
+							"    pm.response.to.be.empty;\r",
+							"});\r"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"Username\": \"{{Username}}\",\n    \"Bio\": \"Test\"\n}"
+				},
+				"url": {
+					"raw": "{{URL}}/users/bio",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"users",
+						"bio"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /users/:username (Check if bio updated)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is a valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has expected properties\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an(\"object\");\r",
+							"    pm.expect(jsonData).to.have.property(\"id\");\r",
+							"    pm.expect(jsonData).to.have.property(\"username\");\r",
+							"    pm.expect(jsonData).to.have.property(\"sites\");\r",
+							"    pm.expect(jsonData).to.have.property(\"bio\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Bio is changed\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.Bio).to.not.equal(\"\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt}}"
+					}
+				],
+				"url": {
+					"raw": "{{URL}}/users/:username",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"users",
+						":username"
+					],
+					"variable": [
+						{
+							"key": "username",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT /users/bio (Revert Bio)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is empty\", function () {\r",
+							"    pm.response.to.be.empty;\r",
+							"});\r"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"Username\": \"{{Username}}\",\n    \"Bio\": \"\"\n}"
+				},
+				"url": {
+					"raw": "{{URL}}/users/bio",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"users",
+						"bio"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
